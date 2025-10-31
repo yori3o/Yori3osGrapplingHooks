@@ -1,0 +1,16 @@
+{
+  "item.yo_hooks.iron_grappling_hook": "Iron grappling hook",
+  "item.yo_hooks.gold_grappling_hook": "Golden grappling hook",
+  "item.yo_hooks.diamond_grappling_hook": "Diamond grappling hook",
+  "item.yo_hooks.netherite_grappling_hook": "Netherite grappling hook",
+
+  "item.yo_hooks.iron_hook_head": "Iron hook",
+  "item.yo_hooks.gold_hook_head": "Golden hook",
+  "item.yo_hooks.diamond_hook_head": "Diamond hook",
+  "item.yo_hooks.netherite_hook_head": "Netherite hook",
+
+  "gui.yo_hooks.hooks.desc_1": "§9Maximum range: % blocks",
+
+  "key.yo_hooks.jump": "Hook Jump",
+  "category.yo_hooks": "Yo Hooks"
+}
