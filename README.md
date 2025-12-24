@@ -3,3 +3,5 @@
 [Modrinth link](https://modrinth.com/mod/yori3os-grappling-hooks)
 
 [Curseforge link](https://www.curseforge.com/minecraft/mc-mods/yori3os-grappling-hooks)
+
+[Youtube link](https://www.youtube.com/watch?v=pH57T758aFU)
