@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "A": {
+      "item": "minecraft:diamond"
+    }
+  },
+  "pattern": [
+    "AA",
+    " A"
+  ],
+  "result": {
+    "item": "yo_hooks:diamond_hook_head"
+  }
+}

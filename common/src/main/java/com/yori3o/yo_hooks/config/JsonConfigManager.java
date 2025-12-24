@@ -1,5 +1,8 @@
 package com.yori3o.yo_hooks.config;
 
+
+import com.yori3o.yo_hooks.utils.LoggerUtil;
+
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import java.io.*;
@@ -34,6 +37,8 @@ public abstract class JsonConfigManager<T> {
                 return;
             }
 
+            getDefaultConfig();
+
             try (Reader reader = Files.newBufferedReader(configPath)) {
                 configInstance = gson.fromJson(new JsonReader(reader), configClass);
             }
@@ -42,8 +47,10 @@ public abstract class JsonConfigManager<T> {
                 throw new IOException("Config parsed to null (corrupted JSON?)");
             }
 
+            save();
+
         } catch (Exception e) {
-            System.err.println("[CONFIG] Failed to load " + configPath.getFileName() + ": " + e.getMessage());
+            LoggerUtil.LOGGER.error("[CONFIG] Failed to load " + configPath.getFileName() + ": " + e.getMessage());
             backupCorruptedFile();
             saveDefault();
         }
@@ -65,7 +72,7 @@ public abstract class JsonConfigManager<T> {
                 gson.toJson(configInstance, writer);
             }
         } catch (Exception e) {
-            System.err.println("[CONFIG] Failed to save config: " + e.getMessage());
+            LoggerUtil.LOGGER.error("[CONFIG] Failed to save config: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -78,7 +85,7 @@ public abstract class JsonConfigManager<T> {
             try (Writer writer = Files.newBufferedWriter(configPath)) {
                 gson.toJson(configInstance, writer);
             }
-            System.out.println("[CONFIG] Created new config file: " + configPath);
+            LoggerUtil.LOGGER.info("[CONFIG] Created new config file: " + configPath);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -92,10 +99,10 @@ public abstract class JsonConfigManager<T> {
                         .format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
                 Path backup = configPath.resolveSibling(configPath.getFileName() + ".broken_" + timestamp + ".bak");
                 Files.move(configPath, backup, StandardCopyOption.REPLACE_EXISTING);
-                System.err.println("[CONFIG] Corrupted config renamed to: " + backup.getFileName());
+                LoggerUtil.LOGGER.warn("[CONFIG] Corrupted config renamed to: " + backup.getFileName());
             }
         } catch (IOException ex) {
-            System.err.println("[CONFIG] Failed to backup corrupted file: " + ex.getMessage());
+            LoggerUtil.LOGGER.error("[CONFIG] Failed to backup corrupted file: " + ex.getMessage());
         }
     }
 

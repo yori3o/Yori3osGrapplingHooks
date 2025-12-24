@@ -6,15 +6,20 @@ import dev.architectury.platform.Platform;
 public class CommonConfig extends JsonConfigManager<CommonConfig.Values> {
 
     public static class Values {
-        public int ironHookDurabitility = 32;
-        public int goldHookDurabitility = 16;
-        public int diamondHookDurabitility = 64;
-        public int netheriteHookDurabitility = 96;
+        public int ironHookDurabitility = 48;
+        public int goldHookDurabitility = 24;
+        public int diamondHookDurabitility = 96;
+        public int netheriteHookDurabitility = 144;
 
         public int ironHookLength = 18;
         public int goldHookLength = 22;
         public int diamondHookLength = 26;
         public int netheriteHookLength = 32;
+
+        //public float climbSpeed = 0.1f;
+
+        public boolean softHook = false;
+        public float stiffness = 0.10f;
     }
 
     private static final Path CONFIG_PATH = Platform.getConfigFolder().resolve("yo_hooks_common.json");
@@ -28,6 +33,5 @@ public class CommonConfig extends JsonConfigManager<CommonConfig.Values> {
         return new Values();
     }
 
-    //public boolean isSaveBossKiller() { return get().SaveBossKiller; }
-    //public void setSaveBossKiller(boolean value) { get().SaveBossKiller = value; save(); }
+    //public void set...(boolean value) { get(). ... = value; save(); }
 }

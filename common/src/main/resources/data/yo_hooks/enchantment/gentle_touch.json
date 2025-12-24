@@ -1,0 +1,21 @@
+{
+  "anvil_cost": 6,
+  "description": {
+    "translate": "enchantment.yo_hooks.gentle_touch"
+  },
+  "effects": {},
+  "max_cost": {
+    "base": 65,
+    "per_level_above_first": 0
+  },
+  "max_level": 1,
+  "min_cost": {
+    "base": 15,
+    "per_level_above_first": 0
+  },
+  "slots": [
+    "mainhand"
+  ],
+  "supported_items": "#yo_hooks:enchantable/gentle_touch",
+  "weight": 1
+}

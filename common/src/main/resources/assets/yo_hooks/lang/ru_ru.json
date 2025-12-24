@@ -9,8 +9,13 @@
   "item.yo_hooks.diamond_hook_head": "Алмазный крюк",
   "item.yo_hooks.netherite_hook_head": "Незеритовый крюк",
 
-  "gui.yo_hooks.hooks.desc_1": "§9Максимальная дальность: % блоков",
+  "gui.yo_hooks.hooks.desc_1": "§9Максимальная дальность: %s блоков",
 
   "key.yo_hooks.jump": "Прыжок с крюка",
-  "category.yo_hooks": "Yo Hooks"
+  "key.yo_hooks.climb": "Взобраться по цепи",
+  "key.yo_hooks.climb_down": "Спуститься по цепи",
+  "category.yo_hooks": "Yo Hooks",
+
+  "enchantment.yo_hooks.gentle_touch": "Мягкое касание",
+  "enchantment.yo_hooks.gentle_touch.desc": "Крюк-кошка не ломает хрупкие блоки, такие как стекло или капельник."
 }

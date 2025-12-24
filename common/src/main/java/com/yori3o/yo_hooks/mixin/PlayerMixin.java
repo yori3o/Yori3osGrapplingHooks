@@ -1,34 +1,29 @@
 package com.yori3o.yo_hooks.mixin;
 
-import com.yori3o.yo_hooks.config.ServerConfig;
+import com.yori3o.yo_hooks.YoHooks;
+import com.yori3o.yo_hooks.YoHooksClient;
 import com.yori3o.yo_hooks.entity.HookEntity;
 import com.yori3o.yo_hooks.utils.PlayerWithHookData;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+
 @Mixin(Player.class)
 public class PlayerMixin implements PlayerWithHookData {
+    
     private HookEntity hookEntity;
-    private Boolean isResetFallDistance = false;
+    private boolean isJumpAllowed = false;
+    private boolean isClimbing;
+    /*private Vec3 lastServerPos;
+    private Vec3 deltaMovement2;*/
 
-    // Константы для настройки:
-    /*private static final double SPRING_CONSTANT = 0.5; // Жесткость пружины
-    private static final double DAMPING_CONSTANT = 1;  // Демпфирование (Трение)
-    private static final double PUSH_FACTOR = 0.08; // Общий масштаб силы
-    private static final double RADIAL_CONTROL = 0.33; // Коэффициент сдерживания радиальной скорости (для маятника)*/
-
-    private static ServerConfig sc = new ServerConfig();
-
-    private static final double SPRING_CONSTANT = sc.get().hooksStiffness;
-    private static final double DAMPING_CONSTANT = sc.get().dampingForce;
-    private static final double PUSH_FACTOR = sc.get().forceModifier;
-    private static final double RADIAL_CONTROL = sc.get().radialControl;
 
     @Override
     public HookEntity getHook() {
@@ -36,8 +31,18 @@ public class PlayerMixin implements PlayerWithHookData {
     }
 
     @Override
-    public Boolean isResetFallDistance() {
-        return this.isResetFallDistance;
+    public boolean isJumpAllowed() {
+        return this.isJumpAllowed;
+    }
+
+    /*@Override
+    public boolean isClimbing() {
+        return this.isClimbing;
+    }*/
+
+    @Override
+    public void setClimbing(boolean bl) {
+        isClimbing = bl;
     }
 
     @Override
@@ -45,89 +50,209 @@ public class PlayerMixin implements PlayerWithHookData {
         this.hookEntity = value;
     }
 
-    /*public float getEntityJumpStrength(Player entity) {
-        return 0.5f;
-    }*/
 
     @Inject(method = "travel", at = @At("HEAD"))
     private void onTravel(Vec3 travelVector, CallbackInfo ci) {
-        Player player = (Player) (Object) this;
 
-        // === HOOK HANDLING ===
-        if (this.hookEntity != null && this.hookEntity.isInBlock() && !player.level().isClientSide()) {
+        Player player = (Player)(Object)this;
 
-            // 1. Векторы и расстояния
+        // --- HOOK HANDLING ---
+        if (this.hookEntity != null && this.hookEntity.isInBlock()) {
+            
+            // --- переменные ---
             Vec3 hookPos = this.hookEntity.position();
             Vec3 playerEyePos = player.getEyePosition();
+            Vec3 vecToHook = hookPos.subtract(playerEyePos);
+            Vec3 unitVector = vecToHook.normalize();
             
-            Vec3 vecToHook = hookPos.subtract(playerEyePos); // Вектор от игрока к крюку (vec)
-            double dist = vecToHook.length(); // Текущая длина (dist)
-            float maxChainLength = this.hookEntity.getLength(); // Максимальная длина (length)
-
-            // 2. Равновесная длина (L_равн)
-            double equilibriumLength = maxChainLength; 
             
-            // 3. Вычисляем только, если цепь натянута или игрок близко к максимальной длине
-            if (dist > equilibriumLength * 0.95) { 
-                
-                Vec3 unitVector = vecToHook.normalize(); // Единичный вектор к крюку (û)
-                Vec3 playerVelocity = player.getDeltaMovement(); // Текущая скорость игрока (v)
-                
-                // --- СИЛА УПРУГОСТИ (F_упруг) ---
-                double stretch = dist - equilibriumLength;
-                double springForceMagnitude = SPRING_CONSTANT * stretch; 
-                
-                // Если цепь сжимается (stretch < 0), силы нет.
-                if (stretch < 0) { 
-                    springForceMagnitude = 0; 
-                }
-                
-                Vec3 springForce = unitVector.scale(springForceMagnitude);
-                
-                // --- СИЛА ДЕМПФИРОВАНИЯ (F_демпф) ---
-                double velocityProjection = playerVelocity.dot(unitVector); // v · û
-                double dampingMagnitude = -DAMPING_CONSTANT * velocityProjection;
-                
-                Vec3 dampingForce = unitVector.scale(dampingMagnitude);
-                
-                // --- ИТОГОВАЯ СИЛА (F_общ) ---
-                Vec3 totalForce = springForce.add(dampingForce);
-                
-                // Новый блок применения силы (Заменяет player.setDeltaMovement):
+            
+            // --- физика применяется на клиенте ---
+            if (player.level().isClientSide()) {
 
-                // 1. Расчеты V_рад (которая уводит от круга)
-                double radialSpeed = playerVelocity.dot(unitVector); 
-                Vec3 radialVelocity = unitVector.scale(radialSpeed);
+                // --- ещё переменные (не нужные на сервере) ---
+                double MAX_R = this.hookEntity.getLength(); 
+                double dist = vecToHook.length();
+                Vec3 V = player.getDeltaMovement();
 
-                // 2. Сила, необходимая для остановки V_рад (Центростремительный импульс)
-                // Мы должны применить силу, противоположную V_рад, и добавить F_общ.
-                // (1 / PUSH_FACTOR) - это обратная величина для силы.
-                Vec3 antiRadialImpulse = radialVelocity.scale(-1.0 * RADIAL_CONTROL); 
+                // Разложение скорости
+                double vRadial = V.dot(unitVector);
+                Vec3 vTangential = V.subtract(unitVector.scale(vRadial));
 
-                // 3. Добавление F_общ (Пружина/Демпфер)
-                Vec3 pushForce = totalForce.scale(PUSH_FACTOR);
+                // режим твердой верёвки
+                if (!YoHooksClient.softHook) {
+                    if (dist > MAX_R/*  && vRadial <= 0*/) {
 
-                // 4. Итоговая сила (контроль V_рад + F_общ)
-                // Применяем силы с помощью push (позволяя ванильной игре сохранить V_танг и гравитацию)
-                Vec3 finalPush = pushForce.add(antiRadialImpulse);
+                        double stretch = dist - MAX_R;
 
-                if (vecToHook.y > -0.66) {
-                    player.push(finalPush.x, finalPush.y, finalPush.z);
+                        if (isClimbing) {
+                            vRadial = YoHooks.climbSpeed;
+                        }
+                        
+                        if (stretch > 0.03) {
+                            
+                            double new_vRadial = stretch * 0.0333;
+                            if (!(vRadial > new_vRadial)) {
+                                vRadial = new_vRadial;
+                            }
+                            
+                        } else {
+                            vRadial = 0;
+                        }
 
-                    player.hurtMarked = true; // Отмечаем игрока как измененного для синхронизации
-                }
-
-                // 5. Обнуление урона от падения
-
-                if (vecToHook.y > -0.15) {
-                    isResetFallDistance = true;
-                    if (velocityProjection < 0) { // Игрок падает (velocityProjection < 0)
-                        ((LivingEntity) player).resetFallDistance();
+                        // увеличиваем тангенциальную скорость, так как ванильное сопротивление слишком сильное
+                        if (!player.isFallFlying())
+                            vTangential = vTangential.scale(1.05f);
+                    } else {
+                        if (isClimbing) {
+                            if (MAX_R < MAX_R - 2)
+                                vRadial = -(YoHooks.climbSpeed * 1.5);
+                        }
                     }
+                } else { // мягкой, сила упругости
+                    if (dist > MAX_R) {
+                        double stretch = dist - MAX_R;
+
+                        if (isClimbing) {
+                            vRadial = YoHooks.climbSpeed;
+                        }
+
+                        vRadial = Math.max(vRadial, vRadial + stretch * YoHooksClient.stiffness);
+                        vRadial = Math.min(vRadial, 1);
+
+                        // увеличиваем тангенциальную скорость, так как ванильное сопротивление слишком сильное
+                        if (!player.isFallFlying())
+                            vTangential = vTangential.scale(1.05f);
+                    } else {
+                        if (isClimbing) {
+                            if (MAX_R < MAX_R - 2)
+                                vRadial = -(YoHooks.climbSpeed * 1.5);
+                        }
+                    }
+                }
+
+                Vec3 V_new;
+                
+                if (player.onGround()) {
+                    V_new = vTangential.add(unitVector.scale(vRadial));
+                } else { // лёгкое демпфирование
+                    V_new = vTangential.add(unitVector.scale(vRadial * 0.99));
+                }
+                
+                player.setDeltaMovement(V_new);
+            
+                if (unitVector.y > -0.15) { // эта переменная нужны для работы прыжка с крюка
+                    isJumpAllowed = true;
                 } else {
-                    isResetFallDistance = false;
+                    isJumpAllowed = false;
+                }
+
+            } else { // --- Обнуление урона от падения и урон - это серверная логика ---
+                if (unitVector.y > -0.15) {
+                    isJumpAllowed = true;
+                    ((LivingEntity) player).resetFallDistance();
+                } else {
+                    isJumpAllowed = false;
+                }
+                /*lastServerPos = player.position();
+                //deltaMovement2 = player.position();
+                LoggerUtil.LOGGER.info("old vec3 = " + lastServerPos);
+                //LoggerUtil.LOGGER.info("old vec3 = " + deltaMovement2);*/
+            }
+        }
+    }
+
+    /*@Inject(method = "travel", at = @At("TAIL"))
+    private void onTravel2(Vec3 travelVector, CallbackInfo ci) {
+
+        Player player = (Player)(Object)this;
+
+        if (this.hookEntity != null && this.hookEntity.isInBlock()) {
+            
+        
+            if (!player.level().isClientSide()) {
+
+                
+
+                LoggerUtil.LOGGER.info("player.horizontalCollision = " + player.horizontalCollision);
+
+                LoggerUtil.LOGGER.info("player.minorHorizontalCollision = " + player.minorHorizontalCollision);
+
+                if (player.horizontalCollision) { 
+                    Vec3 delta = player.position().subtract(lastServerPos);
+                    LoggerUtil.LOGGER.info("new vec3 = " + player.position());
+                    double speed = delta.horizontalDistance();
+
+
+                    //double speed = player.getDeltaMovement().horizontalDistance(); // XZ-скорость
+
+                    
+
+                    double n = speed;
+                    LoggerUtil.LOGGER.info("n = " + n);
+                    float o = (float)(n * 10.0D - 3.0D);
+                    if (o > 0.0F) {
+                        player.playSound(getFallDamageSound((int)o, player), 1.0F, 1.0F);
+                        player.hurt(player.damageSources().flyIntoWall(), o);
+                    }
+                    //Vec3 delta = player.position().subtract(lastServerPos);
+                    //double speed = delta.horizontalDistance();
+                    //Vec3 deltaPos = player.position().subtract(player.xo, player.yo, player.zo);
+                    //double speed = deltaPos.horizontalDistance();
+                    /*LoggerUtil.LOGGER.info("new vec3 = " + player.position());
+                    LoggerUtil.LOGGER.info("subtract = " + player.position().subtract(lastServerPos));
+                    LoggerUtil.LOGGER.info("speed = " + delta.horizontalDistance());*/
+
+                    /*LoggerUtil.LOGGER.info("using newiest vec3 on server = " + player.getDeltaMovement());
+
+                    double speedBefore = deltaMovement2.horizontalDistance();
+                    double speedAfter  = player.getDeltaMovement().horizontalDistance();*/
+
+                    /*double n = speed;
+                    //LoggerUtil.LOGGER.info("n = " + n);
+
+                    float damage = (float)(n * 100D - 3.0D);
+
+                    //LoggerUtil.LOGGER.info(speedBefore > 1.5 && speedAfter < speedBefore * 0.4);
+                    LoggerUtil.LOGGER.info("damage = " + damage);
+
+                    if (damage > 0.0F) {
+                        player.playSound(getFallDamageSound((int)damage, player), 1.0F, 1.0F);
+                        player.hurt(player.damageSources().flyIntoWall(), damage);
+                    }
+
                 }
             }
         }
     }
+
+    
+
+    private SoundEvent getFallDamageSound(int i, Player player) {
+        return i > 4 ? player.getFallSounds().big() : player.getFallSounds().small();
+    }*/
+/* 
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void savePos(CallbackInfo ci) {
+        Player player = (Player)(Object)this;
+        if (this.hookEntity != null &&  this.hookEntity.isInBlock() && !player.level().isClientSide()) {
+            lastServerPos = player.position();
+            LoggerUtil.LOGGER.info("old vec3 = " + lastServerPos);
+        }
+    }
+
+    @Inject(method = "tick", at = @At("TAIL"))
+    private void afterTick(CallbackInfo ci) {
+        Player player = (Player)(Object)this;
+        if (this.hookEntity != null &&  this.hookEntity.isInBlock() && !player.level().isClientSide()) {
+            Vec3 delta = player.position().subtract(lastServerPos);
+            LoggerUtil.LOGGER.info("new vec3 = " + player.position());
+            speed = delta.horizontalDistance();
+            LoggerUtil.LOGGER.info("speed = " + speed);
+        }
+    }*/
 }
+
+
+
+

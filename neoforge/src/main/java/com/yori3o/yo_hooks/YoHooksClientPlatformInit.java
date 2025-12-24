@@ -2,8 +2,8 @@ package com.yori3o.yo_hooks;
 
 import com.yori3o.yo_hooks.entity.HookEntity;
 import com.yori3o.yo_hooks.item.HookItem;
-import com.yori3o.yo_hooks.register.ModEntities;
-import com.yori3o.yo_hooks.register.ModItems;
+import com.yori3o.yo_hooks.init.EntitiyRegistry;
+import com.yori3o.yo_hooks.init.ItemRegistry;
 import com.yori3o.yo_hooks.render.entity.HookRenderer;
 import com.yori3o.yo_hooks.utils.PlayerWithHookData;
 
@@ -12,6 +12,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.CreativeModeTab.TabVisibility;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -25,26 +27,27 @@ public class YoHooksClientPlatformInit {
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerEntityRenderer(ModEntities.HOOK_ENTITY.get(), HookRenderer::new);
+        event.registerEntityRenderer(EntitiyRegistry.HOOK_ENTITY.get(), HookRenderer::new);
     }
 
     @SubscribeEvent
     public static void addItemsToTabs(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
-            event.accept(ModItems.IRON_GRAPPLING_HOOK.get());
-            event.accept(ModItems.GOLD_GRAPPLING_HOOK.get());
-            event.accept(ModItems.DIAMOND_GRAPPLING_HOOK.get());
-            event.accept(ModItems.NETHERITE_GRAPPLING_HOOK.get());
-            event.accept(ModItems.IRON_HOOK_HEAD.get());
-            event.accept(ModItems.GOLD_HOOK_HEAD.get());
-            event.accept(ModItems.DIAMOND_HOOK_HEAD.get());
-            event.accept(ModItems.NETHERITE_HOOK_HEAD.get());
+            event.insertAfter(new ItemStack(Items.IRON_HOE), new ItemStack(ItemRegistry.IRON_GRAPPLING_HOOK.get()), TabVisibility.PARENT_AND_SEARCH_TABS);//.accept(ItemRegistry.IRON_GRAPPLING_HOOK.get());
+            event.insertAfter(new ItemStack(Items.GOLDEN_HOE), new ItemStack(ItemRegistry.GOLD_GRAPPLING_HOOK.get()), TabVisibility.PARENT_AND_SEARCH_TABS);//event.accept(ItemRegistry.GOLD_GRAPPLING_HOOK.get());
+            event.insertAfter(new ItemStack(Items.DIAMOND_HOE), new ItemStack(ItemRegistry.DIAMOND_GRAPPLING_HOOK.get()), TabVisibility.PARENT_AND_SEARCH_TABS);//event.accept(ItemRegistry.DIAMOND_GRAPPLING_HOOK.get());
+            event.insertAfter(new ItemStack(Items.NETHERITE_HOE), new ItemStack(ItemRegistry.NETHERITE_GRAPPLING_HOOK.get()), TabVisibility.PARENT_AND_SEARCH_TABS);//event.accept(ItemRegistry.NETHERITE_GRAPPLING_HOOK.get());
+        } else if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
+            event.insertAfter(new ItemStack(Items.DISC_FRAGMENT_5), new ItemStack(ItemRegistry.NETHERITE_HOOK_HEAD.get()), TabVisibility.PARENT_AND_SEARCH_TABS);//event.accept(ItemRegistry.IRON_HOOK_HEAD.get());
+            event.insertAfter(new ItemStack(Items.DISC_FRAGMENT_5), new ItemStack(ItemRegistry.DIAMOND_HOOK_HEAD.get()), TabVisibility.PARENT_AND_SEARCH_TABS);//event.accept(ItemRegistry.GOLD_HOOK_HEAD.get());
+            event.insertAfter(new ItemStack(Items.DISC_FRAGMENT_5), new ItemStack(ItemRegistry.GOLD_HOOK_HEAD.get()), TabVisibility.PARENT_AND_SEARCH_TABS);//event.accept(ItemRegistry.DIAMOND_HOOK_HEAD.get());
+            event.insertAfter(new ItemStack(Items.DISC_FRAGMENT_5), new ItemStack(ItemRegistry.IRON_HOOK_HEAD.get()), TabVisibility.PARENT_AND_SEARCH_TABS);//event.accept(ItemRegistry.NETHERITE_HOOK_HEAD.get());
         }
     }
 
     /*public static void makeHooksItem() {
         ItemProperties.register(
-            ModItems.GRAPPLING_HOOK.get(),
+            ItemRegistry.GRAPPLING_HOOK.get(),
             ResourceLocation.fromNamespaceAndPath("yo_hooks", "grappling_hook_extended"),
             (stack, level, entity, seed) -> {
                 if (entity == null) {
@@ -66,7 +69,7 @@ public class YoHooksClientPlatformInit {
     public static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
             ItemProperties.register(
-                ModItems.IRON_GRAPPLING_HOOK.get(),
+                ItemRegistry.IRON_GRAPPLING_HOOK.get(),
                 ResourceLocation.fromNamespaceAndPath("yo_hooks", "grappling_hook_handle"),
                 (stack, level, entity, seed) -> {
                     if (entity == null || !(entity instanceof Player) /*|| level == null || !level.isClientSide()*/) {
@@ -92,7 +95,7 @@ public class YoHooksClientPlatformInit {
             );
 
             ItemProperties.register(
-                ModItems.GOLD_GRAPPLING_HOOK.get(),
+                ItemRegistry.GOLD_GRAPPLING_HOOK.get(),
                 ResourceLocation.fromNamespaceAndPath("yo_hooks", "grappling_hook_handle"),
                 (stack, level, entity, seed) -> {
                     if (entity == null || !(entity instanceof Player) /*|| level == null || !level.isClientSide()*/) {
@@ -118,7 +121,7 @@ public class YoHooksClientPlatformInit {
             );
 
             ItemProperties.register(
-                ModItems.DIAMOND_GRAPPLING_HOOK.get(),
+                ItemRegistry.DIAMOND_GRAPPLING_HOOK.get(),
                 ResourceLocation.fromNamespaceAndPath("yo_hooks", "grappling_hook_handle"),
                 (stack, level, entity, seed) -> {
                     if (entity == null || !(entity instanceof Player) /*|| level == null || !level.isClientSide()*/) {
@@ -144,7 +147,7 @@ public class YoHooksClientPlatformInit {
             );
 
             ItemProperties.register(
-                ModItems.NETHERITE_GRAPPLING_HOOK.get(),
+                ItemRegistry.NETHERITE_GRAPPLING_HOOK.get(),
                 ResourceLocation.fromNamespaceAndPath("yo_hooks", "grappling_hook_handle"),
                 (stack, level, entity, seed) -> {
                     if (entity == null || !(entity instanceof Player) /*|| level == null || !level.isClientSide()*/) {

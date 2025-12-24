@@ -6,12 +6,8 @@ import dev.architectury.platform.Platform;
 public class ServerConfig extends JsonConfigManager<ServerConfig.Values> {
 
     public static class Values {
-        public double hooksStiffness = 0.5;
-        public double dampingForce = 1;
-        public double forceModifier = 0.08;
-        public double radialControl = 0.33;
-        public Boolean isJumpAllowed = true;
-        public float decreaseSatiety = 0.6f;
+        public float decreaseSatiety = 0.45f;
+        public boolean breakingFragileBlocks = true;
     }
 
     private static final Path CONFIG_PATH = Platform.getConfigFolder().resolve("yo_hooks_server.json");
@@ -25,7 +21,4 @@ public class ServerConfig extends JsonConfigManager<ServerConfig.Values> {
         return new Values();
     }
 
-    /*public double hooksStiffness() { return get().hooksStiffness; }
-    public Boolean isJumpAllowed() { return get().isJumpAllowed; }*/
-    //public void setSaveBossKiller(boolean value) { get().SaveBossKiller = value; save(); }
 }

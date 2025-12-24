@@ -8,9 +8,9 @@
     "Yori3o"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod",
-    "issues": "https://github.com/yori3o/BossChecklist/issues"
+    "homepage": "https://modrinth.com/mod/yori3os-grappling-hooks",
+    "sources": "https://github.com/yori3o/Yori3osGrapplingHooks",
+    "issues": "https://github.com/yori3o/Yori3osGrapplingHooks/issues"
   },
   "license": "MIT License",
   "icon": "logo.png",
@@ -39,8 +39,8 @@
   "custom": {
     "modmenu": {
       "links": {
-        "modmenu.curseforge":"https://www.curseforge.com/minecraft/mc-mods/boss-checklist",
-        "modmenu.modrinth":"https://modrinth.com/mod/boss-checklist"
+        "modmenu.curseforge":"https://www.curseforge.com/minecraft/mc-mods/yori3os-grappling-hooks",
+        "modmenu.modrinth":"https://modrinth.com/mod/yori3os-grappling-hooks"
       }
     }
   }

@@ -1,48 +1,99 @@
 package com.yori3o.yo_hooks;
 
-import com.mojang.blaze3d.platform.InputConstants;
+import com.yori3o.yo_hooks.config.CommonConfig;
 import com.yori3o.yo_hooks.entity.HookEntity;
-import com.yori3o.yo_hooks.network.JumpClientSend;
+import com.yori3o.yo_hooks.item.HookItem;
+import com.yori3o.yo_hooks.network.ClientSender;
 import com.yori3o.yo_hooks.utils.PlayerWithHookData;
 
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.player.Player;
+
+import com.mojang.blaze3d.platform.InputConstants;
+
+import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.registry.client.keymappings.KeyMappingRegistry;
-import net.minecraft.client.KeyMapping;
+
 
 public class YoHooksClient {
 
+    // --- common config values ---
+    public static boolean softHook;
+    public static float stiffness;
+    //public static float climbSpeed;
+
     public static final KeyMapping JUMP = new KeyMapping(
-    "key.yo_hooks.jump", // The translation key of the name shown in the Controls screen
-    InputConstants.Type.KEYSYM, // This key mapping is for Keyboards by default
-    InputConstants.KEY_SPACE, // The default keycode
-    "category.yo_hooks" // The category translation key used to categorize in the Controls screen 
+        "key.yo_hooks.jump",
+        InputConstants.Type.KEYSYM,
+        InputConstants.KEY_SPACE,
+        "category.yo_hooks"
+    );
+    public static final KeyMapping CLIMB = new KeyMapping(
+        "key.yo_hooks.climb",
+        InputConstants.Type.KEYSYM,
+        InputConstants.KEY_X,
+        "category.yo_hooks"
+    );
+    public static final KeyMapping CLIMB_DOWN = new KeyMapping(
+        "key.yo_hooks.climb_down",
+        InputConstants.Type.KEYSYM,
+        InputConstants.KEY_Z,
+        "category.yo_hooks"
     );
 
     public static void OnlyClientInit() {
         KeyMappingRegistry.register(JUMP);
+        KeyMappingRegistry.register(CLIMB);
+        KeyMappingRegistry.register(CLIMB_DOWN);
 
-        ClientTickEvent.CLIENT_POST.register(minecraft -> {
-            // ❗️ 1. Получаем текущего игрока
-            PlayerWithHookData clientPlayer = (PlayerWithHookData) minecraft.player;
-            
-            // Проверка, что игрок существует (чтобы избежать NPE при загрузке)
-            if (clientPlayer == null) {
-                return;
+        ClientTickEvent.CLIENT_POST.register(mc -> {
+            Player player = mc.player;
+            if (player == null) return;
+
+            PlayerWithHookData hookData = (PlayerWithHookData)player;
+
+            HookEntity hook = hookData.getHook();
+
+            while (JUMP.consumeClick() && hook != null && hook.isInBlock()) {
+                if (hookData.isJumpAllowed()) {
+                    ClientSender.JumpFromHook();
+                    hookData.setHook(null);
+                }
             }
-            
-            // ❗️ 2. Проверка активного крюка
-            // Вам нужно иметь доступ к вашему полю hookEntity, которое есть у игрока.
-            // Если hookEntity хранится в вашем PlayerMixin, вам понадобится каст.
-            // Предположим, что у игрока есть метод getHookEntity() или доступ через Mixin-интерфейс.
-            
-            // Пример с кастом (если у вас есть интерфейс/Mixin)
-            HookEntity hook = clientPlayer.getHook(); // Замените на ваш фактический каст/метод!
-            
-            
-            // Проверяем: 1) Нажатие кнопки И 2) Активный крюк
-            while (JUMP.consumeClick() && hook != null && hook.isInBlock()) { 
-                JumpClientSend.PlayerJumpedFromHook();
+            if (hook != null) {
+                if (hook.isInBlock()) {
+                    
+                    if (CLIMB.isDown()) {
+                        ClientSender.Climb(true);
+                        hookData.setClimbing(true);
+                    } else {
+                        if (CLIMB_DOWN.isDown()) {
+                            ClientSender.Climb(false);
+                            hookData.setClimbing(true);
+                        } else {
+                            hookData.setClimbing(false);
+                        }
+                    }
+                }
+                if (!player.isAlive() ||  !((player.getMainHandItem().getItem() instanceof HookItem) || (player.getOffhandItem().getItem() instanceof HookItem))  || hook.distanceTo(player) > hook.getMaxRange()) {    
+                    hookData.setHook(null);      
+                }
             }
+        });
+
+        ClientPlayerEvent.CLIENT_PLAYER_JOIN.register((level) -> {
+            Minecraft.getInstance().execute(() -> {
+                CommonConfig cc = new CommonConfig();
+                cc.load();
+                // These variables are used only on the client
+                softHook = cc.get().softHook;
+                stiffness = cc.get().stiffness;
+                //climbSpeed = cc.get().climbSpeed;
+                
+                ClientSender.CheckConfig(softHook);
+            });
         });
     }
     
