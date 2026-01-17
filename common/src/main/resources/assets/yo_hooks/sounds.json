@@ -1,0 +1,28 @@
+{
+  "cast": {
+    "sounds": [
+      { "name": "yo_hooks:cast_1" },
+      { "name": "yo_hooks:cast_2" },
+      { "name": "yo_hooks:cast_3" }
+    ]
+  },
+  "back": {
+    "sounds": [
+      { "name": "yo_hooks:back_1" },
+      { "name": "yo_hooks:back_2" },
+      { "name": "yo_hooks:back_3" }
+    ]
+  },
+  "ambient": {
+    "sounds": [
+      { "name": "yo_hooks:ambient_1" },
+      { "name": "yo_hooks:ambient_2" }
+    ]
+  },
+  "climb": {
+    "sounds": [
+      { "name": "yo_hooks:climb_1" },
+      { "name": "yo_hooks:climb_2" }
+    ]
+  }
+}

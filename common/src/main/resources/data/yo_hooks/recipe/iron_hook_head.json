@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "A": {
+      "item": "minecraft:iron_ingot"
+    },
+    "B": {
+      "item": "minecraft:iron_nugget"
+    }
+  },
+  "pattern": [
+    "AA",
+    "BA"
+  ],
+  "result": {
+    "count": 1,
+    "id": "yo_hooks:iron_hook_head"
+  }
+}

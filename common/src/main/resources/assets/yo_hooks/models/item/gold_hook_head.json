@@ -1,0 +1,6 @@
+{
+  "parent" : "minecraft:item/handheld",
+  "textures" : {
+    "layer0" : "yo_hooks:item/gold_hook_head"
+  }
+}
