@@ -1,6 +1,0 @@
-{
-  "parent" : "minecraft:item/handheld",
-  "textures" : {
-    "layer0" : "yo_hooks:item/diamond_hook_head"
-  }
-}
