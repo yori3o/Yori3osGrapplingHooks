@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "A": "yo_hooks:diamond_hook_head",
+    "B": "minecraft:iron_chain",
+    "C": "minecraft:stick"
+  },
+  "pattern": [
+    "  A",
+    " B ",
+    "C  "
+  ],
+  "result": {
+    "count": 1,
+    "id": "yo_hooks:diamond_grappling_hook"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "model": {
+    "type": "minecraft:condition",
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "yo_hooks:item/diamond_grappling_hook"
+    },
+    "on_true": {
+      "type": "minecraft:model",
+      "model": "yo_hooks:item/grappling_hook_handle"
+    },
+    "property": "yo_hooks:hook_active"
+  }
+}

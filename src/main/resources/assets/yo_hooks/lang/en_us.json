@@ -1,0 +1,40 @@
+{
+  "item.yo_hooks.iron_grappling_hook": "Iron Grappling Hook",
+  "item.yo_hooks.gold_grappling_hook": "Golden Grappling Hook",
+  "item.yo_hooks.diamond_grappling_hook": "Diamond Grappling Hook",
+  "item.yo_hooks.netherite_grappling_hook": "Netherite Grappling Hook",
+  "item.yo_hooks.copper_grappling_hook": "Copper Grappling Hook",
+
+  "item.yo_hooks.iron_hook_head": "Iron Hook",
+  "item.yo_hooks.gold_hook_head": "Golden Hook",
+  "item.yo_hooks.diamond_hook_head": "Diamond Hook",
+  "item.yo_hooks.netherite_hook_head": "Netherite Hook",
+  "item.yo_hooks.copper_hook_head": "Copper Hook",
+
+  "gui.yo_hooks.hooks.desc_1": "§9Maximum range: %s §9blocks",
+
+  "key.yo_hooks.jump": "Hook Jump",
+  "key.yo_hooks.climb": "Climb the Chain",
+  "key.yo_hooks.climb_down": "Climb Down the Chain",
+  "category.yo_hooks": "Yori3o's Grappling Hooks",
+  "key.category.yo_hooks.hook": "Yori3o's Grappling Hooks",
+
+  "enchantment.yo_hooks.gentle_touch": "Gentle Touch",
+  "enchantment.yo_hooks.gentle_touch.desc": "The grappling hook will not break fragile blocks such as glass or dripstone.",
+  "enchantment.yo_hooks.long_reach": "Long Reach",
+  "enchantment.yo_hooks.long_reach.desc": "Increases the length of the grappling hook.",
+  "enchantment.yo_hooks.agility": "Agility",
+  "enchantment.yo_hooks.agility.desc": "Speeds up chain climb up and increases the jump.",
+
+  "settings.yo_hooks.reset_settings": "Reset config to default",
+  "settings.yo_hooks.open_file": "Open File",
+  "settings.yo_hooks.funny_mode": "Funny Mode",
+  "settings.yo_hooks.soft_hook": "Soft Hook",
+  "settings.yo_hooks.stiffness": "Stiffness",
+  "settings.yo_hooks.climb_speed": "Climb Speed",
+  "settings.yo_hooks.decrease_satiety": "Satiety Consumption",
+  "settings.yo_hooks.breaking_fragile_blocks": "Breaking Fragile Blocks",
+
+  "modmenu.descriptionTranslation.yo_hooks": "Adds vanilla-like and physically realistic grappling hooks.",
+  "fml.menu.mods.info.description.yo_hooks": "Adds vanilla-like and physically realistic grappling hooks."
+}

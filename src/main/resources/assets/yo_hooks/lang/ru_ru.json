@@ -1,0 +1,41 @@
+{
+  "item.yo_hooks.iron_grappling_hook": "Железный крюк-кошка",
+  "item.yo_hooks.gold_grappling_hook": "Золотой крюк-кошка",
+  "item.yo_hooks.diamond_grappling_hook": "Алмазный крюк-кошка",
+  "item.yo_hooks.netherite_grappling_hook": "Незеритовый крюк-кошка",
+  "item.yo_hooks.copper_grappling_hook": "Медный крюк-кошка",
+
+  "item.yo_hooks.iron_hook_head": "Железный крюк",
+  "item.yo_hooks.gold_hook_head": "Золотой крюк",
+  "item.yo_hooks.diamond_hook_head": "Алмазный крюк",
+  "item.yo_hooks.netherite_hook_head": "Незеритовый крюк",
+  "item.yo_hooks.copper_hook_head": "Медный крюк",
+
+  "gui.yo_hooks.hooks.desc_1": "§9Максимальная дальность: %s §9блоков",
+
+  "key.yo_hooks.jump": "Прыжок с крюка",
+  "key.yo_hooks.climb": "Взобраться по цепи",
+  "key.yo_hooks.climb_down": "Спуститься по цепи",
+  "category.yo_hooks": "Yori3o's Grappling Hooks",
+  "key.category.yo_hooks.hook": "Yori3o's Grappling Hooks",
+
+  "enchantment.yo_hooks.gentle_touch": "Мягкое касание",
+  "enchantment.yo_hooks.gentle_touch.desc": "Крюк-кошка не ломает хрупкие блоки, такие как стекло или капельник.",
+  "enchantment.yo_hooks.long_reach": "Дальний зацеп",
+  "enchantment.yo_hooks.long_reach.desc": "Увеличивает длину крюка-кошки.",
+  "enchantment.yo_hooks.agility": "Ловкость",
+  "enchantment.yo_hooks.agility.desc": "Ускоряет подъём по цепи и усиливает прыжок.",
+
+  "settings.yo_hooks.reset_settings": "Сбросить настройки по умолчанию",
+  "settings.yo_hooks.open_file": "Открыть файл",
+  "settings.yo_hooks.funny_mode": "Весёлый режим",
+  "settings.yo_hooks.soft_hook": "Мягкий крюк",
+  "settings.yo_hooks.stiffness": "Жёсткость",
+  "settings.yo_hooks.climb_speed": "Скорость карабканья",
+  "settings.yo_hooks.decrease_satiety": "Потребление сытости",
+  "settings.yo_hooks.breaking_fragile_blocks": "Ломать хрупкие блоки",
+
+  "modmenu.descriptionTranslation.yo_hooks": "Добавляет похожие на ванилу крюки-кошки с реалистичной физикой.",
+  "fml.menu.mods.info.description.yo_hooks": "Добавляет похожие на ванилу крюки-кошки с реалистичной физикой."
+  
+}
