@@ -1,0 +1,45 @@
+{
+    "pools": [
+        {
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "yo_hooks:diamond_grappling_hook",
+                    "weight": 3,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_damage", 
+                            "add": false,
+                            "damage": {
+                                "type": "minecraft:uniform",
+                                "max": 0.35,
+                                "min": 0.15
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "yo_hooks:iron_grappling_hook",
+                    "weight": 6,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_damage", 
+                            "add": false,
+                            "damage": {
+                                "type": "minecraft:uniform",
+                                "max": 0.5,
+                                "min": 0.2
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "empty",
+                    "weight": 6
+                }
+            ],
+            "rolls": 1.0
+        }
+    ]
+}

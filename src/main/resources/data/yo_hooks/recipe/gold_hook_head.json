@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "A": "minecraft:gold_ingot",
+    "B": "minecraft:gold_nugget"
+  },
+  "pattern": [
+    "AA",
+    "BA"
+  ],
+  "result": {
+    "count": 1,
+    "id": "yo_hooks:gold_hook_head"
+  }
+}
