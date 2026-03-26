@@ -1,0 +1,34 @@
+[
+  {
+    "lootTable": "yo_hooks:minecraft/abandoned_mineshaft",
+    "lootTableForInject": "minecraft:chests/abandoned_mineshaft"
+  },
+  {
+    "lootTable": "yo_hooks:minecraft/spawn_bonus_chest",
+    "lootTableForInject": "minecraft:chests/spawn_bonus_chest"
+  },
+  {
+    "lootTable": "yo_hooks:minecraft/jungle_temple",
+    "lootTableForInject": "minecraft:chests/jungle_temple"
+  },
+  {
+    "lootTable": "yo_hooks:minecraft/ruined_portal",
+    "lootTableForInject": "minecraft:chests/ruined_portal"
+  },
+  {
+    "lootTable": "yo_hooks:minecraft/bastion_other",
+    "lootTableForInject": "minecraft:chests/bastion_other"
+  },
+  {
+    "lootTable": "yo_hooks:minecraft/bastion_treasure",
+    "lootTableForInject": "minecraft:chests/bastion_treasure"
+  },
+  {
+    "lootTable": "yo_hooks:minecraft/end_city_treasure",
+    "lootTableForInject": "minecraft:chests/end_city_treasure"
+  },
+  {
+    "lootTable": "yo_hooks:minecraft/simple_dungeon",
+    "lootTableForInject": "minecraft:chests/simple_dungeon"
+  }
+]

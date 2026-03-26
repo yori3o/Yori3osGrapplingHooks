@@ -1,0 +1,441 @@
+package com.yori3o.yo_hooks.common.entity;
+
+
+import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
+import com.yori3o.yo_hooks.common.item.HookItem;
+import com.yori3o.yo_hooks.common.sound.SoundRegistry;
+import com.yori3o.yo_hooks.common.init.EntityRegistry;
+import com.yori3o.yo_hooks.common.init.ItemRegistry;
+import com.yori3o.yo_hooks.common.init.TagRegistry;
+import com.yori3o.yo_hooks.common.util.PhysicVariables;
+import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ThrowableProjectile;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.FallingBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.UUID;
+import org.jetbrains.annotations.Nullable;
+
+
+
+public class HookEntity extends ThrowableProjectile {
+
+    private static final EntityDataAccessor<Boolean> IN_BLOCK =
+            SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Float> LENGTH =
+            SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Integer> HOOK_RANGE = 
+            SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<String> HOOK_ITEM_MATERIAL = 
+            SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<BlockPos> BLOCK_POS = 
+            SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.BLOCK_POS);
+    private static final EntityDataAccessor<Boolean> GENTLE_TOUCH =
+            SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.BOOLEAN);        
+    private static final EntityDataAccessor<String> PLAYER_UUID = 
+            SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<Integer> AGILITY_LEVEL = 
+            SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.INT);
+            
+    public int damageOnHit = 1;
+
+
+    public HookEntity(EntityType<? extends HookEntity> type, Level level) {
+        super((EntityType<? extends ThrowableProjectile>) type, level);
+    }
+
+
+
+    // 2. КОНСТРУКТОР ДЛЯ ЗАПУСКА СУЩНОСТЬЮ (например, игроком)
+    public HookEntity(Level level, LivingEntity owner, int hookRange, ItemStack itemStack, int agilityLevel, boolean gentleTouch, int damageOnHit) {
+        this(EntityRegistry.HOOK_ENTITY.get(), level);
+        this.setOwner(owner);
+        this.setPos(owner.getX(), owner.getEyeY(), owner.getZ());
+        this.setMaxRange(hookRange);
+        this.setHookItemMaterial(((HookItem)(itemStack.getItem())).hookDefinition.id);
+        this.setPlayerUUID(owner.getUUID().toString());
+        this.setAgilityLevel(agilityLevel); 
+        this.setGentleTouch(gentleTouch);
+        this.damageOnHit = damageOnHit;
+        this.setDeltaMovement(owner.getLookAngle().scale(PhysicVariables.hookSpeed + (agilityLevel * 0.25)));
+    }
+    
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(IN_BLOCK, false);
+        builder.define(LENGTH, 0.0F);
+        builder.define(HOOK_RANGE, 0);
+        builder.define(HOOK_ITEM_MATERIAL, "");
+        builder.define(BLOCK_POS, new BlockPos(0, -99999, 0));
+        builder.define(PLAYER_UUID, "");
+        builder.define(GENTLE_TOUCH, false);
+        builder.define(AGILITY_LEVEL, 0);
+    }
+
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (this.isRemoved()) return;
+
+        Player owner = this.getPlayerOwner();   
+
+        // This assigns the hook to the owner when re-entering the world
+        if (owner == null) {
+            String uuid = this.getPlayerUUID();
+            if (uuid.isEmpty()) {
+                this.discard();
+                return;
+            }
+            Player player = level().getPlayerByUUID(UUID.fromString(uuid));
+            if (player != null) {
+                setOwner(player);
+                owner = player;
+            } else {
+                return;
+            }
+        }
+
+        if (!level().isClientSide()) {
+            
+            if (this.discardIfInvalid(owner)) {
+                return;
+            }
+
+            if (this.entityData.get(BLOCK_POS).getY() != -99999) {
+                if (this.level().getBlockState(this.entityData.get(BLOCK_POS)).isAir() && this.isNoGravity()) {
+                    this.discard();
+                    ((PlayerWithHookData) owner).setHook(null);
+                    return;
+                }
+            }
+
+            if (((PlayerWithHookData) owner).getHook() == null) {
+                ((PlayerWithHookData) owner).setHook(this);
+            }
+
+            if (Math.random() > 0.9955) {
+                this.level().playSound(null,
+                    this,
+                    SoundRegistry.getAmbientSound(getHookItemMaterial()),
+                    SoundSource.AMBIENT,
+                    1.0f, 1.0f
+                );
+            }
+            
+
+            HitResult hitResult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
+            if (hitResult.getType() != HitResult.Type.MISS) {
+                this.onHit(hitResult);
+            }
+
+            this.onInsideBlock(getBlockStateOn());
+        }
+    }
+
+    private boolean discardIfInvalid(Player player) {
+        if (!player.isAlive() || player.isRemoved() 
+                || !((player.getMainHandItem().getItem() instanceof HookItem) 
+                || (player.getOffhandItem().getItem() instanceof HookItem)) 
+                || this.distanceTo(player) > getMaxRange()) {
+            this.discard();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean fireImmune() {
+        return true;
+    }
+
+    @Override
+    public boolean isPushedByFluid() {
+        return false;
+    }
+
+    @Override
+    protected boolean canHitEntity(Entity entity) {
+        
+        if (entity == this.getOwner()) return false;
+        if (!entity.isAlive()) return false;
+        if (entity.getFirstPassenger() == this.getOwner()) return false;
+
+        return entity instanceof LivingEntity;
+    }
+
+    @Override
+    protected void onHitEntity(EntityHitResult result) {
+        if (!level().isClientSide()) {
+            Entity target = result.getEntity();
+
+            if (target instanceof LivingEntity living) {
+                Entity owner = this.getOwner();
+
+                DamageSource source = this.damageSources().thrown(this, owner);
+
+                living.hurtServer((ServerLevel)this.level(), source, damageOnHit);
+            }
+        }
+    }
+
+
+
+    @Override
+    protected void onHitBlock(BlockHitResult result) {
+        super.onHitBlock(result);
+
+        setBlockPos(result.getBlockPos());
+
+        Player player = this.getPlayerOwner();
+        if (player == null) return;
+
+        Level level = this.level();
+
+        BlockPos pos = this.entityData.get(BLOCK_POS);
+        BlockState bs = level.getBlockState(pos);
+
+        if (!DynamicConfigHandler.server().blocksBlacklist.isEmpty()) {
+            boolean isThisBlockBanned = (DynamicConfigHandler.server().blocksBlacklist.contains(bs.getBlock().properties().blockIdOrThrow().identifier().toString()));
+            if (DynamicConfigHandler.server().whitelistMode) isThisBlockBanned = !isThisBlockBanned;
+            if (isThisBlockBanned) {
+                this.discard();
+                ((PlayerWithHookData) player).setHook(null);
+                return;
+            }
+        }
+
+        if (DynamicConfigHandler.server().breakingFragileBlocks) {
+            if (!this.isGentleTouch()) {
+
+                if (bs.is(TagRegistry.FRAGILE_BLOCKS)) {
+                    level.destroyBlock(pos, true);
+                    this.discard();
+                    ((PlayerWithHookData) player).setHook(null);
+                    return;
+                }
+                if (bs.getBlock() instanceof FallingBlock) {
+                    level.scheduleTick(pos, bs.getBlock(), 1);
+                }
+            }
+        }
+        if (!DynamicConfigHandler.common().funnyMode) {
+            if (!player.isCreative()) {
+
+                ItemStack stack = player.getMainHandItem();
+                EquipmentSlot hand = EquipmentSlot.MAINHAND;
+                if (!(stack.getItem() instanceof HookItem)) {
+                    stack = player.getOffhandItem();
+                    hand = EquipmentSlot.OFFHAND;
+                }
+
+                stack.hurtAndBreak(1, player, hand);
+            }
+        }
+
+        level.playSound(null,
+            getX(), getY(), getZ(),
+            bs.getSoundType().getHitSound(),
+            SoundSource.PLAYERS,
+            0.22f, 1.15f
+        );
+        level.playSound(null,
+            getX(), getY(), getZ(),
+            SoundRegistry.getHitSound(getHookItemMaterial()),
+            SoundSource.PLAYERS,
+            0.26f, 1f
+        );
+
+        this.setDeltaMovement(Vec3.ZERO);
+        this.setInBlock(true);
+        this.setPos(result.getLocation());
+        this.setNoGravity(true);
+        
+        if (player != null) {
+            double dist = player.getEyePosition().subtract(result.getLocation()).length();
+            this.setLength((float)dist);
+        }
+        
+    }
+
+    @Override
+    protected void addAdditionalSaveData(ValueOutput tag) {
+        tag.putBoolean("in_block", this.isInBlock());
+        tag.putFloat("length", this.getLength());
+        tag.putInt("hook_range", this.getMaxRange());
+        tag.putString("hook_item_material", this.getHookItemMaterial());
+        tag.putInt("hook_pos_x", this.getPosX());
+        tag.putInt("hook_pos_y", this.getPosY());
+        tag.putInt("hook_pos_z", this.getPosZ());
+        tag.putString("player_uuid", this.getPlayerUUID());
+        tag.putInt("agility_level", this.getAgilityLevel());
+    }
+
+    @Override
+    protected void readAdditionalSaveData(ValueInput tag) {
+        this.setInBlock(tag.getBooleanOr("in_block", false));
+        this.setLength(tag.getFloatOr("length", 0f));
+        this.setMaxRange(tag.getInt("hook_range").get());
+        this.setHookItemMaterial(tag.getString("hook_item_material").get());
+        this.setBlockPos(new BlockPos(tag.getInt("hook_pos_x").get(), tag.getInt("hook_pos_y").get(), tag.getInt("hook_pos_z").get()));
+        this.setPlayerUUID(tag.getString("player_uuid").get());
+        this.setAgilityLevel(tag.getInt("agility_level").get());
+    }
+
+    // --- in block flag ---
+    private void setInBlock(boolean inBlock) {
+        this.entityData.set(IN_BLOCK, inBlock);
+    }
+    public boolean isInBlock() {
+        return this.entityData.get(IN_BLOCK);
+    }
+
+
+    // --- length ---
+    public void setLength(float length) {
+        this.entityData.set(LENGTH, length);
+    }
+    public float getLength() {
+        return this.entityData.get(LENGTH);
+    }
+
+
+    // --- max range ---
+    private void setMaxRange(int range) {
+        this.entityData.set(HOOK_RANGE, range);
+    }
+    public int getMaxRange() {
+        return this.entityData.get(HOOK_RANGE);
+    }
+
+
+    // --- Block Pos ---
+    public int getPosX() {
+        return this.entityData.get(BLOCK_POS).getX();
+    }
+    public int getPosY() {
+        return this.entityData.get(BLOCK_POS).getY();
+    }
+    public int getPosZ() {
+        return this.entityData.get(BLOCK_POS).getZ();
+    }
+    public BlockPos getBlockPos() {
+        return this.entityData.get(BLOCK_POS);
+    }
+    private void setBlockPos(BlockPos bp) {
+        this.entityData.set(BLOCK_POS, bp);
+    }
+
+
+    // --- hook item ---
+    public String getHookItemMaterial() {
+        return this.entityData.get(HOOK_ITEM_MATERIAL);
+    }
+
+    public ItemStack getHeadItem() {
+        String hookMaterial = this.entityData.get(HOOK_ITEM_MATERIAL);
+        if (hookMaterial.isEmpty()) return new ItemStack(Items.DIRT);
+        Item i = ItemRegistry.HOOK_HEADS.get(hookMaterial).get();
+        if (i != null) {
+            return new ItemStack(i);
+        } else {
+            return new ItemStack(Items.DIRT); 
+        }
+    }
+
+    private void setHookItemMaterial(String id) {
+        this.entityData.set(HOOK_ITEM_MATERIAL, id);
+    }
+
+
+
+    // --- player uuid ---
+    private void setPlayerUUID(String UUID) {
+        this.entityData.set(PLAYER_UUID, UUID);
+    }
+    public String getPlayerUUID() {
+        return this.entityData.get(PLAYER_UUID);
+    }
+
+
+    // --- gentle touch flag ---
+    private void setGentleTouch(boolean gentle_touch) {
+        this.entityData.set(GENTLE_TOUCH, gentle_touch);
+    }
+    public boolean isGentleTouch() {
+        return this.entityData.get(GENTLE_TOUCH);
+    }
+
+
+
+    // --- agility enchantment level ---
+    private void setAgilityLevel(int level) {
+        this.entityData.set(AGILITY_LEVEL, level);
+    }
+    public int getAgilityLevel() {
+        return this.entityData.get(AGILITY_LEVEL);
+    }
+
+
+
+
+    @Override
+    protected Entity.MovementEmission getMovementEmission() {
+        return Entity.MovementEmission.NONE;
+    }
+
+    @Override
+    public void remove(RemovalReason reason) {
+        this.setHookForPlayer(null);
+        super.remove(reason);
+    }
+
+    @Override
+    public void setOwner(@Nullable Entity entity) {
+        super.setOwner(entity);
+        this.setHookForPlayer(this);
+    }
+
+    private void setHookForPlayer(@Nullable HookEntity hookEntity) {
+        Player player = this.getPlayerOwner();
+        if (player instanceof PlayerWithHookData data) {
+            data.setHook(hookEntity);
+        }
+    }
+
+    @Nullable
+    public Player getPlayerOwner() {
+        Entity entity = this.getOwner();
+        return (entity instanceof Player player) ? player : null;
+    }
+    
+    @Override
+    public boolean shouldBeSaved() {
+        return true;
+    }
+}
