@@ -9,7 +9,8 @@
   ],
   "mixins": [
     "PlayerMixin",
-    "ServerGamePacketListenerImplMixin"
+    "ServerGamePacketListenerImplMixin",
+    "ThrowableProjectileMixin"
   ],
 	"overwrites": {
 		"requireAnnotations": true

@@ -5,6 +5,7 @@ import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
 import com.yori3o.yo_hooks.common.hookregistry.HookRegistry;
 import com.yori3o.yo_hooks.common.hookregistry.LootTableRegistry;
 import com.yori3o.yo_hooks.common.init.EntityRegistry;
+import com.yori3o.yo_hooks.common.init.StatsRegistry;
 import com.yori3o.yo_hooks.impl.PlatformUtil;
 
 
@@ -24,6 +25,7 @@ public class YoHooks {
         LootTableRegistry.load();
 
 		EntityRegistry.register();
+		StatsRegistry.register();
 
 		
 		if (PlatformUtil.isClient()) {

@@ -26,7 +26,6 @@ import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -34,7 +33,6 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.UUID;
@@ -43,6 +41,7 @@ import org.jetbrains.annotations.Nullable;
 
 
 public class HookEntity extends ThrowableProjectile {
+
 
     private static final EntityDataAccessor<Boolean> IN_BLOCK =
             SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.BOOLEAN);
@@ -62,15 +61,13 @@ public class HookEntity extends ThrowableProjectile {
             SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.INT);
             
     public int damageOnHit = 1;
+    private boolean hookedOnFallingBlock = false;
 
 
     public HookEntity(EntityType<? extends HookEntity> type, Level level) {
         super((EntityType<? extends ThrowableProjectile>) type, level);
     }
 
-
-
-    // 2. КОНСТРУКТОР ДЛЯ ЗАПУСКА СУЩНОСТЬЮ (например, игроком)
     public HookEntity(Level level, LivingEntity owner, int hookRange, ItemStack itemStack, int agilityLevel, boolean gentleTouch, int damageOnHit) {
         this(EntityRegistry.HOOK_ENTITY.get(), level);
         this.setOwner(owner);
@@ -84,7 +81,6 @@ public class HookEntity extends ThrowableProjectile {
         this.setDeltaMovement(owner.getLookAngle().scale(PhysicVariables.hookSpeed + (agilityLevel * 0.25)));
     }
     
-
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(IN_BLOCK, false);
@@ -97,7 +93,7 @@ public class HookEntity extends ThrowableProjectile {
         builder.define(AGILITY_LEVEL, 0);
     }
 
-
+    // important: hook entity ticks at intervals of 5 ticks
     @Override
     public void tick() {
         super.tick();
@@ -131,6 +127,10 @@ public class HookEntity extends ThrowableProjectile {
                 if (this.level().getBlockState(this.entityData.get(BLOCK_POS)).isAir() && this.isNoGravity()) {
                     this.discard();
                     ((PlayerWithHookData) owner).setHook(null);
+                    if (hookedOnFallingBlock) {
+                        ((PlayerWithHookData) owner).setSuddenFall(true);
+                        hookedOnFallingBlock = false;
+                    }
                     return;
                 }
             }
@@ -139,7 +139,7 @@ public class HookEntity extends ThrowableProjectile {
                 ((PlayerWithHookData) owner).setHook(this);
             }
 
-            if (Math.random() > 0.9955) {
+            if (this.random.nextFloat() > 0.9955) {
                 this.level().playSound(null,
                     this,
                     SoundRegistry.getAmbientSound(getHookItemMaterial()),
@@ -147,14 +147,6 @@ public class HookEntity extends ThrowableProjectile {
                     1.0f, 1.0f
                 );
             }
-            
-
-            HitResult hitResult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
-            if (hitResult.getType() != HitResult.Type.MISS) {
-                this.onHit(hitResult);
-            }
-
-            this.onInsideBlock(getBlockStateOn());
         }
     }
 
@@ -200,6 +192,8 @@ public class HookEntity extends ThrowableProjectile {
                 DamageSource source = this.damageSources().thrown(this, owner);
 
                 living.hurtServer((ServerLevel)this.level(), source, damageOnHit);
+
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.5f));
             }
         }
     }
@@ -210,77 +204,81 @@ public class HookEntity extends ThrowableProjectile {
     protected void onHitBlock(BlockHitResult result) {
         super.onHitBlock(result);
 
-        setBlockPos(result.getBlockPos());
+        if (!level().isClientSide()) {
 
-        Player player = this.getPlayerOwner();
-        if (player == null) return;
+            setBlockPos(result.getBlockPos());
 
-        Level level = this.level();
+            Player player = this.getPlayerOwner();
+            if (player == null) return;
 
-        BlockPos pos = this.entityData.get(BLOCK_POS);
-        BlockState bs = level.getBlockState(pos);
+            Level level = this.level();
 
-        if (!DynamicConfigHandler.server().blocksBlacklist.isEmpty()) {
-            boolean isThisBlockBanned = (DynamicConfigHandler.server().blocksBlacklist.contains(bs.getBlock().properties().blockIdOrThrow().identifier().toString()));
-            if (DynamicConfigHandler.server().whitelistMode) isThisBlockBanned = !isThisBlockBanned;
-            if (isThisBlockBanned) {
-                this.discard();
-                ((PlayerWithHookData) player).setHook(null);
-                return;
-            }
-        }
+            BlockPos pos = this.entityData.get(BLOCK_POS);
+            BlockState bs = level.getBlockState(pos);
 
-        if (DynamicConfigHandler.server().breakingFragileBlocks) {
-            if (!this.isGentleTouch()) {
-
-                if (bs.is(TagRegistry.FRAGILE_BLOCKS)) {
-                    level.destroyBlock(pos, true);
+            if (!DynamicConfigHandler.server().blocksBlacklist.isEmpty()) {
+                boolean isThisBlockBanned = (DynamicConfigHandler.server().blocksBlacklist.contains(bs.getBlock().properties().blockIdOrThrow().identifier().toString()));
+                if (DynamicConfigHandler.server().whitelistMode) isThisBlockBanned = !isThisBlockBanned;
+                if (isThisBlockBanned) {
                     this.discard();
                     ((PlayerWithHookData) player).setHook(null);
                     return;
                 }
-                if (bs.getBlock() instanceof FallingBlock) {
-                    level.scheduleTick(pos, bs.getBlock(), 1);
+            }
+
+            if (DynamicConfigHandler.server().breakingFragileBlocks) {
+                if (!this.isGentleTouch()) {
+
+                    if (bs.is(TagRegistry.FRAGILE_BLOCKS)) {
+                        level.destroyBlock(pos, true);
+                        this.discard();
+                        ((PlayerWithHookData) player).setHook(null);
+                        ((PlayerWithHookData) player).setSuddenFall(true);
+                        return;
+                    }
+                    if (bs.getBlock() instanceof FallingBlock) {
+                        level.scheduleTick(pos, bs.getBlock(), 1);
+                        hookedOnFallingBlock = true;
+                    }
                 }
             }
-        }
-        if (!DynamicConfigHandler.common().funnyMode) {
-            if (!player.isCreative()) {
+            if (!DynamicConfigHandler.common().funnyMode) {
+                if (!player.isCreative()) {
 
-                ItemStack stack = player.getMainHandItem();
-                EquipmentSlot hand = EquipmentSlot.MAINHAND;
-                if (!(stack.getItem() instanceof HookItem)) {
-                    stack = player.getOffhandItem();
-                    hand = EquipmentSlot.OFFHAND;
+                    ItemStack stack = player.getMainHandItem();
+                    EquipmentSlot hand = EquipmentSlot.MAINHAND;
+                    if (!(stack.getItem() instanceof HookItem)) {
+                        stack = player.getOffhandItem();
+                        hand = EquipmentSlot.OFFHAND;
+                    }
+
+                    stack.hurtAndBreak(1, player, hand);
                 }
+            }
 
-                stack.hurtAndBreak(1, player, hand);
+            level.playSound(null,
+                getX(), getY(), getZ(),
+                bs.getSoundType().getHitSound(),
+                SoundSource.PLAYERS,
+                0.22f, 1.15f
+            );
+            level.playSound(null,
+                getX(), getY(), getZ(),
+                SoundRegistry.getHitSound(getHookItemMaterial()),
+                SoundSource.PLAYERS,
+                0.26f, 1f
+            );
+
+            this.setDeltaMovement(Vec3.ZERO);
+            this.setInBlock(true);
+            this.setPos(result.getLocation());
+            this.setNoGravity(true);
+            
+            if (player != null) {
+                double dist = player.getEyePosition().subtract(result.getLocation()).length();
+                this.setLength((float)dist);
             }
         }
-
-        level.playSound(null,
-            getX(), getY(), getZ(),
-            bs.getSoundType().getHitSound(),
-            SoundSource.PLAYERS,
-            0.22f, 1.15f
-        );
-        level.playSound(null,
-            getX(), getY(), getZ(),
-            SoundRegistry.getHitSound(getHookItemMaterial()),
-            SoundSource.PLAYERS,
-            0.26f, 1f
-        );
-
-        this.setDeltaMovement(Vec3.ZERO);
-        this.setInBlock(true);
-        this.setPos(result.getLocation());
-        this.setNoGravity(true);
-        
-        if (player != null) {
-            double dist = player.getEyePosition().subtract(result.getLocation()).length();
-            this.setLength((float)dist);
-        }
-        
     }
 
     @Override
@@ -437,5 +435,10 @@ public class HookEntity extends ThrowableProjectile {
     @Override
     public boolean shouldBeSaved() {
         return true;
+    }
+
+    @Override
+    public boolean canUsePortal(boolean ignorePassenger) {
+        return false;
     }
 }

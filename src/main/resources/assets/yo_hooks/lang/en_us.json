@@ -23,8 +23,6 @@
   "category.yo_hooks": "Yori3o's Grappling Hooks",
   "key.category.yo_hooks.hook": "Yori3o's Grappling Hooks",
 
-  "itemGroup.yo_hooks": "Yori3o's Grappling Hooks",
-
   "enchantment.yo_hooks.gentle_touch": "Gentle Touch",
   "enchantment.yo_hooks.gentle_touch.desc": "The grappling hook will not break fragile blocks such as glass or dripstone.",
   "enchantment.yo_hooks.long_reach": "Long Reach",
@@ -32,9 +30,12 @@
   "enchantment.yo_hooks.agility": "Agility",
   "enchantment.yo_hooks.agility.desc": "Speeds up chain climb up and increases the jump.",
 
+  "itemGroup.yo_hooks": "Yori3o's Grappling Hooks",
   "entity.yo_hooks.hook_entity": "Hook",
-
   "sounds.yo_hooks.cast": "Grappling hook used",
+  "stat.yo_hooks.distance_traveled_on_hook_one_cm": "Distance on the Grappling Hook",
+  "advancements.yo_hooks.adventure.sudden_fall.title": "Failed Hook",
+  "advancements.yo_hooks.adventure.sudden_fall.description": "Cling to a fragile block and fall to your death",
 
   "settings.yo_hooks.save_and_close": "Save and exit",
   "settings.yo_hooks.reset_settings": "Reset config to default",
