@@ -8,9 +8,9 @@ import com.yori3o.yo_hooks.common.sound.SoundRegistry;
 import com.yori3o.yo_hooks.common.init.EntityRegistry;
 import com.yori3o.yo_hooks.common.init.ItemRegistry;
 import com.yori3o.yo_hooks.common.init.TagRegistry;
+import com.yori3o.yo_hooks.common.util.LastItemStackThatWasDamaged;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
-import com.yori3o.yo_hooks.common.util.df;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -261,7 +261,7 @@ public class HookEntity extends ThrowableProjectile {
                     }
 
                     stack.hurtAndBreak(1, player, hand);
-                    df.lastItemStackThatDamaged = stack;
+                    LastItemStackThatWasDamaged.lastItemStackThatWasDamaged = stack;
                 }
             }
 

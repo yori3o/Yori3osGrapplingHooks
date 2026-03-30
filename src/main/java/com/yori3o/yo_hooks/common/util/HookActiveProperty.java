@@ -31,20 +31,8 @@ public record HookActiveProperty() implements ConditionalItemModelProperty {
         HookEntity hook = ((PlayerWithHookData) player).getHook();
         ItemStack mainHandItem = player.getMainHandItem();
 
-        //boolean flag = ItemStack.matches(mainHandItem, stack);
-        //boolean flag1 = ItemStack.matches(player.getOffhandItem(), stack);
-
-        //boolean flag = ItemStack.isSameItemSameComponents(mainHandItem, stack) && mainHandItem.getDamageValue() != stack.getDamageValue();
-        //boolean flag1 = ItemStack.isSameItemSameComponents(player.getOffhandItem(), stack) && player.getOffhandItem().getDamageValue() != stack.getDamageValue();
-
-        //boolean flag = ItemStack.matchesIgnoringComponents(mainHandItem, stack);
-        //boolean flag1 = ItemStack.matchesIgnoringComponents(player.getOffhandItem(), stack);
-        
-        //boolean flag = mainHandItem.equals(stack);
-        //boolean flag1 = player.getOffhandItem().equals(stack);
-
-        boolean flag = mainHandItem == stack || df.lastItemStackThatDamaged == mainHandItem;
-        boolean flag1 = player.getOffhandItem() == stack || df.lastItemStackThatDamaged == player.getOffhandItem();
+        boolean flag = mainHandItem == stack || LastItemStackThatWasDamaged.lastItemStackThatWasDamaged == mainHandItem;
+        boolean flag1 = player.getOffhandItem() == stack || LastItemStackThatWasDamaged.lastItemStackThatWasDamaged == player.getOffhandItem();
         
         if (mainHandItem.getItem() instanceof HookItem) {
             flag1 = false;
