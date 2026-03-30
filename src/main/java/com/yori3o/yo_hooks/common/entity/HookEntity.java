@@ -1,6 +1,7 @@
 package com.yori3o.yo_hooks.common.entity;
 
 
+import com.google.common.annotations.VisibleForTesting;
 import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
 import com.yori3o.yo_hooks.common.item.HookItem;
 import com.yori3o.yo_hooks.common.sound.SoundRegistry;
@@ -9,6 +10,7 @@ import com.yori3o.yo_hooks.common.init.ItemRegistry;
 import com.yori3o.yo_hooks.common.init.TagRegistry;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
+import com.yori3o.yo_hooks.common.util.df;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -16,6 +18,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.VisibleForDebug;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -27,7 +30,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CaveVinesBlock;
 import net.minecraft.world.level.block.FallingBlock;
+import net.minecraft.world.level.block.RedStoneOreBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -37,6 +43,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
 
 
@@ -198,8 +205,7 @@ public class HookEntity extends ThrowableProjectile {
         }
     }
 
-
-
+    
     @Override
     protected void onHitBlock(BlockHitResult result) {
         super.onHitBlock(result);
@@ -239,6 +245,8 @@ public class HookEntity extends ThrowableProjectile {
                     if (bs.getBlock() instanceof FallingBlock) {
                         level.scheduleTick(pos, bs.getBlock(), 1);
                         hookedOnFallingBlock = true;
+                    } else if (bs.getBlock() instanceof RedStoneOreBlock) {
+                        RedStoneOreBlock.interact(bs, level, pos);
                     }
                 }
             }
@@ -253,6 +261,7 @@ public class HookEntity extends ThrowableProjectile {
                     }
 
                     stack.hurtAndBreak(1, player, hand);
+                    df.lastItemStackThatDamaged = stack;
                 }
             }
 

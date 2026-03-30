@@ -29,7 +29,6 @@ public class HookActivePropertyMixin {
     
     @Inject(method = "bootstrap", at = @At("TAIL"))
     private static void yo_hooks$registerHookProperty(CallbackInfo ci) {
-        
         ID_MAPPER.put(HOOK_ACTIVE_ID, HookActiveProperty.MAP_CODEC);
     }
 }

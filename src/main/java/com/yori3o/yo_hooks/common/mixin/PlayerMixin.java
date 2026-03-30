@@ -146,7 +146,6 @@ public class PlayerMixin implements PlayerWithHookData {
                 // --- server logic for fall damage reset ---
                 if (PhysicVariables.jumpAlwaysAllowed) {
                     player.resetFallDistance();
-                    suddenFall = false;
                 }
                 if (!player.onGround()) {
                     player.hurtMarked = false;
@@ -154,7 +153,6 @@ public class PlayerMixin implements PlayerWithHookData {
                         allowStatsIncrease = true;
                         if (unitVector.y > -0.15) { 
                             player.resetFallDistance();
-                            suddenFall = false;
                         }
                     }
                 }

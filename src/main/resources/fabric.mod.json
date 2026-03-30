@@ -29,6 +29,7 @@
     "mixins": [
         "yo_hooks-common.mixins.json"
     ],
+    "accessWidener": "yo_hooks.accesswidener",
     "depends": {
         "fabricloader": ">=0.18.4",
         "minecraft": "~26.1",
