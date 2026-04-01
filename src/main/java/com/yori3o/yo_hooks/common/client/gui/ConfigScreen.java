@@ -19,10 +19,11 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.io.File;
+import java.util.List;
 
 
 
-public class ConfigScreen extends Screen {
+public class ConfigScreen extends Screen { // dirty code that I'm afraid to touch for fear of breaking
 
 
     private final Screen parent;
@@ -31,6 +32,8 @@ public class ConfigScreen extends Screen {
 
     private float decreaseSatiety = DynamicConfigHandler.server().decreaseSatiety;
     private boolean breakingFragileBlocks = DynamicConfigHandler.server().breakingFragileBlocks;
+    private List<String> blocksBlacklist = DynamicConfigHandler.server().blocksBlacklist;
+    private boolean whitelistMode = DynamicConfigHandler.server().whitelistMode;
 
     private boolean softHook = DynamicConfigHandler.common().softHook;
     private float stiffness = DynamicConfigHandler.common().stiffness;
@@ -203,18 +206,24 @@ public class ConfigScreen extends Screen {
         
         decreaseSatiety = scv.decreaseSatiety;
         breakingFragileBlocks = scv.breakingFragileBlocks;
+        blocksBlacklist = scv.blocksBlacklist;
+        whitelistMode = scv.whitelistMode;
  
         softHook = ccv.softHook;
         stiffness = ccv.stiffness;
         climbSpeed = ccv.climbSpeed;
         funnyMode = ccv.funnyMode;
 
-        saveConfig();
+        saveConfig(false);
 
         init();
     }
 
     private void saveConfig() {
+        saveConfig(true);
+    }
+
+    private void saveConfig(boolean bool) {
         
         CommonConfig.Values ccv = DynamicConfigHandler.common();
         ServerConfig.Values scv = DynamicConfigHandler.server();
@@ -225,6 +234,17 @@ public class ConfigScreen extends Screen {
         ccv.funnyMode = funnyMode;
         scv.decreaseSatiety = decreaseSatiety;
         scv.breakingFragileBlocks = breakingFragileBlocks;
+
+        if (bool) {
+            ServerConfig sc = new ServerConfig();
+            ServerConfig.Values scv2 = sc.get();
+            scv.blocksBlacklist = scv2.blocksBlacklist;
+            scv.whitelistMode = scv2.whitelistMode;
+        } else {
+            scv.blocksBlacklist = blocksBlacklist;
+            scv.whitelistMode = whitelistMode;
+        }
+        
 
         DynamicConfigHandler.cc.save();
         DynamicConfigHandler.sc.save();
@@ -254,7 +274,7 @@ public class ConfigScreen extends Screen {
                 for (ServerPlayer p : players) {
                     if (host != null && p.getUUID().equals(host.getUUID())) continue;
 
-                    ServerSender.sendCommonConfig(p, DynamicConfigHandler.cc.get());
+                    ServerSender.sendCommonConfig(p, DynamicConfigHandler.cc.get(), null);
                 }
             }
 

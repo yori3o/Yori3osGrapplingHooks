@@ -20,7 +20,7 @@ public class LoggerUtil {
 
     public static final void info(String message) {
         if (PlatformUtil.isFabric()) {
-            LOGGER.info("[yo_hooks] " + message);
+            LOGGER.info("[yo_hooks]: " + message);
         } else {
             LOGGER.info(message);
         }
@@ -28,7 +28,7 @@ public class LoggerUtil {
 
     public static final void warn(String message) {
         if (PlatformUtil.isFabric()) {
-            LOGGER.warn("[yo_hooks] " + message);
+            LOGGER.warn("[yo_hooks]: " + message);
         } else {
             LOGGER.warn(message);
         }
@@ -36,7 +36,7 @@ public class LoggerUtil {
 
     public static final void error(String message) {
         if (PlatformUtil.isFabric()) {
-            LOGGER.error("[yo_hooks] " + message);
+            LOGGER.error("[yo_hooks]: " + message);
         } else {
             LOGGER.error(message);
         }

@@ -4,6 +4,7 @@ package com.yori3o.yo_hooks.common.item;
 import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.hookregistry.HookDefinition;
+import com.yori3o.yo_hooks.common.init.StatsRegistry;
 import com.yori3o.yo_hooks.common.sound.SoundRegistry;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
@@ -24,7 +25,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 
 import java.util.function.Consumer;
-
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 
 
@@ -33,6 +33,8 @@ public class HookItem extends Item {
 
     
     public final HookDefinition hookDefinition;
+    
+    public Integer lengthOverlap;
 
     
     public HookItem(Properties properties, HookDefinition hookDefinition) {
@@ -52,18 +54,12 @@ public class HookItem extends Item {
             return InteractionResult.PASS;
         }
 
-
         if (hook != null) {
             
             discard(world, player, hook);
         } else {
             
             if (!world.isClientSide() && !DynamicConfigHandler.common().funnyMode && !hookDefinition.doesNotConsumeHunger) {
-                /*stack.hurtAndBreak(1, player, p -> { // FOR 1.20.1
-                    p.broadcastBreakEvent(hand == InteractionHand.MAIN_HAND 
-                            ? EquipmentSlot.MAINHAND 
-                            : EquipmentSlot.OFFHAND);
-                });*/
                 player.causeFoodExhaustion(DynamicConfigHandler.server().decreaseSatiety / 1.5f);
             }
             fire(world, player, stack);
@@ -76,7 +72,7 @@ public class HookItem extends Item {
         
         if (!world.isClientSide()) {
 
-            int range = hookDefinition.length;
+            int range = this.getBasicLength();
             int agilityLevel = 0;
             boolean gentleTouch = false;
 
@@ -100,6 +96,7 @@ public class HookItem extends Item {
         
 
             player.awardStat(Stats.ITEM_USED.get(this));
+            player.awardStat(StatsRegistry.DISTANCE_TRAVELED_ON_HOOK_ONE_CM, 1);
             world.playSound(null,
                     player.getX(), player.getY() + 1, player.getZ(),
                     SoundRegistry.getCastSound(hookDefinition.id),
@@ -124,22 +121,10 @@ public class HookItem extends Item {
             player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);}
     }
 
-    
-    //public void appendHoverText(ItemStack stack, Level level, List<Component> tooltip, TooltipFlag flag) { // FOR 1.20.1
-    /*public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flags) {
-        int range = hookDefinition.length;
-        if (PhysicVariables.funnyMode) range = 80;
-        for (Entry<Holder<Enchantment>> a : stack.getEnchantments().entrySet()) {
-            if (a.getKey().getRegisteredName().equals("yo_hooks:long_reach")) {
-                range += (int)(a.getIntValue() * 3.5);
-            }
-        }
-        tooltip.add(Component.translatable("gui.yo_hooks.hooks.desc_1", range).withColor(0xFF5555FF));
-    }*/
     // FOR 1.21.5+
     public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext context, 
                 TooltipDisplay tooltipDisplay, Consumer<Component> consumer, TooltipFlag tooltipFlag) {
-        int range = hookDefinition.length;
+        int range = this.getBasicLength();
         if (PhysicVariables.funnyMode) range = 80;
         for (Entry<Holder<Enchantment>> a : stack.getEnchantments().entrySet()) {
             if (a.getKey().getRegisteredName().equals("yo_hooks:long_reach")) {
@@ -158,18 +143,16 @@ public class HookItem extends Item {
         }
     }
 
-   /*  @Override
-    public boolean isValidRepairItem(ItemStack itemStack, ItemStack itemStack2) {
-        if (repairTag != null) {
-            return itemStack2.is(repairTag);
-        } else {
-            return false;
-        }
+    public void setLengthServerOverlap(int lengthOverlap) {
+        this.lengthOverlap = lengthOverlap;
     }
 
-    @Override
-    public int getEnchantmentValue() {
-      return hookDefinition.enchantability;
-    }*/
+    public int getBasicLength() {
+        if (lengthOverlap == null) {
+            return hookDefinition.length;
+        } else {
+            return lengthOverlap;
+        }
+    }
 
 }

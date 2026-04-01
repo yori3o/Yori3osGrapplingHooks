@@ -14,7 +14,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 public class YoHooksClient {
     
 
-    public static final Category YO_HOOKS_CATEGORY = new Category(Identifier.fromNamespaceAndPath("yo_hooks", "hook"));
+public static final Category YO_HOOKS_CATEGORY = new Category(Identifier.fromNamespaceAndPath("yo_hooks", "hook"));
 
     public static final KeyMapping JUMP = new KeyMapping(
         "key.yo_hooks.jump",

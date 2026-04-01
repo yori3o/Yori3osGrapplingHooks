@@ -1,6 +1,6 @@
 {
   "type": "minecraft:smithing_transform",
-  "addition": "minecraft:netherite_ingot",
+  "addition": "#c:ingots/netherite",
   "base": "yo_hooks:diamond_hook_head",
   "result": {
     "count": 1,

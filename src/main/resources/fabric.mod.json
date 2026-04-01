@@ -1,51 +1,51 @@
-{
-  "schemaVersion": 1,
-  "id": "yo_hooks",
-  "version": "${version}",
-  "name": "Yori3o's Grappling Hooks",
-  "description": "Adds grappling hooks to the game.",
-  "authors": [
-    "Yori3o"
-  ],
-  "contact": {
-    "homepage": "https://modrinth.com/mod/yori3os-grappling-hooks",
-    "sources": "https://github.com/yori3o/Yori3osGrapplingHooks",
-    "issues": "https://github.com/yori3o/Yori3osGrapplingHooks/issues"
-  },
-  "license": "MIT License",
-  "icon": "logo.png",
-  "environment": "*",
-  "entrypoints": {
-    "main": [
-      "com.yori3o.yo_hooks.fabric.YoHooksFabric"
+    {
+    "schemaVersion": 1,
+    "id": "yo_hooks",
+    "version": "${version}",
+    "name": "Yori3o's Grappling Hooks",
+    "description": "Adds grappling hooks to the game.",
+    "authors": [
+        "Yori3o"
     ],
-    "client": [
-      "com.yori3o.yo_hooks.fabric.YoHooksFabricClient"
+    "contact": {
+        "homepage": "https://modrinth.com/mod/yori3os-grappling-hooks",
+        "sources": "https://github.com/yori3o/Yori3osGrapplingHooks",
+        "issues": "https://github.com/yori3o/Yori3osGrapplingHooks/issues"
+    },
+    "license": "MIT License",
+    "icon": "logo.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "com.yori3o.yo_hooks.fabric.YoHooksFabric"
+        ],
+        "client": [
+            "com.yori3o.yo_hooks.fabric.YoHooksFabricClient"
+        ],
+        "modmenu": [
+            "com.yori3o.yo_hooks.fabric.ModMenuIntegration"
+        ]
+    },
+    "mixins": [
+        "yo_hooks-common.mixins.json"
     ],
-    "modmenu": [
-      "com.yori3o.yo_hooks.fabric.ModMenuIntegration"
-    ]
-  },
-  "mixins": [
-    "yo_hooks-common.mixins.json"
-  ],
-  "depends": {
-    "fabricloader": ">=0.17.0",
-    "minecraft": "1.21.11",
-    "fabric-api": "*"
-  },
-  "suggests": {
-    "modmenu": "*"
-  },
-  "breaks": {
-    "inventorysorter": "*"
-  },
-  "custom": {
-    "modmenu": {
-      "links": {
-        "modmenu.curseforge":"https://www.curseforge.com/minecraft/mc-mods/yori3os-grappling-hooks",
-        "modmenu.modrinth":"https://modrinth.com/mod/yori3os-grappling-hooks"
-      }
+    "accessWidener": "yo_hooks.accesswidener",
+    "depends": {
+        "fabricloader": ">=0.18.0",
+        "minecraft": "~1.21.11",
+        "fabric-api": "*"
+    },
+    "suggests": {
+        "modmenu": "*"
+    },
+    "custom": {
+        "modmenu": {
+            "links": {
+                "modmenu.curseforge":"https://www.curseforge.com/minecraft/mc-mods/yori3os-grappling-hooks",
+                "modmenu.modrinth":"https://modrinth.com/mod/yori3os-grappling-hooks",
+                "modmenu.donate":"https://sprightly-smakager-c8e2b1.netlify.app",
+                "modmenu.youtube":"https://www.youtube.com/watch?v=R_HgY7vfMeI"
+            }
+        }
     }
-  }
 }

@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "A": "minecraft:diamond"
+    "A": "#c:gems/diamond"
   },
   "pattern": [
     "AA",

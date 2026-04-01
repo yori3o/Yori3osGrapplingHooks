@@ -3,6 +3,8 @@ package com.yori3o.yo_hooks.common.event;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.player.Player;
 
 
 /**
@@ -18,6 +20,10 @@ public class EventHandler {
 
     public static void whenPlayerJoinToServer(ServerPlayer serverPlayer) {
         ServerEvents.sendConfigToNewPlayer(serverPlayer);
+    }
+
+    public static void whenPlayerDie(Player player, DamageSource damageSource) {
+        ServerEvents.checkSuddenFall(player, damageSource);
     }
 
     public static void whenClientTickStart() {

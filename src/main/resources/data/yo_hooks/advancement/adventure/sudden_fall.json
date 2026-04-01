@@ -1,0 +1,20 @@
+{
+  "parent": "minecraft:adventure/root",
+  "criteria": {
+    "fall_death": {
+        "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.yo_hooks.adventure.sudden_fall.description"
+    },
+    "icon": {
+      "id": "yo_hooks:iron_grappling_hook"
+    },
+    "title": {
+      "translate": "advancements.yo_hooks.adventure.sudden_fall.title"
+    }
+  },
+  "sends_telemetry_event": false
+}

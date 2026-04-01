@@ -27,7 +27,7 @@ public class EntityRegistry {
             )
             .sized(0.25f, 0.25f)
             .clientTrackingRange(4)
-            .updateInterval(5)
+            .updateInterval(4)
             .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(YoHooks.MOD_ID, "hook_entity")))
                     
         );

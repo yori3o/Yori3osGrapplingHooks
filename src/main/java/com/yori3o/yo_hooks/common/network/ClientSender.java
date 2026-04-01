@@ -5,11 +5,6 @@ import com.yori3o.yo_hooks.impl.PlatformNetworkHelper;
 
 import net.minecraft.client.Minecraft;
 
-// for 1.20.1
-/*import io.netty.buffer.Unpooled;
-import net.minecraft.resources.Identifier;
-import net.minecraft.network.FriendlyByteBuf;*/
-
 
 
 public class ClientSender {
@@ -20,10 +15,6 @@ public class ClientSender {
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.getConnection() == null) return;
 
-        /*
-        FriendlyByteBuf originalBuf = new FriendlyByteBuf(Unpooled.buffer()); 
-        originalBuf.writeBoolean(cancelUsing);
-        PlatformNetworkHelper.sendToServer(Identifier.fromNamespaceAndPath("yo_hooks", "player_jump"), originalBuf);*/
 
         PlayerJumpPayload payload = new PlayerJumpPayload(
                 cancelUsing
@@ -36,9 +27,6 @@ public class ClientSender {
     
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.getConnection() == null) return;
-        /*FriendlyByteBuf originalBuf = new FriendlyByteBuf(Unpooled.buffer()); 
-        originalBuf.writeBoolean(up);
-        PlatformNetworkHelper.sendToServer(Identifier.fromNamespaceAndPath("yo_hooks", "climb"), originalBuf); */
 
         PlayerClimbPayload payload = new PlayerClimbPayload(
                 up, agility_level, shouldPlaySound

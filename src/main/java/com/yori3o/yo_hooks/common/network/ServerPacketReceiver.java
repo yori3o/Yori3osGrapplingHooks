@@ -14,14 +14,9 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.gameevent.GameEvent;
 
-// for 1.21.11 fabric
-//import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-//import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-
 
 
 public class ServerPacketReceiver {
-
 
 
     public static void registerPackets() {
@@ -114,7 +109,7 @@ public class ServerPacketReceiver {
 
                         if (shouldPlaySound) {
                             player.level().playSound(null,
-                                player,//.getX(), player.getY(), player.getZ(),
+                                player,
                                 SoundRegistry.getClimbSound(hook.getHookItemMaterial()),
                                 SoundSource.PLAYERS,
                                 0.21f, 1.0f

@@ -50,7 +50,7 @@ public abstract class JsonConfigManager<T> {
             save();
 
         } catch (Exception e) {
-            LoggerUtil.LOGGER.error("[CONFIG] Failed to load " + configPath.getFileName() + ": " + e.getMessage());
+            LoggerUtil.error("[CONFIG] Failed to load " + configPath.getFileName() + ": " + e.getMessage());
             backupCorruptedFile();
             saveDefault();
         }
@@ -72,7 +72,7 @@ public abstract class JsonConfigManager<T> {
                 gson.toJson(configInstance, writer);
             }
         } catch (Exception e) {
-            LoggerUtil.LOGGER.error("[CONFIG] Failed to save config: " + e.getMessage());
+            LoggerUtil.error("[CONFIG] Failed to save config: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -85,7 +85,7 @@ public abstract class JsonConfigManager<T> {
             try (Writer writer = Files.newBufferedWriter(configPath)) {
                 gson.toJson(configInstance, writer);
             }
-            LoggerUtil.LOGGER.info("[CONFIG] Created new config file: " + configPath);
+            LoggerUtil.info("[CONFIG] Created new config file: " + configPath);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -99,10 +99,10 @@ public abstract class JsonConfigManager<T> {
                         .format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
                 Path backup = configPath.resolveSibling(configPath.getFileName() + ".broken_" + timestamp + ".bak");
                 Files.move(configPath, backup, StandardCopyOption.REPLACE_EXISTING);
-                LoggerUtil.LOGGER.warn("[CONFIG] Corrupted config renamed to: " + backup.getFileName());
+                LoggerUtil.warn("[CONFIG] Corrupted config renamed to: " + backup.getFileName());
             }
         } catch (IOException ex) {
-            LoggerUtil.LOGGER.error("[CONFIG] Failed to backup corrupted file: " + ex.getMessage());
+            LoggerUtil.error("[CONFIG] Failed to backup corrupted file: " + ex.getMessage());
         }
     }
 

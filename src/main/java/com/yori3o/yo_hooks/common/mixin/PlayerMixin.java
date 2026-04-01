@@ -3,6 +3,7 @@ package com.yori3o.yo_hooks.common.mixin;
 
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.event.ClientEvents;
+import com.yori3o.yo_hooks.common.init.StatsRegistry;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
 
@@ -27,6 +28,11 @@ public class PlayerMixin implements PlayerWithHookData {
     private boolean isClimbingUp;
     private boolean usingCancelAfterJump;
     private int agility_level;
+    
+    private boolean allowStatsIncrease;
+    private Vec3 oldPosition;
+    
+    private boolean suddenFall = false;
 
 
     @Override
@@ -38,19 +44,16 @@ public class PlayerMixin implements PlayerWithHookData {
         return usingCancelAfterJump;
     }
 
-
     @Override
     public boolean isJumpAllowed() {
         return this.isJumpAllowed;
     }
-
 
     @Override
     public void setClimbing(boolean up, int level) {
         agility_level = level;
         isClimbingUp = up;
     }
-
 
     @Override
     public void setHook(HookEntity value) {
@@ -61,13 +64,25 @@ public class PlayerMixin implements PlayerWithHookData {
         return this.hookEntity;
     }
 
+    @Override
+    public void setSuddenFall(boolean bool) {
+        suddenFall = bool;
+    }
+    @Override
+    public boolean isSuddenFall() {
+        return suddenFall;
+    }
 
     @Inject(method = "travel", at = @At("HEAD"))
     private void onTravel(Vec3 travelVector, CallbackInfo ci) {
         Player player = (Player) (Object) this;
 
+        allowStatsIncrease = false;
+
         // --- HOOK HANDLING ---
         if (this.hookEntity != null && this.hookEntity.isInBlock()) {
+            
+            oldPosition = player.position();
 
             // --- variables ---
             Vec3 hookPos = this.hookEntity.position();
@@ -82,15 +97,13 @@ public class PlayerMixin implements PlayerWithHookData {
             double vRadial = V.dot(unitVector);
             Vec3 vTangential = V.subtract(unitVector.scale(vRadial));
 
-            double vTangentialMultiplier = 1.0204;
+            double vTangentialMultiplier = 1.01;
 
 
             if (dist > MAX_R) {
                 double stretch = dist - MAX_R;
 
-                if (stretch >= 0) {
-                    vTangentialMultiplier = 1.047;
-                }
+                vTangentialMultiplier = 1.047;
 
                 if (isClimbingUp) {
                     if (MAX_R > 0.4) {
@@ -102,16 +115,14 @@ public class PlayerMixin implements PlayerWithHookData {
                 }
 
                 if (!PhysicVariables.softHook) {
-                    if (stretch >= 0) {
-                        double new_vRadial = stretch * 0.055;
-                        if (!(vRadial > new_vRadial)) vRadial = new_vRadial;
-                    }
+                    double new_vRadial = stretch * 0.055;
+                    if (!(vRadial > new_vRadial)) vRadial = new_vRadial;
                 } else { // soft mode
                     vRadial = Math.max(vRadial, vRadial + stretch * PhysicVariables.stiffness);
                     vRadial = Math.min(vRadial, 1);
                 }
             }
-            
+
 
             if (!player.onGround() && !player.isFallFlying()) {
                 vTangential = vTangential.scale(vTangentialMultiplier);
@@ -135,15 +146,28 @@ public class PlayerMixin implements PlayerWithHookData {
                 // --- server logic for fall damage reset ---
                 if (PhysicVariables.jumpAlwaysAllowed) {
                     player.resetFallDistance();
-                } else {
-                    if (unitVector.y > -0.15) { 
-                        if ((dist + 0.5) > MAX_R)
+                }
+                if (!player.onGround()) {
+                    player.hurtMarked = false;
+                    if ((dist + 0.6) > MAX_R) {
+                        allowStatsIncrease = true;
+                        if (unitVector.y > -0.15) { 
                             player.resetFallDistance();
+                        }
                     }
                 }
-                if (!player.onGround()) player.hurtMarked = false;
             }
         }
     }
 
+    @Inject(method = "travel", at = @At("TAIL"))
+    private void afterTravel(Vec3 travelVector, CallbackInfo ci) {
+        Player player = (Player) (Object) this;
+
+        if (allowStatsIncrease) {
+            Vec3 current = player.position();
+            double traveledDistance = current.distanceTo(oldPosition);
+            player.awardStat(StatsRegistry.DISTANCE_TRAVELED_ON_HOOK_ONE_CM, (int)(traveledDistance * 200));
+        }
+    }
 }

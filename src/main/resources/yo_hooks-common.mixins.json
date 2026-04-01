@@ -9,9 +9,11 @@
   ],
   "mixins": [
     "PlayerMixin",
-    "ServerGamePacketListenerImplMixin"
+    "ServerGamePacketListenerImplMixin",
+    "ThrowableProjectileMixin",
+    "EntityMixin"
   ],
-  "injectors": {
-    "defaultRequire": 1
-  }
+	"overwrites": {
+		"requireAnnotations": true
+	}
 }
