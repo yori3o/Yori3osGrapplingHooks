@@ -34,7 +34,6 @@ public class DynamicConfigHandler {
 
 
     public static void commonConfigUpdate(CommonConfig.Values cc) {
-
         common().softHook = cc.softHook;
         common().stiffness = cc.stiffness;
         common().climbSpeed = cc.climbSpeed;

@@ -14,7 +14,7 @@ public interface PlayerWithHookData {
 
     boolean isJumpAllowed();
 
-    void setClimbing(boolean up, int agility_level);
+    void setClimbing(boolean up, int agilityLevel);
     
     void setSuddenFall(boolean bool);
     boolean isSuddenFall();

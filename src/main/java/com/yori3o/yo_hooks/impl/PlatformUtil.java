@@ -38,7 +38,7 @@ public final class PlatformUtil {
         return null;
     }
     
-    public static boolean isFabric() {
+    public static final boolean isFabric() {
         return true;
     }
 

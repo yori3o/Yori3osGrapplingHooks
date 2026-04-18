@@ -28,18 +28,20 @@
   "enchantment.yo_hooks.long_reach": "Дальний зацеп",
   "enchantment.yo_hooks.long_reach.desc": "Увеличивает длину крюка-кошки.",
   "enchantment.yo_hooks.agility": "Ловкость",
-  "enchantment.yo_hooks.agility.desc": "Ускоряет подъём по цепи и усиливает прыжок.",
+  "enchantment.yo_hooks.agility.desc": "Ускоряет подъём по цепи крюка-кошки и усиливает прыжок.",
 
   "itemGroup.yo_hooks": "Yori3o's Grappling Hooks",
   "entity.yo_hooks.hook_entity": "Крюк",
   "sounds.yo_hooks.cast": "Крюк-кошка использован",
   "stat.yo_hooks.distance_traveled_on_hook_one_cm": "Преодолено на крюке-кошке",
   "advancements.yo_hooks.adventure.sudden_fall.title": "Неудачный зацеп",
-  "advancements.yo_hooks.adventure.sudden_fall.description": "Прицепитесь за хрупкий блок и разбейтесь насмерть",
+  "advancements.yo_hooks.adventure.sudden_fall.description": "Попробуйте прицепиться за хрупкий блок и разбейтесь насмерть",
 
   "settings.yo_hooks.save_and_close": "Сохранить и выйти",
   "settings.yo_hooks.reset_settings": "Сбросить настройки по умолчанию",
   "settings.yo_hooks.open_file": "Открыть файл",
+  "settings.yo_hooks.server": "Серверные (server)",
+  "settings.yo_hooks.common": "Общие (common)",
   "settings.yo_hooks.funny_mode": "Весёлый режим",
   "settings.yo_hooks.soft_hook": "Мягкая верёвка",
   "settings.yo_hooks.stiffness": "Жёсткость",
@@ -50,5 +52,4 @@
 
   "modmenu.descriptionTranslation.yo_hooks": "Добавляет похожие на ванилу крюки-кошки с реалистичной физикой.",
   "fml.menu.mods.info.description.yo_hooks": "Добавляет похожие на ванилу крюки-кошки с реалистичной физикой."
-  
 }

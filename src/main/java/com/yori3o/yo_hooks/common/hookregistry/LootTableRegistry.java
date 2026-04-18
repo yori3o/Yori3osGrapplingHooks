@@ -1,6 +1,7 @@
 package com.yori3o.yo_hooks.common.hookregistry;
 
 
+import com.yori3o.yo_hooks.common.util.LoggerUtil;
 import com.yori3o.yo_hooks.impl.PlatformModFileResolver;
 
 import java.io.InputStream;
@@ -24,16 +25,10 @@ public final class LootTableRegistry {
 
 
     public static void load() {
-
-        List<InputStream> files =
-                PlatformModFileResolver.findFiles("yo_hooks/loot_tables.json");
-
+        List<InputStream> files = PlatformModFileResolver.findFiles("yo_hooks/loot_tables.json");
         for (InputStream stream : files) {
-
             try (Reader reader = new InputStreamReader(stream)) {
-
-                LootTableDefinition[] array =
-                        GSON.fromJson(reader, LootTableDefinition[].class);
+                LootTableDefinition[] array = GSON.fromJson(reader, LootTableDefinition[].class);
 
                 if (array != null) {
                     for (LootTableDefinition def : array) {
@@ -41,9 +36,8 @@ public final class LootTableRegistry {
                         lootTables.add(def);
                     }
                 }
-
             } catch (Exception e) {
-                throw new RuntimeException("Failed to parse loot_tables.json", e);
+                LoggerUtil.errorWithException("Failed to parse loot_tables.json: ", e);
             }
         }
     }

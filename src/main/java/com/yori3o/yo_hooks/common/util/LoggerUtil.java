@@ -11,12 +11,12 @@ import org.apache.logging.log4j.LogManager;
 public class LoggerUtil {
 
     
-    public static final Logger LOGGER = LogManager.getLogger("yo_hooks");
+    private static final Logger LOGGER = LogManager.getLogger("yo_hooks");
 
 
-    /// ==================
-    /// These methods are needed to add [yo_hooks] to logs on Fabric, while NeoForge does it itself.
-    /// ==================
+    // ==================
+    // These methods are needed to add [yo_hooks] to logs.
+    // ==================
 
     public static final void info(String message) {
         if (PlatformUtil.isFabric()) {
@@ -39,6 +39,14 @@ public class LoggerUtil {
             LOGGER.error("[yo_hooks]: " + message);
         } else {
             LOGGER.error(message);
+        }
+    }
+
+    public static final void errorWithException(String message, Exception e) {
+        if (PlatformUtil.isFabric()) {
+            LOGGER.error("[yo_hooks]: " + message, e);
+        } else {
+            LOGGER.error(message, e);
         }
     }
 

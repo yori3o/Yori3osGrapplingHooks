@@ -16,8 +16,8 @@ import net.fabricmc.loader.api.ModContainer;
 
 public class PlatformModFileResolver {
 
-    public static List<InputStream> findFiles(String path) {
 
+    public static List<InputStream> findFiles(String path) {
         List<InputStream> streams = new ArrayList<>();
 
         for (ModContainer mod : FabricLoader.getInstance().getAllMods()) {

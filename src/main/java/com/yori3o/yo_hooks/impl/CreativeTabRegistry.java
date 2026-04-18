@@ -28,15 +28,12 @@ public class CreativeTabRegistry {
             .title(Component.translatable("itemGroup.yo_hooks"))
             .build();
 
+            
     public static void register() {
-        
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, CUSTOM_ITEM_GROUP_KEY, CUSTOM_ITEM_GROUP);
         
         CreativeModeTabEvents.modifyOutputEvent(CUSTOM_ITEM_GROUP_KEY).register(itemGroup -> {
 
-            /*for (Item item : ItemRegistry.ALL_ITEMS) {
-                itemGroup.accept(item);
-            }*/
             for (Supplier<? extends Item> supplier : ItemRegistry.ALL_ITEMS) {
                 itemGroup.accept(supplier.get());
             }

@@ -16,8 +16,8 @@ import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 
 public class LootInjector {
 
+    
     public static void register() {
-        //LootTableEvents.MODIFY.register((resourceManager, lootManager, key, tableBuilder, source) -> {
         LootTableEvents.MODIFY.register((key, tableBuilder, source, registries) -> {
 
             for (LootTableDefinition lootTable : LootTableRegistry.lootTables) {

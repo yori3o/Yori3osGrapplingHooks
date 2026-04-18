@@ -1,6 +1,9 @@
 package com.yori3o.yo_hooks.common;
 
 
+import com.yori3o.yo_hooks.common.client.render.HookRenderer;
+import com.yori3o.yo_hooks.common.init.EntityRegistry;
+import com.yori3o.yo_hooks.impl.PlatformEntityRendererRegistry;
 import com.yori3o.yo_hooks.impl.PlatformKeyMappingRegistry;
 
 import net.minecraft.client.KeyMapping;
@@ -48,6 +51,8 @@ public static final Category YO_HOOKS_CATEGORY = new Category(Identifier.fromNam
         PlatformKeyMappingRegistry.registerKeyMapping(CLIMB);
         PlatformKeyMappingRegistry.registerKeyMapping(CLIMB_DOWN);
         PlatformKeyMappingRegistry.registerKeyMapping(PREVENT_USE);
+
+        PlatformEntityRendererRegistry.registerEntityRenderer(EntityRegistry.HOOK_ENTITY.get(), HookRenderer::new);
     }
     
 }

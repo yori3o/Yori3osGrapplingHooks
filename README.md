@@ -9,4 +9,4 @@ New grappling hooks can be added via add-ons that don't require coding. This wil
 
 [Curseforge link](https://www.curseforge.com/minecraft/mc-mods/yori3os-grappling-hooks)
 
-[Youtube link](https://www.youtube.com/watch?v=pH57T758aFU)
+[Youtube link](https://www.youtube.com/watch?v=R_HgY7vfMeI)

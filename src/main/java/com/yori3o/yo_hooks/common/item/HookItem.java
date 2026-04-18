@@ -4,7 +4,6 @@ package com.yori3o.yo_hooks.common.item;
 import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.hookregistry.HookDefinition;
-import com.yori3o.yo_hooks.common.init.StatsRegistry;
 import com.yori3o.yo_hooks.common.sound.SoundRegistry;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
@@ -96,7 +95,6 @@ public class HookItem extends Item {
         
 
             player.awardStat(Stats.ITEM_USED.get(this));
-            player.awardStat(StatsRegistry.DISTANCE_TRAVELED_ON_HOOK_ONE_CM, 1);
             world.playSound(null,
                     player.getX(), player.getY() + 1, player.getZ(),
                     SoundRegistry.getCastSound(hookDefinition.id),

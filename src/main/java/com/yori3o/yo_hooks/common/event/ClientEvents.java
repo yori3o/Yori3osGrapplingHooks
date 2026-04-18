@@ -36,7 +36,6 @@ public class ClientEvents {
     }
     
     private static void clientTickKeybindsHandler(Player player, PlayerWithHookData hookData, HookEntity hook) {
-        
         boolean down = YoHooksClient.JUMP.isDown();
 
         if (soundCooldown > 0) {
@@ -44,10 +43,8 @@ public class ClientEvents {
         }
 
         if (hook.isInBlock()) {
-
-            // we jump only if the button is pressed, but was not pressed before, i.e. once at the moment of pressing.
             if (down && !jumpKeybindWasDown && !YoHooksClient.PREVENT_USE.isDown()) {
-    
+
                 boolean usingCancel = (YoHooksClient.JUMP.same(Minecraft.getInstance().options.keyUse));
                 hookData.setUsingCancelAfterJump(usingCancel);
                 
@@ -60,15 +57,13 @@ public class ClientEvents {
             }
             
             if (YoHooksClient.CLIMB.isDown()) {
-                int agility_level = hook.getAgilityLevel();
-                boolean play_sound = shouldPlayClimbSound();
-                ClientSender.climb(true, agility_level, play_sound);
-                hookData.setClimbing(true, agility_level);
+                int agilityLevel = hook.getAgilityLevel();
+                ClientSender.climb(true, agilityLevel, shouldPlayClimbSound());
+                hookData.setClimbing(true, agilityLevel);
             } else {
                 if (YoHooksClient.CLIMB_DOWN.isDown()) {
-                    int agility_level = hook.getAgilityLevel();
-                    boolean play_sound = shouldPlayClimbSound();
-                    ClientSender.climb(false, agility_level, play_sound);
+                    int agilityLevel = hook.getAgilityLevel();
+                    ClientSender.climb(false, agilityLevel, shouldPlayClimbSound());
                     hookData.setClimbing(false, 0);
                 } else {
                     hookData.setClimbing(false, 0);

@@ -41,16 +41,11 @@ public final class HookRegistry {
     }
 
     private static void load() {
-
-        List<InputStream> files =
-                PlatformModFileResolver.findFiles("yo_hooks/hooks.json");
+        List<InputStream> files = PlatformModFileResolver.findFiles("yo_hooks/hooks.json");
 
         for (InputStream stream : files) {
-
             try (Reader reader = new InputStreamReader(stream)) {
-
-                HookDefinition[] array =
-                        GSON.fromJson(reader, HookDefinition[].class);
+                HookDefinition[] array = GSON.fromJson(reader, HookDefinition[].class);
 
                 if (array != null) {
                     for (HookDefinition def : array) {
@@ -67,9 +62,8 @@ public final class HookRegistry {
                         }
                     }
                 }
-
             } catch (Exception e) {
-                throw new RuntimeException("Failed to parse hooks.json", e);
+                LoggerUtil.errorWithException("Failed to parse hooks.json: ", e);
             }
         }
     }

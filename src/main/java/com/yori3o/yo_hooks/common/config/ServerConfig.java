@@ -1,7 +1,7 @@
 package com.yori3o.yo_hooks.common.config;
 
 
-import com.yori3o.yo_hooks.impl.PlatformUtil;
+import com.yori3o.yo_hooks.common.YoHooks;
 
 import java.nio.file.Path;
 import java.util.LinkedList;
@@ -19,7 +19,7 @@ public class ServerConfig extends JsonConfigManager<ServerConfig.Values> {
         public boolean whitelistMode = false;
     }
 
-    private static final Path CONFIG_PATH = PlatformUtil.getConfigDir().resolve("yo_hooks_server.json");
+    private static final Path CONFIG_PATH = YoHooks.CONFIG_FOLDER.resolve("yo_hooks-server.json");
 
     public ServerConfig() {
         super(Values.class, CONFIG_PATH);

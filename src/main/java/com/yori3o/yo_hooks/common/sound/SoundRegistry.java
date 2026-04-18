@@ -25,6 +25,8 @@ public class SoundRegistry {
 
     public static final Map<String, CustomSoundsHolder> customSounds = new HashMap<>();
 
+    private static boolean checkForCustomVisual = false; // This thing is needed for easy optimization when there is no one hook with customVisual
+
 
     public static void register() {
         PlatformSoundRegistry.registerSound(CAST.location(), CAST);
@@ -35,6 +37,8 @@ public class SoundRegistry {
     }
 
     public static void registerNewCustomSounds(String material) {
+        checkForCustomVisual = true;
+
         final SoundEvent CAST_CUSTOM = SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath("yo_hooks", "cast_" + material));
         final SoundEvent BACK_CUSTOM = SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath("yo_hooks", "back_" + material));
         final SoundEvent AMBIENT_CUSTOM = SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath("yo_hooks", "ambient_" + material));
@@ -51,6 +55,7 @@ public class SoundRegistry {
     }
     
     public static SoundEvent getCastSound(String material) {
+        if (!checkForCustomVisual) return CAST;
         if (HookRegistry.hookMaterialsWithCustomVisuals.contains(material)) {
             return customSounds.get(material).CAST;
         } else {
@@ -59,6 +64,7 @@ public class SoundRegistry {
     }
 
     public static SoundEvent getBackSound(String material) {
+        if (!checkForCustomVisual) return BACK;
         if (HookRegistry.hookMaterialsWithCustomVisuals.contains(material)) {
             return customSounds.get(material).BACK;
         } else {
@@ -67,6 +73,7 @@ public class SoundRegistry {
     }
 
     public static SoundEvent getAmbientSound(String material) {
+        if (!checkForCustomVisual) return AMBIENT;
         if (HookRegistry.hookMaterialsWithCustomVisuals.contains(material)) {
             return customSounds.get(material).AMBIENT;
         } else {
@@ -75,6 +82,7 @@ public class SoundRegistry {
     }
 
     public static SoundEvent getClimbSound(String material) {
+        if (!checkForCustomVisual) return CLIMB;
         if (HookRegistry.hookMaterialsWithCustomVisuals.contains(material)) {
             return customSounds.get(material).CLIMB;
         } else {
@@ -83,6 +91,7 @@ public class SoundRegistry {
     }
 
     public static SoundEvent getHitSound(String material) {
+        if (!checkForCustomVisual) return HIT;
         if (HookRegistry.hookMaterialsWithCustomVisuals.contains(material)) {
             return customSounds.get(material).HIT;
         } else {

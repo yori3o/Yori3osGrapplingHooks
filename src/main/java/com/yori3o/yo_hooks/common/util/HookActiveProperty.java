@@ -29,17 +29,20 @@ public record HookActiveProperty() implements ConditionalItemModelProperty {
         }
         Player player = (Player) entity;
         HookEntity hook = ((PlayerWithHookData) player).getHook();
+
+        if (hook == null || hook.isRemoved()) return false;
+
         ItemStack mainHandItem = player.getMainHandItem();
+        ItemStack offHandItem = player.getOffhandItem();
 
         boolean flag = mainHandItem == stack || LastItemStackThatWasDamaged.lastItemStackThatWasDamaged == mainHandItem;
-        boolean flag1 = player.getOffhandItem() == stack || LastItemStackThatWasDamaged.lastItemStackThatWasDamaged == player.getOffhandItem();
-        
+        boolean flag1 = offHandItem == stack || LastItemStackThatWasDamaged.lastItemStackThatWasDamaged == offHandItem;
+
         if (mainHandItem.getItem() instanceof HookItem) {
             flag1 = false;
         }
 
-        boolean hookIsActive = hook != null && !hook.isRemoved();
-        if ((flag || flag1) && hookIsActive) {
+        if (flag || flag1) {
             return true;
         } else {
             return false;

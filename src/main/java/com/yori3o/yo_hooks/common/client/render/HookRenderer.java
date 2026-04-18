@@ -48,8 +48,6 @@ public class HookRenderer extends EntityRenderer<HookEntity, HookRendererState> 
     }
 
 
-
-    
     @Override
     public void extractRenderState(HookEntity hookEntity, HookRendererState state, float partialTicks) {
         super.extractRenderState(hookEntity, state, partialTicks);
@@ -58,23 +56,18 @@ public class HookRenderer extends EntityRenderer<HookEntity, HookRendererState> 
             state.shouldRender = false;
             return;
         }
-        state.shouldRender = true;
 
         Player player = hookEntity.getPlayerOwner();
         if (player == null) {
             state.shouldRender = false;
             return;
         }
-        state.shouldRender = true;
 
         // 0. Базовые данные
-        state.level = hookEntity.level();
-        state.id = hookEntity.getId();
         state.packedLight = LevelRenderer.getLightCoords(
             hookEntity.level(),
             player.blockPosition()
         );
-        
 
         // 1. Считаем позиции (используем lerp для плавности)
         Vec3 handPos = HookRenderer.getHandPosition(player, partialTicks, this.entityRenderDispatcher);
@@ -98,14 +91,13 @@ public class HookRenderer extends EntityRenderer<HookEntity, HookRendererState> 
         state.yawAngle = (float)Math.atan2(normalized.z, normalized.x);
         
         // 3. Предмет
-        state.itemStack = hookEntity.getHeadItem();
         resolver.updateForTopItem(
             state.itemRenderState,
-            state.itemStack,
+            hookEntity.getHeadItem(),
             ItemDisplayContext.GROUND,
-            state.level,
+            hookEntity.level(),
             null,
-            state.id
+            hookEntity.getId()
         );
 
         String hookMaterial = hookEntity.getHookItemMaterial();
@@ -116,7 +108,6 @@ public class HookRenderer extends EntityRenderer<HookEntity, HookRendererState> 
         }
 
     }
-
 
 
     @Override
@@ -148,16 +139,10 @@ public class HookRenderer extends EntityRenderer<HookEntity, HookRendererState> 
 
         poseStack.popPose();
 
-        // --- Рендер цепи (вершины) ---
-        float ropeAB = state.length * 2.5f - 1.0f;
-        float ropeAA = -1.0f;
-
-
-
         collector.submitCustomGeometry(
             poseStack,
             RenderTypes.entityCutout(state.ropeTexture),
-            new HookCustomGeometryRenderer(state.length, ropeAA, ropeAB, packedLight)
+            new HookCustomGeometryRenderer(state.length, state.length * 2.5f - 1.0f, packedLight)
         );
 
         poseStack.popPose();
@@ -166,10 +151,7 @@ public class HookRenderer extends EntityRenderer<HookEntity, HookRendererState> 
     }
 
 
-
-
     public static final Vec3 getHandPosition(Player player, float partialTicks, EntityRenderDispatcher dispatcher) {
-    
         int armSign = player.getMainArm() == HumanoidArm.RIGHT ? 1 : -1;
         ItemStack itemStack = player.getMainHandItem();
         if (!(itemStack.getItem() instanceof HookItem)) {
@@ -185,7 +167,7 @@ public class HookRenderer extends EntityRenderer<HookEntity, HookRendererState> 
         if (dispatcher.options.getCameraType().isFirstPerson() && player == Minecraft.getInstance().player) {
             double fovScale = 960.0D / (double)dispatcher.options.fov().get();
             float f = Mth.sin(Mth.sqrt(player.getAttackAnim(partialTicks)) * 3.1415927F);
-            Vec3 vec3 = dispatcher.camera.getNearPlane(dispatcher.options.fov().get())/* .scale(fovScale)*/.getPointOnPlane((float)armSign * 0.825F, -0.5F).yRot(f * 0.5F).xRot(-f * 0.7F).scale(fovScale);
+            Vec3 vec3 = dispatcher.camera.getNearPlane(dispatcher.options.fov().get()).getPointOnPlane((float)armSign * 0.825F, -0.5F).yRot(f * 0.5F).xRot(-f * 0.7F).scale(fovScale);
 
             return player.getEyePosition(partialTicks).add(vec3);
             

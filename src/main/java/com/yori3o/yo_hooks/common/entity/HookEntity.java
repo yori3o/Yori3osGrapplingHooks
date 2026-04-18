@@ -1,7 +1,6 @@
 package com.yori3o.yo_hooks.common.entity;
 
 
-import com.google.common.annotations.VisibleForTesting;
 import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
 import com.yori3o.yo_hooks.common.item.HookItem;
 import com.yori3o.yo_hooks.common.sound.SoundRegistry;
@@ -18,7 +17,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.VisibleForDebug;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -30,8 +28,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CaveVinesBlock;
 import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.RedStoneOreBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -43,7 +39,6 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.gen.Accessor;
 
 
 
@@ -232,9 +227,19 @@ public class HookEntity extends ThrowableProjectile {
                 }
             }
 
+            if (!DynamicConfigHandler.common().funnyMode) {
+                if (!player.isCreative()) {
+                    ItemStack stack = player.getMainHandItem();
+                    EquipmentSlot hand = EquipmentSlot.MAINHAND;
+                    if (!(stack.getItem() instanceof HookItem)) {
+                        stack = player.getOffhandItem();
+                        hand = EquipmentSlot.OFFHAND;
+                    }
+                    stack.hurtAndBreak(1, player, hand);
+                }
+            }
             if (DynamicConfigHandler.server().breakingFragileBlocks) {
                 if (!this.isGentleTouch()) {
-
                     if (bs.is(TagRegistry.FRAGILE_BLOCKS)) {
                         level.destroyBlock(pos, true);
                         this.discard();
@@ -248,20 +253,6 @@ public class HookEntity extends ThrowableProjectile {
                     } else if (bs.getBlock() instanceof RedStoneOreBlock) {
                         RedStoneOreBlock.interact(bs, level, pos);
                     }
-                }
-            }
-            if (!DynamicConfigHandler.common().funnyMode) {
-                if (!player.isCreative()) {
-
-                    ItemStack stack = player.getMainHandItem();
-                    EquipmentSlot hand = EquipmentSlot.MAINHAND;
-                    if (!(stack.getItem() instanceof HookItem)) {
-                        stack = player.getOffhandItem();
-                        hand = EquipmentSlot.OFFHAND;
-                    }
-
-                    stack.hurtAndBreak(1, player, hand);
-                    LastItemStackThatWasDamaged.lastItemStackThatWasDamaged = stack;
                 }
             }
 
@@ -286,6 +277,18 @@ public class HookEntity extends ThrowableProjectile {
             if (player != null) {
                 double dist = player.getEyePosition().subtract(result.getLocation()).length();
                 this.setLength((float)dist);
+            }
+        } else {
+            Player player = this.getPlayerOwner();
+            if (player == null) return;
+            if (!DynamicConfigHandler.common().funnyMode) {
+                if (!player.isCreative()) {
+                    ItemStack stack = player.getMainHandItem();
+                    if (!(stack.getItem() instanceof HookItem)) {
+                        stack = player.getOffhandItem();
+                    }
+                    LastItemStackThatWasDamaged.lastItemStackThatWasDamaged = stack;
+                }
             }
         }
     }

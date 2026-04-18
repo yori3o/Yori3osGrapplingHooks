@@ -13,17 +13,6 @@ import net.minecraft.world.entity.EntityType;
 
 public class PlatformEntityRegistry {
 
-    /*public static <T extends Entity> EntityType<T> registerEntity(
-            Identifier id,
-            EntityType<T> entityType
-    ) {
-        return Registry.register(
-                BuiltInRegistries.ENTITY_TYPE,
-                id,
-                entityType
-        );
-    }*/
-
     public static <T extends Entity> Supplier<EntityType<T>> registerEntity(Identifier id, Supplier<EntityType<T>> supplier) {
         EntityType<T> entityType = supplier.get();
         Registry.register(BuiltInRegistries.ENTITY_TYPE, id, entityType);

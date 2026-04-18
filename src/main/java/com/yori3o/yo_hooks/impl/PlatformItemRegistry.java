@@ -17,10 +17,6 @@ public class PlatformItemRegistry {
         Registry.register(BuiltInRegistries.ITEM, id, item);
         return () -> item;
     } 
-    /*public static Item registerItem(Identifier id, Item item) {
-        Registry.register(BuiltInRegistries.ITEM, id, item);
-        return item;
-    } */
      
 }
 

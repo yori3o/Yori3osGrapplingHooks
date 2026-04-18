@@ -28,7 +28,9 @@ public class ConfigScreen extends Screen { // dirty code that I'm afraid to touc
 
     private final Screen parent;
 
-    private Component labelCommon, labelServer, labelNote;
+    private Component labelCommon = Component.translatable("settings.yo_hooks.common");
+    private Component labelServer = Component.translatable("settings.yo_hooks.server");
+    private Component labelNote = Component.translatable("settings.yo_hooks.file_note");
 
     private float decreaseSatiety = DynamicConfigHandler.server().decreaseSatiety;
     private boolean breakingFragileBlocks = DynamicConfigHandler.server().breakingFragileBlocks;
@@ -42,16 +44,13 @@ public class ConfigScreen extends Screen { // dirty code that I'm afraid to touc
 
     private Slider slider;
 
-    private final String on;
-    private final String off;
+    private final String on = Component.translatable("options.on").getString();
+    private final String off = Component.translatable("options.off").getString();
     
     
     public ConfigScreen(Screen parent) {
         super(Component.literal("Config"));
         this.parent = parent;
-        
-        on = Component.translatable("options.on").getString();
-        off = Component.translatable("options.off").getString();
     }
 
 
@@ -103,16 +102,13 @@ public class ConfigScreen extends Screen { // dirty code that I'm afraid to touc
         addRenderableWidget(Button.builder(Component.translatable("settings.yo_hooks.breaking_fragile_blocks").append(on3), b -> toggleButton(b, 3)).bounds(x2, y, colWidth, 20).build());
 
 
-        // =========================
-        // Labels
-        // =========================
-        labelCommon = Component.literal("Common");
-        labelServer = Component.literal("Server");
-        labelNote = Component.translatable("settings.yo_hooks.file_note");
 
-
-        addRenderableWidget(Button.builder(Component.translatable("settings.yo_hooks.open_file").append(" (common)"), b -> FileOpenUtil.revealConfigFile(new File(PlatformUtil.getConfigDir().resolve("yo_hooks_common.json").toUri()))).bounds(x1, this.height - 90, colWidth, 20).build());
-        addRenderableWidget(Button.builder(Component.translatable("settings.yo_hooks.open_file").append(" (server)"), b -> FileOpenUtil.revealConfigFile(new File(PlatformUtil.getConfigDir().resolve("yo_hooks_server.json").toUri()))).bounds(x2, this.height - 90, colWidth, 20).build());
+        addRenderableWidget(Button.builder(Component.translatable("settings.yo_hooks.open_file").append(" (common)"),
+                b -> FileOpenUtil.revealConfigFile(new File(PlatformUtil.getConfigDir().resolve("yo_hooks_common.json").toUri()))).bounds(x1, this.height - 90, colWidth, 20)
+            .build());
+        addRenderableWidget(Button.builder(Component.translatable("settings.yo_hooks.open_file").append(" (server)"),
+                b -> FileOpenUtil.revealConfigFile(new File(PlatformUtil.getConfigDir().resolve("yo_hooks_server.json").toUri()))).bounds(x2, this.height - 90, colWidth, 20)
+            .build());
 
         addRenderableWidget(Button.builder(Component.translatable("settings.yo_hooks.reset_settings"), b -> resetConfig()).bounds(x1, this.height - 65, colWidth, 20).build());
         addRenderableWidget(Button.builder(Component.translatable("settings.yo_hooks.save_and_close"), b -> this.onClose()).bounds(x2, this.height - 65, colWidth, 20).build());
