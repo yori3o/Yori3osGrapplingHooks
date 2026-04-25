@@ -1,11 +1,12 @@
 {
   "required": true,
   "package": "com.yori3o.yo_hooks.common.mixin",
-  "compatibilityLevel": "JAVA_25",
+  "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "client": [
     "MultiPlayerGameModeMixin",
-    "HookActivePropertyMixin"
+    "HookActivePropertyMixin",
+    "MouseMixin"
   ],
   "mixins": [
     "PlayerMixin",

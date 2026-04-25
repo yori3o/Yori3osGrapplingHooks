@@ -26,8 +26,10 @@ public abstract class MultiPlayerGameModeMixin {
 
         ItemStack stack = player.getItemInHand(hand);
 
-        if (stack.getItem() instanceof HookItem && YoHooksClient.PREVENT_USE.isDown()) {
-            cir.setReturnValue(InteractionResult.PASS);
+        if (YoHooksClient.PREVENT_USE.isDown()) {
+            if (stack.getItem() instanceof HookItem) {
+               cir.setReturnValue(InteractionResult.PASS); 
+            }
         }
     }
 

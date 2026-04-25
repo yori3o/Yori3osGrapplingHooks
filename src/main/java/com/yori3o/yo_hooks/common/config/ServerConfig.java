@@ -19,7 +19,7 @@ public class ServerConfig extends JsonConfigManager<ServerConfig.Values> {
         public boolean whitelistMode = false;
     }
 
-    private static final Path CONFIG_PATH = YoHooks.CONFIG_FOLDER.resolve("yo_hooks-server.json");
+    public static final Path CONFIG_PATH = YoHooks.CONFIG_FOLDER.resolve("yo_hooks-server.json");
 
     public ServerConfig() {
         super(Values.class, CONFIG_PATH);

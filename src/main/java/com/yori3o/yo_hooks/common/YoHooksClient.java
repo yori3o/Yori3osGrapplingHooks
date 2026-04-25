@@ -2,6 +2,7 @@ package com.yori3o.yo_hooks.common;
 
 
 import com.yori3o.yo_hooks.common.client.render.HookRenderer;
+import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
 import com.yori3o.yo_hooks.common.init.EntityRegistry;
 import com.yori3o.yo_hooks.impl.PlatformEntityRendererRegistry;
 import com.yori3o.yo_hooks.impl.PlatformKeyMappingRegistry;
@@ -51,6 +52,8 @@ public static final Category YO_HOOKS_CATEGORY = new Category(Identifier.fromNam
         PlatformKeyMappingRegistry.registerKeyMapping(CLIMB);
         PlatformKeyMappingRegistry.registerKeyMapping(CLIMB_DOWN);
         PlatformKeyMappingRegistry.registerKeyMapping(PREVENT_USE);
+        
+        DynamicConfigHandler.loadClient();
 
         PlatformEntityRendererRegistry.registerEntityRenderer(EntityRegistry.HOOK_ENTITY.get(), HookRenderer::new);
     }

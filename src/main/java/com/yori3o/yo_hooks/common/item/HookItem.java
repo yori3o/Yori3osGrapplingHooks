@@ -4,6 +4,7 @@ package com.yori3o.yo_hooks.common.item;
 import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.hookregistry.HookDefinition;
+import com.yori3o.yo_hooks.common.init.ComponentRegistry;
 import com.yori3o.yo_hooks.common.sound.SoundRegistry;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
@@ -54,21 +55,20 @@ public class HookItem extends Item {
         }
 
         if (hook != null) {
-            
             discard(world, player, hook);
+            stack.set(ComponentRegistry.HOOK_ACTIVE, false);
         } else {
-            
             if (!world.isClientSide() && !DynamicConfigHandler.common().funnyMode && !hookDefinition.doesNotConsumeHunger) {
                 player.causeFoodExhaustion(DynamicConfigHandler.server().decreaseSatiety / 1.5f);
             }
             fire(world, player, stack);
+            stack.set(ComponentRegistry.HOOK_ACTIVE, true);
         }
 
         return InteractionResult.SUCCESS;
     }
 
     private void fire(Level world, Player player, ItemStack stack) {
-        
         if (!world.isClientSide()) {
 
             int range = this.getBasicLength();
@@ -101,7 +101,8 @@ public class HookItem extends Item {
                     SoundSource.PLAYERS,
                     0.7f, 1.0f
             );
-            player.gameEvent(GameEvent.ITEM_INTERACT_START);}
+            player.gameEvent(GameEvent.ITEM_INTERACT_START);
+        }
     }
 
     private void discard(Level world, Player player, HookEntity hook) {
@@ -116,7 +117,8 @@ public class HookItem extends Item {
                     SoundSource.PLAYERS,
                     1.0f, 1.0f
             );
-            player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);}
+            player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
+        }
     }
 
     // FOR 1.21.5+

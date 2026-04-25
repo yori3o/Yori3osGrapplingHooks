@@ -3,7 +3,7 @@ package com.yori3o.yo_hooks.common.event;
 
 import com.yori3o.yo_hooks.common.YoHooksClient;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
-import com.yori3o.yo_hooks.common.item.HookItem;
+import com.yori3o.yo_hooks.common.init.ComponentRegistry;
 import com.yori3o.yo_hooks.common.network.ClientSender;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
@@ -82,28 +82,18 @@ public class ClientEvents {
     }
 
     private static final void hookDiscardIfInvalid(Player player, PlayerWithHookData hookData, HookEntity hook) {
-        if ( !((player.getMainHandItem().getItem() instanceof HookItem) || (player.getOffhandItem().getItem() instanceof HookItem)) ) {
-            hookData.setHook(null);
-            return;
-        }
-        if (hook.distanceTo(player) > hook.getMaxRange()) {    
-            hookData.setHook(null);
-            return;
-        }
-        if (!player.isAlive()) {
-            hookData.setHook(null);
-            return;
-        }
-        if (hook.getBlockY() != -99999) {
-            if (hook.level().getBlockState(hook.getBlockPos()).isAir() && hook.isNoGravity()) {
-                hookData.setHook(null);
-                return; 
+        if (player.getMainHandItem().getOrDefault(ComponentRegistry.HOOK_ACTIVE, false) || player.getOffhandItem().getOrDefault(ComponentRegistry.HOOK_ACTIVE, false)) {
+            if (hook.distanceTo(player) <= hook.getMaxRange()) {    
+                if (player.isAlive()) {
+                    if (!(hook.getBlockY() != -99999 && (hook.level().getBlockState(hook.getBlockPos()).isAir() && hook.isNoGravity()))) {
+                        if (!hook.isRemoved()) {
+                            return;
+                        }
+                    }
+                }
             }
         }
-        if (hook.isRemoved()) {
-            hookData.setHook(null);
-            return;
-        }
+        hookData.setHook(null);
     }
 
     private static final void applyJumpImpulse(Player player, int agility_level) {

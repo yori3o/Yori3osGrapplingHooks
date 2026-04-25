@@ -1,7 +1,6 @@
 package com.yori3o.yo_hooks.common.util;
 
 
-import java.io.IOException;
 import java.nio.file.*;
 
 import com.yori3o.yo_hooks.common.YoHooks;
@@ -20,20 +19,13 @@ public class ConfigFilesMover {
     
     public static void moveConfigFiles() {
         if (Files.exists(NEW_COMMON)) return;
+        if (!Files.exists(OLD_COMMON)) return;
         try {
             Files.createDirectories(YoHooks.CONFIG_FOLDER);
-            moveAndRenameJson(OLD_COMMON, NEW_COMMON);
-            moveAndRenameJson(OLD_SERVER, NEW_SERVER);
+            Files.move(OLD_COMMON, NEW_COMMON, StandardCopyOption.REPLACE_EXISTING);
+            Files.move(OLD_SERVER, NEW_SERVER, StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
             LoggerUtil.errorWithException("Error when moving config files: ", e);
-        }
-    }
-
-    public static void moveAndRenameJson(Path sourcePath, Path targetPath) {
-        try {
-            Files.move(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            LoggerUtil.errorWithException("Error when moving files: ", e);
         }
     }
 }

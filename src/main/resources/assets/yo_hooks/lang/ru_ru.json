@@ -39,8 +39,9 @@
 
   "settings.yo_hooks.save_and_close": "Сохранить и выйти",
   "settings.yo_hooks.reset_settings": "Сбросить настройки по умолчанию",
-  "settings.yo_hooks.open_file": "Открыть файл",
+  "settings.yo_hooks.open_folder": "Открыть папку",
   "settings.yo_hooks.server": "Серверные (server)",
+  "settings.yo_hooks.client": "Клиентские (client)",
   "settings.yo_hooks.common": "Общие (common)",
   "settings.yo_hooks.funny_mode": "Весёлый режим",
   "settings.yo_hooks.soft_hook": "Мягкая верёвка",
@@ -48,6 +49,7 @@
   "settings.yo_hooks.climb_speed": "Скорость карабканья",
   "settings.yo_hooks.decrease_satiety": "Потребление сытости",
   "settings.yo_hooks.breaking_fragile_blocks": "Ломать хрупкие блоки",
+  "settings.yo_hooks.hold_hook_tightly": "Держать крюк крепко",
   "settings.yo_hooks.file_note": "Некоторые значения можно отрегулировать только в файлах конфига:",
 
   "modmenu.descriptionTranslation.yo_hooks": "Добавляет похожие на ванилу крюки-кошки с реалистичной физикой.",

@@ -18,7 +18,7 @@ public class CommonConfig extends JsonConfigManager<CommonConfig.Values> {
         public boolean funnyMode = false;
     }
 
-    private static final Path CONFIG_PATH = YoHooks.CONFIG_FOLDER.resolve("yo_hooks-common.json");
+    public static final Path CONFIG_PATH = YoHooks.CONFIG_FOLDER.resolve("yo_hooks-common.json");
 
     public CommonConfig() {
         super(Values.class, CONFIG_PATH);

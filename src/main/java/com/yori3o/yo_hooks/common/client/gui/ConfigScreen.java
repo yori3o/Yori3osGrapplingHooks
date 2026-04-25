@@ -1,13 +1,14 @@
 package com.yori3o.yo_hooks.common.client.gui;
 
 
+import com.yori3o.yo_hooks.common.YoHooks;
+import com.yori3o.yo_hooks.common.config.ClientConfig;
 import com.yori3o.yo_hooks.common.config.CommonConfig;
 import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
 import com.yori3o.yo_hooks.common.config.ServerConfig;
 import com.yori3o.yo_hooks.common.network.ServerSender;
 import com.yori3o.yo_hooks.common.util.FileOpenUtil;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
-import com.yori3o.yo_hooks.impl.PlatformUtil;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -18,7 +19,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.io.File;
 import java.util.List;
 
 
@@ -28,6 +28,7 @@ public class ConfigScreen extends Screen { // dirty code that I'm afraid to touc
 
     private final Screen parent;
 
+    private Component labelClient = Component.translatable("settings.yo_hooks.client");
     private Component labelCommon = Component.translatable("settings.yo_hooks.common");
     private Component labelServer = Component.translatable("settings.yo_hooks.server");
     private Component labelNote = Component.translatable("settings.yo_hooks.file_note");
@@ -41,6 +42,8 @@ public class ConfigScreen extends Screen { // dirty code that I'm afraid to touc
     private float stiffness = DynamicConfigHandler.common().stiffness;
     private float climbSpeed = DynamicConfigHandler.common().climbSpeed;
     private boolean funnyMode = DynamicConfigHandler.common().funnyMode;
+    
+    private boolean holdHookTightly = DynamicConfigHandler.client().holdHookTightly;
 
     private Slider slider;
 
@@ -100,14 +103,17 @@ public class ConfigScreen extends Screen { // dirty code that I'm afraid to touc
         y += 25;
         String on3 = (DynamicConfigHandler.server().breakingFragileBlocks) ? on : off;
         addRenderableWidget(Button.builder(Component.translatable("settings.yo_hooks.breaking_fragile_blocks").append(on3), b -> toggleButton(b, 3)).bounds(x2, y, colWidth, 20).build());
+        
+        
+        y += 55;
+        String on4 = (DynamicConfigHandler.client().holdHookTightly) ? on : off;
+        addRenderableWidget(Button.builder(Component.translatable("settings.yo_hooks.hold_hook_tightly").append(on4), b -> toggleButton(b, 4)).bounds(x2, y, colWidth, 20).build());
 
 
 
-        addRenderableWidget(Button.builder(Component.translatable("settings.yo_hooks.open_file").append(" (common)"),
-                b -> FileOpenUtil.revealConfigFile(new File(PlatformUtil.getConfigDir().resolve("yo_hooks_common.json").toUri()))).bounds(x1, this.height - 90, colWidth, 20)
-            .build());
-        addRenderableWidget(Button.builder(Component.translatable("settings.yo_hooks.open_file").append(" (server)"),
-                b -> FileOpenUtil.revealConfigFile(new File(PlatformUtil.getConfigDir().resolve("yo_hooks_server.json").toUri()))).bounds(x2, this.height - 90, colWidth, 20)
+
+        addRenderableWidget(Button.builder(Component.translatable("settings.yo_hooks.open_folder"),
+                b -> FileOpenUtil.revealConfigFolder(YoHooks.CONFIG_FOLDER)).bounds(x1, this.height - 90, colWidth, 20)
             .build());
 
         addRenderableWidget(Button.builder(Component.translatable("settings.yo_hooks.reset_settings"), b -> resetConfig()).bounds(x1, this.height - 65, colWidth, 20).build());
@@ -126,6 +132,8 @@ public class ConfigScreen extends Screen { // dirty code that I'm afraid to touc
             slider.active = !on;
         } else if (configValueNumber == 3) {
             breakingFragileBlocks = !on;
+        } else if (configValueNumber == 4) {
+            holdHookTightly = !on;
         }
     }
 
@@ -141,6 +149,7 @@ public class ConfigScreen extends Screen { // dirty code that I'm afraid to touc
         graphics.text(this.font, labelCommon, startX, labelY, 0xFFFFFFFF);
         graphics.text(this.font, labelServer, startX + colWidth + colSpacing, labelY, 0xFFFFFFFF);
         graphics.text(this.font, labelNote, startX, this.height - 110, 0xFFFFFFFF);
+        graphics.text(this.font, labelClient, startX + colWidth + colSpacing, labelY + 80, 0xFFFFFFFF);
 
     }
 
@@ -199,6 +208,7 @@ public class ConfigScreen extends Screen { // dirty code that I'm afraid to touc
 
         ServerConfig.Values scv = new ServerConfig.Values();
         CommonConfig.Values ccv = new CommonConfig.Values();
+        ClientConfig.Values clcv = new ClientConfig.Values();
         
         decreaseSatiety = scv.decreaseSatiety;
         breakingFragileBlocks = scv.breakingFragileBlocks;
@@ -209,6 +219,8 @@ public class ConfigScreen extends Screen { // dirty code that I'm afraid to touc
         stiffness = ccv.stiffness;
         climbSpeed = ccv.climbSpeed;
         funnyMode = ccv.funnyMode;
+        
+        holdHookTightly = clcv.holdHookTightly;
 
         saveConfig(false);
 
@@ -221,6 +233,7 @@ public class ConfigScreen extends Screen { // dirty code that I'm afraid to touc
 
     private void saveConfig(boolean bool) {
         
+        ClientConfig.Values clcv = DynamicConfigHandler.client();
         CommonConfig.Values ccv = DynamicConfigHandler.common();
         ServerConfig.Values scv = DynamicConfigHandler.server();
 
@@ -230,6 +243,8 @@ public class ConfigScreen extends Screen { // dirty code that I'm afraid to touc
         ccv.funnyMode = funnyMode;
         scv.decreaseSatiety = decreaseSatiety;
         scv.breakingFragileBlocks = breakingFragileBlocks;
+        clcv.holdHookTightly = holdHookTightly;
+
 
         if (bool) {
             ServerConfig sc = new ServerConfig();
@@ -244,6 +259,7 @@ public class ConfigScreen extends Screen { // dirty code that I'm afraid to touc
 
         DynamicConfigHandler.cc.save();
         DynamicConfigHandler.sc.save();
+        DynamicConfigHandler.clc.save();
 
         if (Minecraft.getInstance().isLocalServer()) {   
 

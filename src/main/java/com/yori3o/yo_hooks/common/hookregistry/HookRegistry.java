@@ -1,19 +1,20 @@
 package com.yori3o.yo_hooks.common.hookregistry;
 
 
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
 import com.google.gson.Gson;
+import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
 import com.yori3o.yo_hooks.common.init.ItemRegistry;
 import com.yori3o.yo_hooks.common.sound.SoundRegistry;
 import com.yori3o.yo_hooks.common.util.LoggerUtil;
-import com.yori3o.yo_hooks.impl.PlatformModFileResolver;
+import com.yori3o.yo_hooks.common.util.ResourceResolver;
 
 
 /**
@@ -36,15 +37,18 @@ public final class HookRegistry {
 
     private static void registerAllHooks() {
         for (HookDefinition def : hooks.values()) {
+            DynamicConfigHandler.setOverlapValues(def);
+            DynamicConfigHandler.addNewHookToOverlaps(def.id, def.durability, def.length);
             ItemRegistry.registerHook(def);
         }
+        DynamicConfigHandler.saveOverlap();
     }
 
     private static void load() {
-        List<InputStream> files = PlatformModFileResolver.findFiles("yo_hooks/hooks.json");
+        List<URL> urls = ResourceResolver.findFiles("yo_hooks/hooks.json");
 
-        for (InputStream stream : files) {
-            try (Reader reader = new InputStreamReader(stream)) {
+        for (URL url : urls) {
+            try (Reader reader = new InputStreamReader(url.openStream())) {
                 HookDefinition[] array = GSON.fromJson(reader, HookDefinition[].class);
 
                 if (array != null) {

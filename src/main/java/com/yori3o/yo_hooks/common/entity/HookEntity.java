@@ -4,10 +4,10 @@ package com.yori3o.yo_hooks.common.entity;
 import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
 import com.yori3o.yo_hooks.common.item.HookItem;
 import com.yori3o.yo_hooks.common.sound.SoundRegistry;
+import com.yori3o.yo_hooks.common.init.ComponentRegistry;
 import com.yori3o.yo_hooks.common.init.EntityRegistry;
 import com.yori3o.yo_hooks.common.init.ItemRegistry;
 import com.yori3o.yo_hooks.common.init.TagRegistry;
-import com.yori3o.yo_hooks.common.util.LastItemStackThatWasDamaged;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
 
@@ -117,6 +117,7 @@ public class HookEntity extends ThrowableProjectile {
             } else {
                 return;
             }
+            
         }
 
         if (!level().isClientSide()) {
@@ -128,7 +129,6 @@ public class HookEntity extends ThrowableProjectile {
             if (this.entityData.get(BLOCK_POS).getY() != -99999) {
                 if (this.level().getBlockState(this.entityData.get(BLOCK_POS)).isAir() && this.isNoGravity()) {
                     this.discard();
-                    ((PlayerWithHookData) owner).setHook(null);
                     if (hookedOnFallingBlock) {
                         ((PlayerWithHookData) owner).setSuddenFall(true);
                         hookedOnFallingBlock = false;
@@ -154,10 +154,17 @@ public class HookEntity extends ThrowableProjectile {
 
     private boolean discardIfInvalid(Player player) {
         if (!player.isAlive() || player.isRemoved() 
-                || !((player.getMainHandItem().getItem() instanceof HookItem) 
-                || (player.getOffhandItem().getItem() instanceof HookItem)) 
+                || !((player.getMainHandItem().getOrDefault(ComponentRegistry.HOOK_ACTIVE, false)) 
+                || (player.getOffhandItem().getOrDefault(ComponentRegistry.HOOK_ACTIVE, false))) 
                 || this.distanceTo(player) > getMaxRange()) {
+            ((PlayerWithHookData) player).setHook(null);
             this.discard();
+            for (ItemStack stack : player.getInventory()) {
+                if (stack.getOrDefault(ComponentRegistry.HOOK_ACTIVE, false)) {
+                    stack.set(ComponentRegistry.HOOK_ACTIVE, false);
+                    break;
+                }
+            }
             return true;
         }
         return false;
@@ -195,7 +202,7 @@ public class HookEntity extends ThrowableProjectile {
 
                 living.hurtServer((ServerLevel)this.level(), source, damageOnHit);
 
-                this.setDeltaMovement(this.getDeltaMovement().scale(0.5f));
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.25f));
             }
         }
     }
@@ -277,18 +284,6 @@ public class HookEntity extends ThrowableProjectile {
             if (player != null) {
                 double dist = player.getEyePosition().subtract(result.getLocation()).length();
                 this.setLength((float)dist);
-            }
-        } else {
-            Player player = this.getPlayerOwner();
-            if (player == null) return;
-            if (!DynamicConfigHandler.common().funnyMode) {
-                if (!player.isCreative()) {
-                    ItemStack stack = player.getMainHandItem();
-                    if (!(stack.getItem() instanceof HookItem)) {
-                        stack = player.getOffhandItem();
-                    }
-                    LastItemStackThatWasDamaged.lastItemStackThatWasDamaged = stack;
-                }
             }
         }
     }

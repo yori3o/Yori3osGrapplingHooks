@@ -26,7 +26,7 @@ public class ThrowableProjectileMixin {
         )
     )
     private void modifySetPos(ThrowableProjectile self, Vec3 pos) {
-        if (!(self instanceof HookEntity)) {
+        if (self instanceof HookEntity) {
             self.setPos(self.position().add(self.getDeltaMovement()));
         } else {
             self.setPos(pos);
