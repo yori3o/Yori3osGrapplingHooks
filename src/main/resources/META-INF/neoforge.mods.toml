@@ -1,0 +1,31 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+issueTrackerURL = "https://github.com/yori3o/Yori3osGrapplingHooks/issues"
+license = "MIT License"
+
+[[mods]]
+modId = "yo_hooks"
+version = "${version}"
+displayName = "Yori3o's Grappling Hooks"
+authors = "Yori3o"
+description = '''
+Adds grappling hooks to the game.
+'''
+logoFile = "logo.png"
+
+[[dependencies.yo_hooks]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.0,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.yo_hooks]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[mixins]]
+config = "yo_hooks-common.mixins.json"

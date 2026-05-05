@@ -1,0 +1,35 @@
+[
+  {
+    "id": "iron",
+    "durability": 72,
+    "length": 12,
+    "enchantability": 6,
+    "damageOnHit": 1,
+    "repairItemsTag": "yo_hooks:iron_repairable"
+  },
+  {
+    "id": "gold",
+    "durability": 24,
+    "length": 17,
+    "enchantability": 20,
+    "damageOnHit": 1,
+    "repairItemsTag": "yo_hooks:gold_repairable"
+  },
+  {
+    "id": "diamond",
+    "durability": 156,
+    "length": 21,
+    "enchantability": 12,
+    "damageOnHit": 2,
+    "repairItemsTag": "yo_hooks:diamond_repairable"
+  },
+  {
+    "id": "netherite",
+    "durability": 384,
+    "length": 26,
+    "enchantability": 15,
+    "fireResistant": true,
+    "damageOnHit": 2,
+    "repairItemsTag": "yo_hooks:netherite_repairable"
+  }
+]
