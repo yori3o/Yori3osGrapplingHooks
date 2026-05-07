@@ -52,6 +52,6 @@
   "settings.yo_hooks.hold_hook_tightly": "Hold Hook Tightly",
   "settings.yo_hooks.file_note": "Some values can only be adjusted in config files:",
 
-  "modmenu.descriptionTranslation.yo_hooks": "Adds vanilla-like and physically realistic grappling hooks.",
-  "fml.menu.mods.info.description.yo_hooks": "Adds vanilla-like and physically realistic grappling hooks."
+  "modmenu.descriptionTranslation.yo_hooks": "Adds vanilla-like and physically realistic grappling hooks. Separate beta version with Sable support (Create Aeronautics)!",
+  "fml.menu.mods.info.description.yo_hooks": "Adds vanilla-like and physically realistic grappling hooks. Separate beta version with Sable support (Create Aeronautics)!"
 }

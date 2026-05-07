@@ -2,14 +2,12 @@ package com.yori3o.yo_hooks.common.mixin;
 
 
 import com.yori3o.yo_hooks.common.compat.Compats;
-import com.yori3o.yo_hooks.common.compat.sable.HookWithSableData;
-import com.yori3o.yo_hooks.common.compat.sable.SableCompat;
+import com.yori3o.yo_hooks.common.compat.sable.SableCompatPlayerMixin;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.event.ClientEvents;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
 
-import dev.ryanhcode.sable.Sable;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
@@ -79,18 +77,12 @@ public class PlayerMixin implements PlayerWithHookData {
         Player player = (Player) (Object) this;
 
         // --- HOOK HANDLING ---
-        if (this.hookEntity != null && this.hookEntity.isInBlock() /*|| !this.hookEntity.allowOnHit)*/) {
+        if (this.hookEntity != null && this.hookEntity.isInBlock()) {
         
             // --- variables ---
             Vec3 hookPos = this.hookEntity.position();
             if (Compats.isSableLoaded) {
-                HookWithSableData data = SableCompat.hooks.get(this.hookEntity);
-                if (data != null) {
-                    Vec3 physicsPos = data.attachedShip.logicalPose().transformPosition(data.localAttachPos);
-                    hookPos = Sable.HELPER.projectOutOfSubLevel(this.hookEntity.level(), physicsPos);
-                    //LoggerUtil.info("Vec3 hookPos = " + hookPos.toString());
-                }
-                
+                hookPos = SableCompatPlayerMixin.handleHookPos(this.hookEntity, hookPos);
             }
             Vec3 playerEyePos = player.getEyePosition();
             

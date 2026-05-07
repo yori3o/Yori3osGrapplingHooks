@@ -21,11 +21,11 @@ public class MouseMixin
         method = "onScroll",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/world/entity/player/Inventory;setSelectedSlot(I)V"
+            target = "Lnet/minecraft/world/entity/player/Inventory;swapPaint(D)V"
         ),
         cancellable = true
     )
-    private void cancelHotbarScroll(long handle, double xoffset, double yoffset, CallbackInfo ci) {
+    private void cancelHotbarScroll(long window, double horizontal, double vertical, CallbackInfo ci) {
         if (DynamicConfigHandler.client().holdHookTightly) {
             if (((PlayerWithHookData)(Minecraft.getInstance().player)).getHook() != null) {
                 ci.cancel();

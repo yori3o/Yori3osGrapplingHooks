@@ -8,8 +8,6 @@ import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.hookregistry.HookRegistry;
 import com.yori3o.yo_hooks.common.item.HookItem;
 
-import dev.ryanhcode.sable.Sable;
-
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -29,6 +27,7 @@ import net.minecraft.util.Mth;
 
 import org.joml.Quaterniond;
 import org.joml.Quaternionf;
+import org.joml.Vector3d;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -64,11 +63,22 @@ public class HookRenderer extends EntityRenderer<HookEntity> {
             if (data != null) {
                 if (data.attachedShip == null) return;
                 Vec3 physicsPos = data.attachedShip.logicalPose().transformPosition(data.localAttachPos);
-                hookPos = Sable.HELPER.projectOutOfSubLevel(hookEntity.level(), physicsPos);
+                hookPos = SableCompat.projectOutOfSubLevel(hookEntity.level(), physicsPos);
+            }
+        }
+
+        Quaterniond inv = null;
+
+        if (Compats.isSableLoaded) {
+            HookWithSableData data = SableCompat.hooks.get(hookEntity);
+            if (data != null && data.attachedShip != null) {
+                Quaterniond shipRot = data.attachedShip.logicalPose().orientation();
+                inv = new Quaterniond(shipRot).invert();
             }
         }
 
         Vec3 vectorCable = handPos.subtract(hookPos);
+        if (inv != null) vectorCable = rotateVec(vectorCable, inv);
         float length = (float)(vectorCable.length());
         vectorCable = vectorCable.normalize();
         float pitch = (float)Math.acos(vectorCable.y);
@@ -76,19 +86,7 @@ public class HookRenderer extends EntityRenderer<HookEntity> {
 
         poseStack.pushPose();
 
-        if (Compats.isSableLoaded) { // TODO: fix broken rotation
-            HookWithSableData data = SableCompat.hooks.get(hookEntity);
-            if (data != null) {
-                if (data.attachedShip == null) return;
-                //Quaterniondc shipRot = EntitySubLevelUtil.;
-                Quaterniond shipRot = data.attachedShip.logicalPose().orientation();
-    
-                Quaterniond inv = new Quaterniond(shipRot).invert();
-                Quaternionf finalRot = new Quaternionf((float)inv.x, (float)inv.y, (float)inv.z, (float)inv.w);
-                
-                poseStack.mulPose(finalRot);
-            }
-        }
+        if (inv != null) poseStack.mulPose(new Quaternionf((float)inv.x, (float)inv.y, (float)inv.z, (float)inv.w));
 
         poseStack.mulPose(Axis.YP.rotationDegrees((1.5707964f - yawAngle) * Mth.RAD_TO_DEG));
         poseStack.mulPose(Axis.XP.rotationDegrees(pitch * Mth.RAD_TO_DEG));
@@ -139,6 +137,12 @@ public class HookRenderer extends EntityRenderer<HookEntity> {
     
         poseStack.popPose();
         super.render(hookEntity, yaw, partialTicks, poseStack, bufferSource, packedLight);
+    }
+
+    public static Vec3 rotateVec(Vec3 v, Quaterniond q) {
+        Vector3d vec = new Vector3d(v.x, v.y, v.z);
+        vec.rotate(q);
+        return new Vec3(vec.x, vec.y, vec.z);
     }
 
 

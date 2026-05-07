@@ -52,6 +52,6 @@
   "settings.yo_hooks.hold_hook_tightly": "Держать крюк крепко",
   "settings.yo_hooks.file_note": "Некоторые значения можно отрегулировать только в файлах конфига:",
 
-  "modmenu.descriptionTranslation.yo_hooks": "Добавляет похожие на ванилу крюки-кошки с реалистичной физикой.",
-  "fml.menu.mods.info.description.yo_hooks": "Добавляет похожие на ванилу крюки-кошки с реалистичной физикой."
+  "modmenu.descriptionTranslation.yo_hooks": "Добавляет похожие на ванилу крюки-кошки с реалистичной физикой. Отдельная бета версия с поддержкой Sable (Create Aeronautics)!",
+  "fml.menu.mods.info.description.yo_hooks": "Добавляет похожие на ванилу крюки-кошки с реалистичной физикой. Отдельная бета версия с поддержкой Sable (Create Aeronautics)!"
 }

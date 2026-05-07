@@ -22,6 +22,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
@@ -63,8 +64,6 @@ public class HookEntity extends ThrowableProjectile {
             
     public int damageOnHit = 1;
     private boolean hookedOnFallingBlock = false;
-    
-    public boolean allowOnHit = true;
 
 
     public HookEntity(EntityType<? extends HookEntity> type, Level level) {
@@ -206,84 +205,90 @@ public class HookEntity extends ThrowableProjectile {
     
     @Override
     protected void onHitBlock(BlockHitResult result) {
-        /*if (Compats.isSableLoaded) {
-            if (SableCompat.handleHookFlight(this)) return;
-        }*/
-       
-        if (allowOnHit) {
-            super.onHitBlock(result);
+        super.onHitBlock(result);
 
-            if (Compats.isSableLoaded) {
-                SableCompat.onHookHitBlock(this, result);
+        if (Compats.isSableLoaded) {
+            SableCompat.onHookHitBlock(this, result);
+        }
+
+        if (!level().isClientSide()) {  
+
+            setBlockPos(result.getBlockPos());
+
+            Player player = this.getPlayerOwner();
+            if (player == null) return;
+
+            Level level = this.level();
+
+            BlockPos pos = this.entityData.get(BLOCK_POS);
+            BlockState bs = level.getBlockState(pos);
+
+            if (!DynamicConfigHandler.server().blocksBlacklist.isEmpty()) {
+                boolean isThisBlockBanned = (DynamicConfigHandler.server().blocksBlacklist.contains(bs.getBlockHolder().getRegisteredName()));
+                if (DynamicConfigHandler.server().whitelistMode) isThisBlockBanned = !isThisBlockBanned;
+                if (isThisBlockBanned) {
+                    this.discard();
+                    ((PlayerWithHookData) player).setHook(null);
+                    return;
+                }
             }
 
-            if (!level().isClientSide()) {  
+            if (!DynamicConfigHandler.common().funnyMode) {
+                if (!player.isCreative()) {
+                    ItemStack stack = player.getMainHandItem();
+                    EquipmentSlot hand = EquipmentSlot.MAINHAND;
+                    if (!(stack.getItem() instanceof HookItem)) {
+                        stack = player.getOffhandItem();
+                        hand = EquipmentSlot.OFFHAND;
+                    }
+                    stack.hurtAndBreak(1, player, hand);
+                }
+            }
 
-                setBlockPos(result.getBlockPos());
-
-                Player player = this.getPlayerOwner();
-                if (player == null) return;
-
-                Level level = this.level();
-
-                BlockPos pos = this.entityData.get(BLOCK_POS);
-                BlockState bs = level.getBlockState(pos);
-
-                if (!DynamicConfigHandler.server().blocksBlacklist.isEmpty()) {
-                    boolean isThisBlockBanned = (DynamicConfigHandler.server().blocksBlacklist.contains(bs.getBlockHolder().getRegisteredName()));
-                    if (DynamicConfigHandler.server().whitelistMode) isThisBlockBanned = !isThisBlockBanned;
-                    if (isThisBlockBanned) {
+            if (DynamicConfigHandler.server().breakingFragileBlocks) {
+                if (!this.isGentleTouch()) {
+                    if (bs.is(TagRegistry.FRAGILE_BLOCKS)) {
+                        level.destroyBlock(pos, true);
                         this.discard();
                         ((PlayerWithHookData) player).setHook(null);
+                        ((PlayerWithHookData) player).setSuddenFall(true);
                         return;
                     }
-                }
-
-                if (DynamicConfigHandler.server().breakingFragileBlocks) {
-                    if (!this.isGentleTouch()) {
-                        if (bs.is(TagRegistry.FRAGILE_BLOCKS)) {
-                            level.destroyBlock(pos, true);
-                            this.discard();
-                            ((PlayerWithHookData) player).setHook(null);
-                            ((PlayerWithHookData) player).setSuddenFall(true);
-                            return;
-                        }
-                        if (bs.getBlock() instanceof FallingBlock) {
-                            level.scheduleTick(pos, bs.getBlock(), 1);
-                            hookedOnFallingBlock = true;
-                        } else if (bs.getBlock() instanceof RedStoneOreBlock) {
-                            RedStoneOreBlockAccessor.interact(bs, level, pos);
-                        }
+                    if (bs.getBlock() instanceof FallingBlock) {
+                        level.scheduleTick(pos, bs.getBlock(), 1);
+                        hookedOnFallingBlock = true;
+                    } else if (bs.getBlock() instanceof RedStoneOreBlock) {
+                        RedStoneOreBlockAccessor.interact(bs, level, pos);
                     }
                 }
+            }
 
-                level.playSound(null,
-                    getX(), getY(), getZ(),
-                    bs.getSoundType().getHitSound(),
-                    SoundSource.PLAYERS,
-                    0.22f, 1.15f
-                );
-                level.playSound(null,
-                    getX(), getY(), getZ(),
-                    SoundRegistry.getHitSound(getHookItemMaterial()),
-                    SoundSource.PLAYERS,
-                    0.26f, 1f
-                );
+            level.playSound(null,
+                getX(), getY(), getZ(),
+                bs.getSoundType().getHitSound(),
+                SoundSource.PLAYERS,
+                0.22f, 1.15f
+            );
+            level.playSound(null,
+                getX(), getY(), getZ(),
+                SoundRegistry.getHitSound(getHookItemMaterial()),
+                SoundSource.PLAYERS,
+                0.26f, 1f
+            );
 
-                this.setDeltaMovement(Vec3.ZERO);
-                this.setInBlock(true);
-                this.setPos(result.getLocation());
-                this.setNoGravity(true);
-                
-                if (player != null) {
-                    double dist;
-                    if (Compats.isSableLoaded) {
-                        dist = SableCompat.calculateDist(this, player, result);
-                    } else {
-                        dist = player.getEyePosition().subtract(result.getLocation()).length();
-                    }
-                    this.setLength((float)dist);
+            this.setDeltaMovement(Vec3.ZERO);
+            this.setInBlock(true);
+            this.setPos(result.getLocation());
+            this.setNoGravity(true);
+            
+            if (player != null) {
+                double dist;
+                if (Compats.isSableLoaded) {
+                    dist = SableCompat.calculateDist(this, player, result);
+                } else {
+                    dist = player.getEyePosition().subtract(result.getLocation()).length();
                 }
+                this.setLength((float)dist);
             }
         }
     }
