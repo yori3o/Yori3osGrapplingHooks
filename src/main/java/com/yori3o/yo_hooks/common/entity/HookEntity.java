@@ -5,13 +5,13 @@ import com.yori3o.yo_hooks.common.compat.Compats;
 import com.yori3o.yo_hooks.common.compat.sable.SableCompat;
 import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
 import com.yori3o.yo_hooks.common.item.HookItem;
-import com.yori3o.yo_hooks.common.mixin.RedStoneOreBlockAccessor;
 import com.yori3o.yo_hooks.common.sound.SoundRegistry;
 import com.yori3o.yo_hooks.common.init.EntityRegistry;
 import com.yori3o.yo_hooks.common.init.ItemRegistry;
 import com.yori3o.yo_hooks.common.init.TagRegistry;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
+import com.yori3o.yo_hooks.common.util.RedstoneOreInteract;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -252,7 +252,7 @@ public class HookEntity extends ThrowableProjectile {
                             level.scheduleTick(pos, bs.getBlock(), 1);
                             hookedOnFallingBlock = true;
                         } else if (bs.getBlock() instanceof RedStoneOreBlock) {
-                            RedStoneOreBlockAccessor.interact(bs, level, pos);
+                            RedstoneOreInteract.invoke(bs, level, pos);
                         }
                     }
                 }
