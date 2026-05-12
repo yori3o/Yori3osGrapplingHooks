@@ -2,16 +2,18 @@ package com.yori3o.yo_hooks.common.entity;
 
 
 import com.yori3o.yo_hooks.common.compat.Compats;
+import com.yori3o.yo_hooks.common.compat.sable.HookWithSableData;
 import com.yori3o.yo_hooks.common.compat.sable.SableCompat;
 import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
 import com.yori3o.yo_hooks.common.item.HookItem;
-import com.yori3o.yo_hooks.common.mixin.RedStoneOreBlockAccessor;
 import com.yori3o.yo_hooks.common.sound.SoundRegistry;
 import com.yori3o.yo_hooks.common.init.EntityRegistry;
 import com.yori3o.yo_hooks.common.init.ItemRegistry;
 import com.yori3o.yo_hooks.common.init.TagRegistry;
+import com.yori3o.yo_hooks.common.util.LoggerUtil;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
+import com.yori3o.yo_hooks.common.util.RedstoneOreInteract;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -46,6 +48,8 @@ public class HookEntity extends ThrowableProjectile {
 
 
     private static final EntityDataAccessor<Boolean> IN_BLOCK =
+            SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> IN_SABLE_BLOCK =
             SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Float> LENGTH =
             SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.FLOAT);
@@ -87,6 +91,7 @@ public class HookEntity extends ThrowableProjectile {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(IN_BLOCK, false);
+        builder.define(IN_SABLE_BLOCK, false);
         builder.define(LENGTH, 0.0F);
         builder.define(HOOK_RANGE, 0);
         builder.define(HOOK_ITEM_MATERIAL, "");
@@ -119,6 +124,17 @@ public class HookEntity extends ThrowableProjectile {
                 return;
             }
             
+        }
+
+        if (Compats.isSableLoaded && this.isInSableBlock()) {
+            HookWithSableData data = SableCompat.hooks.get(this);
+            if (data == null) {
+                if (!SableCompat.onHookHitBlock(this, this.position()) && !level().isClientSide()) {
+                    ((PlayerWithHookData) owner).setHook(null);
+                    this.discard();
+                    return;
+                }
+            }
         }
 
         if (!level().isClientSide()) {
@@ -208,7 +224,9 @@ public class HookEntity extends ThrowableProjectile {
         super.onHitBlock(result);
 
         if (Compats.isSableLoaded) {
-            SableCompat.onHookHitBlock(this, result);
+            if (SableCompat.onHookHitBlock(this, result.getLocation())) {
+                this.setInSableBlock(true);
+            }
         }
 
         if (!level().isClientSide()) {  
@@ -254,11 +272,23 @@ public class HookEntity extends ThrowableProjectile {
                         ((PlayerWithHookData) player).setSuddenFall(true);
                         return;
                     }
-                    if (bs.getBlock() instanceof FallingBlock) {
-                        level.scheduleTick(pos, bs.getBlock(), 1);
-                        hookedOnFallingBlock = true;
-                    } else if (bs.getBlock() instanceof RedStoneOreBlock) {
-                        RedStoneOreBlockAccessor.interact(bs, level, pos);
+                }
+
+                if (DynamicConfigHandler.server().breakingFragileBlocks) {
+                    if (!this.isGentleTouch()) {
+                        if (bs.is(TagRegistry.FRAGILE_BLOCKS)) {
+                            level.destroyBlock(pos, true);
+                            this.discard();
+                            ((PlayerWithHookData) player).setHook(null);
+                            ((PlayerWithHookData) player).setSuddenFall(true);
+                            return;
+                        }
+                        if (bs.getBlock() instanceof FallingBlock) {
+                            level.scheduleTick(pos, bs.getBlock(), 1);
+                            hookedOnFallingBlock = true;
+                        } else if (bs.getBlock() instanceof RedStoneOreBlock) {
+                            RedstoneOreInteract.invoke(bs, level, pos);
+                        }
                     }
                 }
             }
@@ -296,6 +326,7 @@ public class HookEntity extends ThrowableProjectile {
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
         tag.putBoolean("in_block", this.isInBlock());
+        tag.putBoolean("in_sable_block", this.isInSableBlock());
         tag.putFloat("length", this.getLength());
         tag.putInt("hook_range", this.getMaxRange());
         tag.putString("hook_item_material", this.getHookItemMaterial());
@@ -309,6 +340,7 @@ public class HookEntity extends ThrowableProjectile {
     @Override
     protected void readAdditionalSaveData(CompoundTag tag) {
         this.setInBlock(tag.getBoolean("in_block"));
+        this.setInSableBlock(tag.getBoolean("in_sable_block"));
         this.setLength(tag.getFloat("length"));
         this.setMaxRange(tag.getInt("hook_range"));
         this.setHookItemMaterial(tag.getString("hook_item_material"));
@@ -323,6 +355,15 @@ public class HookEntity extends ThrowableProjectile {
     }
     public boolean isInBlock() {
         return this.entityData.get(IN_BLOCK);
+    }
+
+
+    // --- in sable block flag ---
+    private void setInSableBlock(boolean inBlock) {
+        this.entityData.set(IN_SABLE_BLOCK, inBlock);
+    }
+    public boolean isInSableBlock() {
+        return this.entityData.get(IN_SABLE_BLOCK);
     }
 
 

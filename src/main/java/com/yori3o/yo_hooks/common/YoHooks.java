@@ -11,6 +11,10 @@ import com.yori3o.yo_hooks.common.init.EntityRegistry;
 import com.yori3o.yo_hooks.common.util.ConfigFilesMover;
 import com.yori3o.yo_hooks.impl.PlatformUtil;
 
+import net.minecraft.data.recipes.RecipeBuilder;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Recipe;
+
 
 
 public class YoHooks {

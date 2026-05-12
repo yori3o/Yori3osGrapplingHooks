@@ -11,8 +11,7 @@
     "PlayerMixin",
     "ServerGamePacketListenerImplMixin",
     "ThrowableProjectileMixin",
-    "EntityMixin",
-    "RedStoneOreBlockAccessor"
+    "EntityMixin"
   ],
 	"overwrites": {
 		"requireAnnotations": true

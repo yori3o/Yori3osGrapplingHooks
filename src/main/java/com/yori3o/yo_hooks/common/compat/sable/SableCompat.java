@@ -2,11 +2,14 @@ package com.yori3o.yo_hooks.common.compat.sable;
 
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.joml.Vector3d;
 
 import com.yori3o.yo_hooks.common.entity.HookEntity;
+import com.yori3o.yo_hooks.common.util.LoggerUtil;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -43,12 +46,12 @@ public class SableCompat {
         return JOMLConversion.toMojang(localResult);
     }
 
-    public static boolean onHookHitBlock(HookEntity hookEntity, BlockHitResult hit) {
-        SubLevel potentialShip = getSubLevel(hookEntity.level(), hit.getLocation());
+    public static boolean onHookHitBlock(HookEntity hookEntity, Vec3 vec) {
+        SubLevel potentialShip = getSubLevel(hookEntity.level(), vec);
         if (potentialShip != null) {
             HookWithSableData sableData = new HookWithSableData();
             sableData.attachedShip = potentialShip;
-            sableData.localAttachPos = convertToLocal(potentialShip, hit.getLocation(), hookEntity.level());
+            sableData.localAttachPos = convertToLocal(potentialShip, vec, hookEntity.level());
             hooks.put(hookEntity, sableData);
             return true;
         }
@@ -56,12 +59,12 @@ public class SableCompat {
     }
 
     public static void tick() {
-        for (HookEntity hookEntity : hooks.keySet()) {
+        Iterator<HookEntity> iterator = hooks.keySet().iterator();
+        while (iterator.hasNext()) {
+            HookEntity hookEntity = iterator.next();
             if (hookEntity.isRemoved()) {
-                hooks.remove(hookEntity);
-                continue;
+                iterator.remove();
             }
-
         }
     }
 
