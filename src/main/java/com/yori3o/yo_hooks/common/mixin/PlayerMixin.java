@@ -106,11 +106,13 @@ public class PlayerMixin implements PlayerWithHookData {
                 vTangentialMultiplier = 1.047;
 
                 if (isClimbingUp) {
-                    if (MAX_R > 0.4) {
-                        vTangentialMultiplier = 1.017;
-                        vRadial = (PhysicVariables.climbSpeed + (agility_level * 0.041)) * PhysicVariables.climbSpeedMultiplier;
-                    } else {
-                        ClientEvents.soundCooldown++;
+                    if (!PhysicVariables.softHook) {
+                        if (MAX_R > 0.4) {
+                            vTangentialMultiplier = 1.017;
+                            vRadial = (PhysicVariables.climbSpeed + (agility_level * 0.041)) * PhysicVariables.climbSpeedMultiplier;
+                        } else {
+                            ClientEvents.soundCooldown++;
+                        }
                     }
                 }
 

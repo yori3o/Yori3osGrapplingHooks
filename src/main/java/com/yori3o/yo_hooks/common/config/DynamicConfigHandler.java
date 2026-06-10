@@ -37,18 +37,29 @@ public class DynamicConfigHandler {
         cc.load();
         PhysicVariables.updateCommonVariables(common().softHook, common().stiffness, common().climbSpeed);
         PhysicVariables.updateFunnyModeConfig(common().funnyMode);
+        ConfigManager.CONFIG.softHook = common().softHook;
+        ConfigManager.CONFIG.stiffness = common().stiffness;
+        ConfigManager.CONFIG.climbSpeed = common().climbSpeed;
+        ConfigManager.CONFIG.funnyMode = common().funnyMode;
     }
 
     public static void loadClient() {
         clc.load();
+        ConfigManager.CONFIG.holdHookTightly = client().holdHookTightly;
     }
 
     public static void loadServer() {
         sc.load();
+        ConfigManager.CONFIG.breakingFragileBlocks = server().breakingFragileBlocks;
+        ConfigManager.CONFIG.decreaseSatiety = server().decreaseSatiety;
+        ConfigManager.CONFIG.blocksBlacklist = server().blocksBlacklist;
+        ConfigManager.CONFIG.whitelistMode = server().whitelistMode;
     }
 
     public static void loadOverlap() {
         oc.load();
+        ConfigManager.CONFIG.rangeOverlap = overlap().rangeOverlap;
+        ConfigManager.CONFIG.durabilityOverlap = overlap().durabilityOverlap;
     }
 
 
@@ -82,11 +93,11 @@ public class DynamicConfigHandler {
         OverlapConfig.Values ocv = oc.get();
 
         if (ocv.durabilityOverlap.containsKey(material)) {
-            def.durability = ocv.durabilityOverlap.get(material);
+            def.durabilityOverlap = ocv.durabilityOverlap.get(material);
         }
 
         if (ocv.rangeOverlap.containsKey(material)) {
-            def.length = ocv.rangeOverlap.get(material);
+            def.lengthOverlap = ocv.rangeOverlap.get(material);
         }
     }
 

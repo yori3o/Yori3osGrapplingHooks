@@ -149,7 +149,7 @@ public class HookItem extends Item {
 
     public int getBasicLength() {
         if (lengthOverlap == null) {
-            return hookDefinition.length;
+            return hookDefinition.getLength();
         } else {
             return lengthOverlap;
         }

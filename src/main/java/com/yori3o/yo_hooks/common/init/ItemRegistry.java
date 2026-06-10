@@ -36,17 +36,21 @@ public class ItemRegistry {
 
     public static void registerHook(HookDefinition def) {
         String material = def.id;
-        int durability = def.durability;
+        int durability = def.getDurability();
         boolean fireResistant = def.fireResistant;
         String repairItemsTag = def.repairItemsTag;
 
         String hookId = material + "_grappling_hook";
         String hookHeadId = material + "_hook_head";
 
-        Item.Properties hookProperties = new Item.Properties().stacksTo(1).enchantable(def.enchantability).durability(durability)
+        Item.Properties hookProperties = new Item.Properties().stacksTo(1).enchantable(def.enchantability)
                 .setId(ResourceKey.create(BuiltInRegistries.ITEM.key(), Identifier.fromNamespaceAndPath("yo_hooks", hookId)));
         Item.Properties hookHeadProperties = new Item.Properties().stacksTo(64)
                 .setId(ResourceKey.create(BuiltInRegistries.ITEM.key(), Identifier.fromNamespaceAndPath("yo_hooks", hookHeadId)));
+
+        if (durability > 0) {
+            hookProperties = hookProperties.durability(durability);
+        }
 
         if (fireResistant) {
             hookHeadProperties = hookHeadProperties.fireResistant();
