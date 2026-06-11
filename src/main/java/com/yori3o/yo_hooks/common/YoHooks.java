@@ -3,7 +3,7 @@ package com.yori3o.yo_hooks.common;
 
 import java.nio.file.Path;
 
-import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
+import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.hookregistry.HookRegistry;
 import com.yori3o.yo_hooks.common.hookregistry.LootTableRegistry;
 import com.yori3o.yo_hooks.common.init.ComponentRegistry;
@@ -25,9 +25,9 @@ public class YoHooks {
 	public void init() {
 
         ConfigFilesMover.moveConfigFiles();
-        DynamicConfigHandler.loadCommon();
-        DynamicConfigHandler.loadServer();
-        DynamicConfigHandler.loadOverlap();
+        ConfigManager.loadCommon();
+        ConfigManager.loadServer();
+        ConfigManager.loadOverlap();
 
         ComponentRegistry.register();
         HookRegistry.loadAndRegisterHooks();

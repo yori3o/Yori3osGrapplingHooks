@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
+import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
 
 import net.minecraft.client.Minecraft;
@@ -26,7 +26,7 @@ public class MouseMixin
         cancellable = true
     )
     private void cancelHotbarScroll(long handle, double xoffset, double yoffset, CallbackInfo ci) {
-        if (DynamicConfigHandler.client().holdHookTightly) {
+        if (ConfigManager.client().holdHookTightly) {
             if (((PlayerWithHookData)(Minecraft.getInstance().player)).getHook() != null) {
                 ci.cancel();
             }

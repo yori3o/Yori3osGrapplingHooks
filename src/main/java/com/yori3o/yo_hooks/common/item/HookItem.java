@@ -1,7 +1,7 @@
 package com.yori3o.yo_hooks.common.item;
 
 
-import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
+import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.hookregistry.HookDefinition;
 import com.yori3o.yo_hooks.common.init.ComponentRegistry;
@@ -58,8 +58,8 @@ public class HookItem extends Item {
             discard(world, player, hook);
             stack.set(ComponentRegistry.HOOK_ACTIVE, false);
         } else {
-            if (!world.isClientSide() && !DynamicConfigHandler.common().funnyMode && !hookDefinition.doesNotConsumeHunger) {
-                player.causeFoodExhaustion(DynamicConfigHandler.server().decreaseSatiety / 1.5f);
+            if (!world.isClientSide() && !ConfigManager.common().funnyMode && !hookDefinition.doesNotConsumeHunger) {
+                player.causeFoodExhaustion(ConfigManager.server().decreaseSatiety / 1.5f);
             }
             fire(world, player, stack);
             stack.set(ComponentRegistry.HOOK_ACTIVE, true);
@@ -75,7 +75,7 @@ public class HookItem extends Item {
             int agilityLevel = 0;
             boolean gentleTouch = false;
 
-            if (DynamicConfigHandler.common().funnyMode) range = 79;
+            if (ConfigManager.common().funnyMode) range = 79;
             for (Entry<Holder<Enchantment>> a : stack.getEnchantments().entrySet()) {
                 if (a.getKey().getRegisteredName().equals("yo_hooks:long_reach")) {
                     range += (int)(a.getIntValue() * 3.5);

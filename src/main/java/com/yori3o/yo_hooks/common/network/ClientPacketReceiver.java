@@ -2,7 +2,7 @@ package com.yori3o.yo_hooks.common.network;
 
 
 import com.yori3o.yo_hooks.common.config.CommonConfig;
-import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
+import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.init.ItemRegistry;
 import com.yori3o.yo_hooks.common.util.LoggerUtil;
 import com.yori3o.yo_hooks.impl.PlatformNetworkHelper;
@@ -33,7 +33,7 @@ public class ClientPacketReceiver {
                     Gson gson = new Gson();
                     CommonConfig.Values values = gson.fromJson(jsonConfig, CommonConfig.Values.class);
 
-                    DynamicConfigHandler.commonConfigUpdate(values);
+                    ConfigManager.commonConfigUpdate(values);
 
                     @SuppressWarnings("unchecked")
                     Map<String, Object> hookLengths = gson.fromJson(jsonHookLengths, HashMap.class);

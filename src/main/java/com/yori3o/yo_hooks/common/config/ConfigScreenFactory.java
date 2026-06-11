@@ -9,18 +9,18 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.yori3o.yo_hooks.common.hookregistry.HookDefinition;
 import com.yori3o.yo_hooks.common.hookregistry.HookRegistry;
-import com.yori3o.yo_hooks.impl.PlatformUtil;
 
 import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.controller.FloatSliderControllerBuilder;
+import dev.isxander.yacl3.api.controller.IntegerSliderControllerBuilder;
 import dev.isxander.yacl3.api.controller.StringControllerBuilder;
 import dev.isxander.yacl3.api.controller.TickBoxControllerBuilder;
-import dev.isxander.yacl3.api.controller.CyclingListControllerBuilder;
 
 
 
@@ -28,8 +28,6 @@ public final class ConfigScreenFactory {
 
     public static Screen create(Screen parent) {
         ModConfig config = ConfigManager.CONFIG.copy();
-
-        if (!PlatformUtil.isModLoaded("yet_another_config_lib_v3")) return null;
 
         return YetAnotherConfigLib.createBuilder()
                 .title(Component.literal("Yori3o's Grappling Hooks"))
@@ -39,6 +37,9 @@ public final class ConfigScreenFactory {
 
                         .group(OptionGroup.createBuilder()
                                 .name(Component.translatable("config.yo_hooks.common"))
+                                .description(OptionDescription.createBuilder()
+                                        .text(Component.translatable("config.yo_hooks.common.desc"))
+                                        .build())
 
                                 .option(Option.<Float>createBuilder()
                                         .name(Component.translatable("config.yo_hooks.climb_speed"))
@@ -53,7 +54,10 @@ public final class ConfigScreenFactory {
                                                 value -> config.climbSpeed = value
                                         )
                                         .controller(opt ->
-                                                FloatSliderControllerBuilder.create(opt).range(0f, 1f).step(0.01f))
+                                            FloatSliderControllerBuilder.create(opt).range(0f, 1f).step(0.01f).formatValue(value ->
+                                                Component.literal(String.format(Locale.ROOT, "%.2f", value))
+                                            )
+                                        )
                                         .build())
 
                                 .option(Option.<Boolean>createBuilder()
@@ -84,7 +88,9 @@ public final class ConfigScreenFactory {
                                                 value -> config.stiffness = value
                                         )
                                         .controller(opt ->
-                                                FloatSliderControllerBuilder.create(opt).range(0.01f, 1f).step(0.01f))
+                                                FloatSliderControllerBuilder.create(opt).range(0.01f, 1f).step(0.01f).formatValue(value ->
+                                                Component.literal(String.format(Locale.ROOT, "%.2f", value))
+                                            ))
                                         .build())
 
                                 .option(Option.<Boolean>createBuilder()
@@ -226,6 +232,9 @@ public final class ConfigScreenFactory {
 
                         .group(OptionGroup.createBuilder()
                                 .name(Component.translatable("config.yo_hooks.parameters"))
+                                .description(OptionDescription.createBuilder()
+                                        .text(Component.translatable("config.yo_hooks.parameters.desc"))
+                                        .build())
 
                                 .options(createHookOptions(HookRegistry.hooks, config))
 
@@ -249,7 +258,7 @@ public final class ConfigScreenFactory {
             HookDefinition hook = entry.getValue();
 
             options.add(
-                    Option.<Float>createBuilder()
+                    Option.<Integer>createBuilder()
                             .name(Component.literal(Component.translatable("item.yo_hooks." + id + "_grappling_hook").getString() + Component.translatable("config.yo_hooks.range").getString()))
                             .description(
                                 OptionDescription.createBuilder()
@@ -257,8 +266,8 @@ public final class ConfigScreenFactory {
                                     .build()
                             )
                             .binding(
-                                    (float) hook.getLength(),
-                                    () -> config.rangeOverlap.getOrDefault(id, hook.length).floatValue(),
+                                    hook.getLength(),
+                                    () -> config.rangeOverlap.getOrDefault(id, hook.length),
                                     value -> {
                                         if (value.intValue() == hook.length) {
                                             config.rangeOverlap.remove(id);
@@ -268,18 +277,18 @@ public final class ConfigScreenFactory {
                                     }
                             )
                             .controller(opt ->
-                                    FloatSliderControllerBuilder.create(opt)
-                                            .range(1f, 99f)
-                                            .step(1f))
+                                    IntegerSliderControllerBuilder.create(opt)
+                                            .range(1, 99)
+                                            .step(1))
                             .build()
             );
 
             options.add(
-                    Option.<Float>createBuilder()
+                    Option.<Integer>createBuilder()
                             .name(Component.literal(Component.translatable("item.yo_hooks." + id + "_grappling_hook").getString() + Component.translatable("config.yo_hooks.durability").getString()))
                             .binding(
-                                    (float) hook.getDurability(),
-                                    () -> config.durabilityOverlap.getOrDefault(id, hook.durability).floatValue(),
+                                    hook.getDurability(),
+                                    () -> config.durabilityOverlap.getOrDefault(id, hook.durability),
                                     value -> {
                                         if (value.intValue() == hook.durability) {
                                             config.durabilityOverlap.remove(id);
@@ -294,9 +303,9 @@ public final class ConfigScreenFactory {
                                     .build()
                             )
                             .controller(opt ->
-                                    FloatSliderControllerBuilder.create(opt)
-                                            .range(-1f, 960f)
-                                            .step(1f))
+                                    IntegerSliderControllerBuilder.create(opt)
+                                            .range(-1, 960)
+                                            .step(1))
                             .build()
             );
         }

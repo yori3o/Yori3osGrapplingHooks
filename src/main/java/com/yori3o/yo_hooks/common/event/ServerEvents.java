@@ -2,7 +2,7 @@ package com.yori3o.yo_hooks.common.event;
 
 
 import com.yori3o.yo_hooks.common.config.CommonConfig;
-import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
+import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.init.ItemRegistry;
 import com.yori3o.yo_hooks.common.item.HookItem;
 import com.yori3o.yo_hooks.common.network.ServerSender;
@@ -25,8 +25,8 @@ public class ServerEvents {
 
 
     public static void loadConfigOnServer(MinecraftServer server) {
-        DynamicConfigHandler.loadServer();
-        DynamicConfigHandler.loadCommon();
+        ConfigManager.loadServer();
+        ConfigManager.loadCommon();
     }
 
     public static void sendConfigToNewPlayer(ServerPlayer serverPlayer) {

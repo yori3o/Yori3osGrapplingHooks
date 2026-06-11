@@ -1,7 +1,7 @@
 package com.yori3o.yo_hooks.common.entity;
 
 
-import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
+import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.item.HookItem;
 import com.yori3o.yo_hooks.common.sound.SoundRegistry;
 import com.yori3o.yo_hooks.common.init.ComponentRegistry;
@@ -224,9 +224,9 @@ public class HookEntity extends ThrowableProjectile {
             BlockPos pos = this.entityData.get(BLOCK_POS);
             BlockState bs = level.getBlockState(pos);
 
-            if (!DynamicConfigHandler.server().blocksBlacklist.isEmpty()) {
-                boolean isThisBlockBanned = (DynamicConfigHandler.server().blocksBlacklist.contains(bs.getBlock().properties().blockIdOrThrow().identifier().toString()));
-                if (DynamicConfigHandler.server().whitelistMode) isThisBlockBanned = !isThisBlockBanned;
+            if (!ConfigManager.server().blocksBlacklist.isEmpty()) {
+                boolean isThisBlockBanned = (ConfigManager.server().blocksBlacklist.contains(bs.getBlock().properties().blockIdOrThrow().identifier().toString()));
+                if (ConfigManager.server().whitelistMode) isThisBlockBanned = !isThisBlockBanned;
                 if (isThisBlockBanned) {
                     this.discard();
                     ((PlayerWithHookData) player).setHook(null);
@@ -234,7 +234,7 @@ public class HookEntity extends ThrowableProjectile {
                 }
             }
 
-            if (!DynamicConfigHandler.common().funnyMode) {
+            if (!ConfigManager.common().funnyMode) {
                 if (!player.isCreative()) {
                     ItemStack stack = player.getMainHandItem();
                     EquipmentSlot hand = EquipmentSlot.MAINHAND;
@@ -245,7 +245,7 @@ public class HookEntity extends ThrowableProjectile {
                     stack.hurtAndBreak(1, player, hand);
                 }
             }
-            if (DynamicConfigHandler.server().breakingFragileBlocks) {
+            if (ConfigManager.server().breakingFragileBlocks) {
                 if (!this.isGentleTouch()) {
                     if (bs.is(TagRegistry.FRAGILE_BLOCKS)) {
                         level.destroyBlock(pos, true);

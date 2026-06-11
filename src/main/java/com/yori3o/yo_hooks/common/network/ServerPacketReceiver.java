@@ -3,15 +3,18 @@ package com.yori3o.yo_hooks.common.network;
 
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.hookregistry.HookDefinition;
+import com.yori3o.yo_hooks.common.init.ComponentRegistry;
 import com.yori3o.yo_hooks.common.init.ItemRegistry;
+import com.yori3o.yo_hooks.common.item.HookItem;
 import com.yori3o.yo_hooks.common.sound.SoundRegistry;
-import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
+import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
 import com.yori3o.yo_hooks.impl.PlatformNetworkHelper;
 
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.gameevent.GameEvent;
 
 
@@ -45,8 +48,8 @@ public class ServerPacketReceiver {
                     // but this logic should been executed in main thread
                     context.enqueue(() -> {
 
-                        if (!DynamicConfigHandler.common().funnyMode && !hookDefinition.doesNotConsumeHunger) {
-                            player.causeFoodExhaustion(DynamicConfigHandler.server().decreaseSatiety / 3f);
+                        if (!ConfigManager.common().funnyMode && !hookDefinition.doesNotConsumeHunger) {
+                            player.causeFoodExhaustion(ConfigManager.server().decreaseSatiety / 3f);
                         }
                 
                         // Отцепляем крюк
@@ -63,6 +66,12 @@ public class ServerPacketReceiver {
                         );
 
                         player.resetFallDistance();
+
+                        ItemStack stack = player.getMainHandItem();
+                        if (!(stack.getItem() instanceof HookItem)) {
+                            stack = player.getOffhandItem();
+                        }
+                        stack.set(ComponentRegistry.HOOK_ACTIVE, false);
 
                         player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
                         
@@ -96,12 +105,12 @@ public class ServerPacketReceiver {
 
                         if (up) {
                             if (hook.getLength() > 0.4) {
-                                hook.setLength((float) (hook.getLength() - ((DynamicConfigHandler.common().climbSpeed + (agility_level * 0.041))) * PhysicVariables.climbSpeedMultiplier) );
-                                if (!player.isCreative() && !DynamicConfigHandler.common().funnyMode) player.getFoodData().addExhaustion((DynamicConfigHandler.server().decreaseSatiety / 75f) + (agility_level * 0.0065f));
+                                hook.setLength((float) (hook.getLength() - ((ConfigManager.common().climbSpeed + (agility_level * 0.041))) * PhysicVariables.climbSpeedMultiplier) );
+                                if (!player.isCreative() && !ConfigManager.common().funnyMode) player.getFoodData().addExhaustion((ConfigManager.server().decreaseSatiety / 75f) + (agility_level * 0.0065f));
                             }
                         } else {
                             if (hook.getLength() < hook.getMaxRange() - 2) {
-                                hook.setLength(hook.getLength() + (float)(DynamicConfigHandler.common().climbSpeed * 1.5));
+                                hook.setLength(hook.getLength() + (float)(ConfigManager.common().climbSpeed * 1.5));
                             } else {
                                 return;
                             }
