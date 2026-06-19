@@ -1,9 +1,12 @@
-# Yori3o&#39;s Grappling Hooks
+**Yori3o's Grappling Hooks** is a mod inspired by [Toffy's Hooks](https://github.com/FloffyToffyToolBox/Toffys_Hooks) that adds a new parkour and movement item to the game: grappling hooks.
 
-## Setup
+New grappling hooks can be added via add-ons that don't require coding. This will be detailed in the Wiki tab soon.
 
-For setup instructions, please see the [Fabric Documentation page](https://docs.fabricmc.net/develop/getting-started/creating-a-project#setting-up) related to the IDE that you are using.
+**You can suggest any ideas, report bugs, etc. in the _Issues_ tab.**
 
-## License
 
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+[Modrinth link](https://modrinth.com/mod/yori3os-grappling-hooks)
+
+[Curseforge link](https://www.curseforge.com/minecraft/mc-mods/yori3os-grappling-hooks)
+
+[Youtube link](https://www.youtube.com/watch?v=R_HgY7vfMeI)

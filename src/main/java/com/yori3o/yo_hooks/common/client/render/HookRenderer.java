@@ -71,14 +71,6 @@ public class HookRenderer extends EntityRenderer<HookEntity, HookRendererState> 
             player.blockPosition()
 
         );
-        /*player.level().getRawBrightness(player.blockPosition(), 0);
-        
-        LoggerUtil.info(String.valueOf(state.lightCoords));
-
-        .getLightCoords(
-            hookEntity.level(),
-            player.blockPosition()
-        );*/
 
         Vec3 handPos = HookRenderer.getHandPosition(player, partialTicks, this.entityRenderDispatcher);
         if (handPos == null) {
