@@ -14,6 +14,7 @@ import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
 public class HandInteractModule implements HeldInteractModule {
@@ -64,6 +65,10 @@ public class HandInteractModule implements HeldInteractModule {
             mainHandPosition = ht.getMainHandPosition().orElseThrow();
             offHandPosition = ht.getOffHandPosition().orElseThrow();
         } catch (NoSuchElementException e) {
+            return false;
+        }
+
+        if (player.getItemInHand(hand) != ItemStack.EMPTY) {
             return false;
         }
         
