@@ -2,6 +2,8 @@ package com.yori3o.yo_hooks.common;
 
 
 import com.yori3o.yo_hooks.common.client.render.HookRenderer;
+import com.yori3o.yo_hooks.common.client.vr.HandInteractModule;
+import com.yori3o.yo_hooks.common.client.vr.HandTracker;
 import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.init.EntityRegistry;
 import com.yori3o.yo_hooks.impl.PlatformEntityRendererRegistry;
@@ -12,6 +14,8 @@ import net.minecraft.client.KeyMapping.Category;
 import net.minecraft.resources.Identifier;
 
 import com.mojang.blaze3d.platform.InputConstants;
+
+import org.vivecraft.api.client.VRClientAPI;
 
 
 
@@ -52,7 +56,16 @@ public static final Category YO_HOOKS_CATEGORY = new Category(Identifier.fromNam
         PlatformKeyMappingRegistry.registerKeyMapping(CLIMB);
         PlatformKeyMappingRegistry.registerKeyMapping(CLIMB_DOWN);
         PlatformKeyMappingRegistry.registerKeyMapping(PREVENT_USE);
-        
+
+        try {
+            VRClientAPI.instance().addClientRegistrationHandler(event -> {
+                event.registerInteractModules(HandInteractModule.INSTANCE);
+                event.registerTrackers(HandTracker.INSTANCE);
+            });
+        } catch (Throwable t) {
+            // Vivecraft is not present — skip silently.
+        }
+
         ConfigManager.loadClient();
 
         PlatformEntityRendererRegistry.registerEntityRenderer(EntityRegistry.HOOK_ENTITY.get(), HookRenderer::new);

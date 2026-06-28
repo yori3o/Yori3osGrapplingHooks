@@ -4,6 +4,7 @@
 build/
 out/
 classes/
+build.gradle.bak
 
 # eclipse
 
