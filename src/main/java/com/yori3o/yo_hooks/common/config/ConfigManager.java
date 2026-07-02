@@ -6,6 +6,7 @@ import java.util.List;
 import com.yori3o.yo_hooks.common.hookregistry.HookDefinition;
 import com.yori3o.yo_hooks.common.network.ServerSender;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
+import com.yori3o.yo_hooks.impl.PlatformUtil;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
@@ -55,6 +56,7 @@ public class ConfigManager {
     public static void loadClient() {
         clc.load();
         ConfigManager.CONFIG.holdHookTightly = client().holdHookTightly;
+        if (PlatformUtil.isModLoaded("vivecraft")) VrConfig.HANDLER.load();
     }
 
     public static void loadServer() {
@@ -141,6 +143,7 @@ public class ConfigManager {
         ConfigManager.sc.save();
         ConfigManager.clc.save();
         ConfigManager.oc.save();
+        if (PlatformUtil.isModLoaded("vivecraft")) VrConfig.HANDLER.save();
 
         if (Minecraft.getInstance().isLocalServer()) {   
 

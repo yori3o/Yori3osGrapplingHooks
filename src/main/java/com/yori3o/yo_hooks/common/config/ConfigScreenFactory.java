@@ -13,8 +13,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.ImmutableList;
 import com.yori3o.yo_hooks.common.hookregistry.HookDefinition;
 import com.yori3o.yo_hooks.common.hookregistry.HookRegistry;
+import com.yori3o.yo_hooks.common.util.LoggerUtil;
+import com.yori3o.yo_hooks.impl.PlatformUtil;
 
 import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.controller.FloatSliderControllerBuilder;
@@ -28,6 +31,13 @@ public final class ConfigScreenFactory {
 
     public static Screen create(Screen parent) {
         ModConfig config = ConfigManager.CONFIG.copy();
+
+        /*ImmutableList<ConfigCategory> a = VrConfig.HANDLER.generateGui().categories();
+
+        LoggerUtil.info(a.toString());
+        LoggerUtil.info(a.getFirst().toString());
+        LoggerUtil.info(a.getFirst().groups().toString());
+        LoggerUtil.info(a.getFirst().groups().getFirst().toString());*/
 
         return YetAnotherConfigLib.createBuilder()
                 .title(Component.literal("Yori3o's Grappling Hooks"))
@@ -224,6 +234,9 @@ public final class ConfigScreenFactory {
                                         .build())
 
                                 .build())
+
+                        .groupIf(PlatformUtil.isModLoaded("vivecraft"), VrConfig.HANDLER.generateGui().categories().getFirst().groups().getLast())
+                        // НЕ трогать эту хуйню, .getFirst() для категории и .getLast() для группы
 
                         .build())
 
