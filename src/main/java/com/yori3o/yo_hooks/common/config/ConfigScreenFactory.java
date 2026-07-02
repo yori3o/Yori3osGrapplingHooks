@@ -1,8 +1,18 @@
 package com.yori3o.yo_hooks.common.config;
 
 
+import com.yori3o.yo_hooks.common.hookregistry.HookDefinition;
+import com.yori3o.yo_hooks.common.hookregistry.HookRegistry;
+import com.yori3o.yo_hooks.impl.PlatformUtil;
+
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+
+import dev.isxander.yacl3.api.*;
+import dev.isxander.yacl3.api.controller.FloatSliderControllerBuilder;
+import dev.isxander.yacl3.api.controller.IntegerSliderControllerBuilder;
+import dev.isxander.yacl3.api.controller.StringControllerBuilder;
+import dev.isxander.yacl3.api.controller.TickBoxControllerBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,31 +23,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.ImmutableList;
-import com.yori3o.yo_hooks.common.hookregistry.HookDefinition;
-import com.yori3o.yo_hooks.common.hookregistry.HookRegistry;
-import com.yori3o.yo_hooks.common.util.LoggerUtil;
-import com.yori3o.yo_hooks.impl.PlatformUtil;
-
-import dev.isxander.yacl3.api.*;
-import dev.isxander.yacl3.api.controller.FloatSliderControllerBuilder;
-import dev.isxander.yacl3.api.controller.IntegerSliderControllerBuilder;
-import dev.isxander.yacl3.api.controller.StringControllerBuilder;
-import dev.isxander.yacl3.api.controller.TickBoxControllerBuilder;
-
 
 
 public final class ConfigScreenFactory {
 
     public static Screen create(Screen parent) {
         ModConfig config = ConfigManager.CONFIG.copy();
-
-        /*ImmutableList<ConfigCategory> a = VrConfig.HANDLER.generateGui().categories();
-
-        LoggerUtil.info(a.toString());
-        LoggerUtil.info(a.getFirst().toString());
-        LoggerUtil.info(a.getFirst().groups().toString());
-        LoggerUtil.info(a.getFirst().groups().getFirst().toString());*/
 
         return YetAnotherConfigLib.createBuilder()
                 .title(Component.literal("Yori3o's Grappling Hooks"))
@@ -229,6 +220,21 @@ public final class ConfigScreenFactory {
                                                 false,
                                                 () -> config.holdHookTightly,
                                                 value -> config.holdHookTightly = value
+                                        )
+                                        .controller(TickBoxControllerBuilder::create)
+                                        .build())
+
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Component.translatable("config.yo_hooks.climb_with_mouse_wheel_scroll"))
+                                        .description(
+                                            OptionDescription.createBuilder()
+                                                .text(Component.translatable("config.yo_hooks.climb_with_mouse_wheel_scroll.desc"))
+                                                .build()
+                                        )
+                                        .binding(
+                                                false,
+                                                () -> config.climbWithMouseWheelScroll,
+                                                value -> config.climbWithMouseWheelScroll = value
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())

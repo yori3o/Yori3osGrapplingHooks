@@ -21,6 +21,10 @@ public class ClientEvents {
     private static final int SOUND_LENGTH_TICKS = 39; // ~2 sec
     private static boolean jumpKeybindWasDown = false;
 
+    public static boolean climbingUpWithMouseWheel = false;
+    public static boolean climbingDownWithMouseWheel = false;
+    public static int mouseWheelClimbingResetTimer = 0;
+
     
     public static void clientTickStart() {
         Player player = Minecraft.getInstance().player;
@@ -32,6 +36,7 @@ public class ClientEvents {
         if (hook != null) {
             hookDiscardIfInvalid(player, hookData, hook);
             clientTickKeybindsHandler(player, hookData, hook);
+            tickMouseWheelClimbing();
         }
     }
     
@@ -56,12 +61,12 @@ public class ClientEvents {
                 }
             }
             
-            if (YoHooksClient.CLIMB.isDown()) {
+            if (YoHooksClient.CLIMB.isDown() || climbingUpWithMouseWheel) {
                 int agilityLevel = hook.getAgilityLevel();
                 ClientSender.climb(true, agilityLevel, shouldPlayClimbSound());
                 hookData.setClimbing(true, agilityLevel);
             } else {
-                if (YoHooksClient.CLIMB_DOWN.isDown()) {
+                if (YoHooksClient.CLIMB_DOWN.isDown() || climbingDownWithMouseWheel) {
                     int agilityLevel = hook.getAgilityLevel();
                     ClientSender.climb(false, agilityLevel, shouldPlayClimbSound());
                     hookData.setClimbing(false, 0);
@@ -71,6 +76,9 @@ public class ClientEvents {
             }
         }
         jumpKeybindWasDown = down;
+
+        //climbingUpWithMouseWheel = false;
+        //climbingDownWithMouseWheel = false;
     }
 
     private static final boolean shouldPlayClimbSound() {
@@ -94,6 +102,16 @@ public class ClientEvents {
             }
         }
         hookData.setHook(null);
+        mouseWheelClimbingResetTimer = 0;
+    }
+
+    private static final void tickMouseWheelClimbing() {
+        if (mouseWheelClimbingResetTimer <= 0) {
+            climbingUpWithMouseWheel = false;
+            climbingDownWithMouseWheel = false;
+        } else {
+            mouseWheelClimbingResetTimer--;
+        }
     }
 
     private static final void applyJumpImpulse(Player player, int agility_level) {

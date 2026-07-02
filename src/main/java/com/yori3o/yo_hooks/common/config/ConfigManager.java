@@ -56,6 +56,7 @@ public class ConfigManager {
     public static void loadClient() {
         clc.load();
         ConfigManager.CONFIG.holdHookTightly = client().holdHookTightly;
+        ConfigManager.CONFIG.climbWithMouseWheelScroll = client().climbWithMouseWheelScroll;
         if (PlatformUtil.isModLoaded("vivecraft")) VrConfig.HANDLER.load();
     }
 
@@ -131,6 +132,7 @@ public class ConfigManager {
         scv.decreaseSatiety = config.decreaseSatiety;
         scv.breakingFragileBlocks = config.breakingFragileBlocks;
         clcv.holdHookTightly = config.holdHookTightly;
+        clcv.climbWithMouseWheelScroll = config.climbWithMouseWheelScroll;
         
         ocv.rangeOverlap = config.rangeOverlap;
         ocv.durabilityOverlap = config.durabilityOverlap;

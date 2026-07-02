@@ -17,6 +17,7 @@ public class ModConfig {
     public boolean funnyMode = false;
 
     public boolean holdHookTightly = false;
+    public boolean climbWithMouseWheelScroll = false;
     
     public Map<String, Integer> durabilityOverlap = new HashMap<>();
     public Map<String, Integer> rangeOverlap = new HashMap<>();
@@ -35,6 +36,7 @@ public class ModConfig {
         copy.funnyMode = funnyMode;
 
         copy.holdHookTightly = holdHookTightly;
+        copy.climbWithMouseWheelScroll = climbWithMouseWheelScroll;
 
         copy.durabilityOverlap = durabilityOverlap;
         copy.rangeOverlap = rangeOverlap;

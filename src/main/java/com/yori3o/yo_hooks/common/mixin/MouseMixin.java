@@ -1,16 +1,17 @@
 package com.yori3o.yo_hooks.common.mixin;
 
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import com.yori3o.yo_hooks.common.config.ConfigManager;
+import com.yori3o.yo_hooks.common.event.ClientEvents;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
+
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 
 
@@ -32,4 +33,23 @@ public class MouseMixin
             }
         }
     }
+
+
+    @Inject(at = @At("HEAD"), method = "onScroll(JDD)V")
+	private void onOnMouseScroll(long window, double horizontal, double vertical, CallbackInfo ci) {
+		if (ConfigManager.client().holdHookTightly) {
+            if (ConfigManager.client().climbWithMouseWheelScroll) {
+                if (vertical == 0) return;
+                if (vertical > 0) {
+                    ClientEvents.climbingUpWithMouseWheel = true;
+                    ClientEvents.climbingDownWithMouseWheel = false;
+                    ClientEvents.mouseWheelClimbingResetTimer += vertical * 2;
+                } else {
+                    ClientEvents.climbingUpWithMouseWheel = false;
+                    ClientEvents.climbingDownWithMouseWheel = true;
+                    ClientEvents.mouseWheelClimbingResetTimer += -vertical * 2;
+                }
+            }
+        }
+	}
 }
