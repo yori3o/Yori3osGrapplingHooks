@@ -1,6 +1,9 @@
-package com.yori3o.yo_hooks.common.config;
+package com.yori3o.yo_hooks.common.config.client;
 
 
+import com.yori3o.yo_hooks.common.config.ConfigManager;
+import com.yori3o.yo_hooks.common.config.ModConfig;
+import com.yori3o.yo_hooks.common.config.categories.VrConfig;
 import com.yori3o.yo_hooks.common.hookregistry.HookDefinition;
 import com.yori3o.yo_hooks.common.hookregistry.HookRegistry;
 import com.yori3o.yo_hooks.impl.PlatformUtil;
@@ -261,7 +264,7 @@ public final class ConfigScreenFactory {
 
                         .build())
 
-                .save(() -> ConfigManager.save(config))
+                .save(() -> ClientConfigManager.save(config))
                 .build()
                 .generateScreen(parent);
     }

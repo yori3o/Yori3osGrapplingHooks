@@ -11,6 +11,6 @@ public class ModMenuIntegration implements ModMenuApi {
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
         //return parent -> new ConfigScreen(parent);
         if (!PlatformUtil.isModLoaded("yet_another_config_lib_v3")) return null;
-        return parent -> com.yori3o.yo_hooks.common.config.ConfigScreenFactory.create(parent);
+        return parent -> com.yori3o.yo_hooks.common.config.client.ConfigScreenFactory.create(parent);
     }
 }

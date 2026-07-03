@@ -1,7 +1,8 @@
-package com.yori3o.yo_hooks.common.config;
+package com.yori3o.yo_hooks.common.config.categories;
 
 
 import com.yori3o.yo_hooks.common.YoHooks;
+import com.yori3o.yo_hooks.common.config.JsonConfigManager;
 
 import java.nio.file.Path;
 import java.util.HashMap;

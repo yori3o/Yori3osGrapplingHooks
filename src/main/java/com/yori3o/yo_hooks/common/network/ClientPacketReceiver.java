@@ -1,7 +1,7 @@
 package com.yori3o.yo_hooks.common.network;
 
 
-import com.yori3o.yo_hooks.common.config.CommonConfig;
+import com.yori3o.yo_hooks.common.config.categories.CommonConfig;
 import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.init.ItemRegistry;
 import com.yori3o.yo_hooks.common.util.LoggerUtil;
