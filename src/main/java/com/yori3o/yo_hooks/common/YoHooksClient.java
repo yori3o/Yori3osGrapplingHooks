@@ -8,6 +8,7 @@ import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.init.EntityRegistry;
 import com.yori3o.yo_hooks.impl.PlatformEntityRendererRegistry;
 import com.yori3o.yo_hooks.impl.PlatformKeyMappingRegistry;
+import com.yori3o.yo_hooks.impl.PlatformUtil;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.KeyMapping.Category;
@@ -57,13 +58,11 @@ public static final Category YO_HOOKS_CATEGORY = new Category(Identifier.fromNam
         PlatformKeyMappingRegistry.registerKeyMapping(CLIMB_DOWN);
         PlatformKeyMappingRegistry.registerKeyMapping(PREVENT_USE);
 
-        try {
+        if (PlatformUtil.isModLoaded("vivecraft")) {
             VRClientAPI.instance().addClientRegistrationHandler(event -> {
                 event.registerInteractModules(HandInteractModule.INSTANCE);
                 event.registerTrackers(HandTracker.INSTANCE);
             });
-        } catch (Throwable t) {
-            // Vivecraft is not present — skip silently.
         }
 
         ConfigManager.loadClient();

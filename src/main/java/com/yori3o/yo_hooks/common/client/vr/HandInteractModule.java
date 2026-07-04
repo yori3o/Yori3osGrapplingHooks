@@ -7,6 +7,7 @@ import org.vivecraft.api.client.HeldInteractModule;
 import org.vivecraft.api.client.VRClientAPI;
 import org.vivecraft.api.data.VRBodyPart;
 
+import com.yori3o.yo_hooks.common.config.VrConfig;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.network.ClientSender;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
@@ -22,27 +23,42 @@ public class HandInteractModule implements HeldInteractModule {
     public static final HandInteractModule INSTANCE = new HandInteractModule();
     
     private static final Identifier ID = Identifier.fromNamespaceAndPath("yo_hooks", "vr_hand");
-    private static final double DDY_THRESHOLD = 0.01;
+    private static final double DDIFF_THRESHOLD = 0.01;
     private static final int HAPTIC_COOLDOWN = 5;
 
-    private Optional<Double> dyPrev = Optional.empty();
+    private Optional<Double> diffPrev = Optional.empty();
+    private Optional<Vec3> rememberedHookHandPosition = Optional.empty();
     private int hapticCooldown = 0;
 
     private HandInteractModule() {}
 
-    private static boolean isPointInCone(Vec3 freeHandPos, Vec3 hookHandPos) {
+    private static boolean isFreeHandInCone(Vec3 freeHandPos, Vec3 hookHandPos, Vec3 coneDirection) {
         double coneAngleRadians = Math.PI / 3;
-        Vec3 d = freeHandPos.subtract(hookHandPos);
-        
-        if (d.y < 0) {
+        double halfAngleCos = Math.cos(coneAngleRadians / 2.0);
+
+        Vec3 v = freeHandPos.subtract(hookHandPos);
+        Vec3 coneDirectional = coneDirection.subtract(hookHandPos);
+
+        double dSquaredLength = coneDirectional.lengthSqr();
+        if (dSquaredLength == 0) {
             return false;
         }
-            
-        double squaredRadius = d.x * d.x + d.z * d.z;
-        double halfAngleTan = Math.tan(coneAngleRadians / 2.);
-        double maxSquaredRadius = (d.y * d.y) * (halfAngleTan * halfAngleTan);
+
+        double dotProduct = v.dot(coneDirectional);
+        if (dotProduct < 0) {
+            return false;
+        }
+
+        double vSquaredLength = v.lengthSqr();
+        double minDotProductSquared = vSquaredLength * dSquaredLength * (halfAngleCos * halfAngleCos);
         
-        return squaredRadius <= maxSquaredRadius;
+        return (dotProduct * dotProduct) >= minDotProductSquared;
+    }
+
+    private static double diff(Vec3 movablePoint, Vec3 relativePoint, Vec3 relativeDirection) {
+        Vec3 directional = relativeDirection.subtract(relativePoint);
+        Vec3 v = movablePoint.subtract(relativePoint);
+        return v.dot(directional.normalize());
     }
 
     @Override
@@ -73,33 +89,34 @@ public class HandInteractModule implements HeldInteractModule {
         }
         
         if (hand == InteractionHand.MAIN_HAND) {
-            return isPointInCone(mainHandPosition, offHandPosition);
+            Vec3 direction = ht.getHookHeadPosition().orElseGet(() -> offHandPosition.add(Vec3.Y_AXIS));
+            return isFreeHandInCone(mainHandPosition, offHandPosition, direction);
         } else {
-            return isPointInCone(offHandPosition, mainHandPosition);
+            Vec3 direction = ht.getHookHeadPosition().orElseGet(() -> mainHandPosition.add(Vec3.Y_AXIS));
+            return isFreeHandInCone(offHandPosition, mainHandPosition, direction);
         }
     }
 
     @Override
     public boolean onPress(LocalPlayer player, InteractionHand hand) {
-        double dy;
-        try {
+        if (VrConfig.HANDLER.instance().rememberHookHandPosition) {
             HandTracker ht = HandTracker.INSTANCE;
-            Vec3 mainHandPosition = ht.getMainHandPosition().orElseThrow();
-            Vec3 offHandPosition = ht.getOffHandPosition().orElseThrow();
-            if (hand == InteractionHand.MAIN_HAND) {
-                dy = mainHandPosition.y - offHandPosition.y; // free hand is main hand
-            } else {
-                dy = offHandPosition.y - mainHandPosition.y; // free hand is off hand
+            try {
+                Vec3 mainHandPosition = ht.getMainHandPosition().orElseThrow();
+                Vec3 offHandPosition = ht.getOffHandPosition().orElseThrow();
+                if (hand == InteractionHand.MAIN_HAND) {
+                    this.rememberedHookHandPosition = Optional.of(offHandPosition);
+                } else {
+                    this.rememberedHookHandPosition = Optional.of(mainHandPosition);
+                }
+            } catch (NoSuchElementException e) {
+                return false;
             }
-        } catch (NoSuchElementException e) {
-            return false;
         }
-
-        this.dyPrev = Optional.of(dy);
-
+        
         return true;
     }
-   
+
     @Override
     public boolean swingsArm() {
         return false;
@@ -111,39 +128,46 @@ public class HandInteractModule implements HeldInteractModule {
             return false;
         }
 
+        HandTracker ht = HandTracker.INSTANCE;
+        Vec3 freeHandPosition;
+        Vec3 hookHandPosition;
         VRBodyPart vrHand;
-        double dy;
         try {
-            HandTracker ht = HandTracker.INSTANCE;
             Vec3 mainHandPosition = ht.getMainHandPosition().orElseThrow();
             Vec3 offHandPosition = ht.getOffHandPosition().orElseThrow();
             if (hand == InteractionHand.MAIN_HAND) {
                 vrHand = VRBodyPart.MAIN_HAND;
-                dy = mainHandPosition.y - offHandPosition.y; // free hand is main hand
+                freeHandPosition = mainHandPosition;
+                hookHandPosition = offHandPosition;
             } else {
                 vrHand = VRBodyPart.OFF_HAND;
-                dy = offHandPosition.y - mainHandPosition.y; // free hand is off hand
+                freeHandPosition = offHandPosition;
+                hookHandPosition = mainHandPosition;
             }
         } catch (NoSuchElementException e) {
             return false;
         }
+        
+        Vec3 usedHookHandPosition = this.rememberedHookHandPosition.orElse(hookHandPosition);
+        Vec3 hookHeadDirection = ht.getHookHeadPosition().orElseGet(() -> usedHookHandPosition.add(Vec3.Y_AXIS));
+        double diff = diff(freeHandPosition, usedHookHandPosition, hookHeadDirection);
 
-        double dyPrev;
+        double diffPrev;
         try {
-            dyPrev = this.dyPrev.orElseThrow();
+            diffPrev = this.diffPrev.orElseThrow();
         } catch (NoSuchElementException e) {
-            this.dyPrev = Optional.of(dy);
+            this.diffPrev = Optional.of(diff);
             return true;
         }
 
         PlayerWithHookData hookData = (PlayerWithHookData)player;
         HookEntity hook = hookData.getHook();
         int agilityLevel = hook.getAgilityLevel();
-        double ddy = dyPrev - dy;
-        if (ddy > DDY_THRESHOLD) { // up
+        double ddiff = diffPrev - diff;
+        if (ddiff > DDIFF_THRESHOLD) { // up
             ClientSender.climb(true, agilityLevel, false); // Vibrate controller instead of playing sound
             hookData.setClimbing(true, agilityLevel);
-        } else if (ddy < -DDY_THRESHOLD) { // down
+        } else if (ddiff < -DDIFF_THRESHOLD) { // down
             ClientSender.climb(false, agilityLevel, false);
             hookData.setClimbing(false, 0);
         } else {
@@ -157,13 +181,14 @@ public class HandInteractModule implements HeldInteractModule {
         }
         this.hapticCooldown--;
 
-        this.dyPrev = Optional.of(dy);
+        this.diffPrev = Optional.of(diff);
 
         return true;
     }
 
     @Override
     public void onRelease(LocalPlayer player, InteractionHand hand) {
-        this.dyPrev = Optional.empty();
+        this.diffPrev = Optional.empty();
+        this.rememberedHookHandPosition = Optional.empty();
     }
 }
