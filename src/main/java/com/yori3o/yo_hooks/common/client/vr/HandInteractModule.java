@@ -7,7 +7,7 @@ import org.vivecraft.api.client.HeldInteractModule;
 import org.vivecraft.api.client.VRClientAPI;
 import org.vivecraft.api.data.VRBodyPart;
 
-import com.yori3o.yo_hooks.common.config.VrConfig;
+import com.yori3o.yo_hooks.common.config.categories.VrConfig;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.network.ClientSender;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
