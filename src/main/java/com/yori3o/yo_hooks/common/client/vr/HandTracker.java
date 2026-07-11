@@ -23,24 +23,32 @@ public class HandTracker implements Tracker {
 
     public static final HandTracker INSTANCE = new HandTracker();
     
-    private Optional<Vec3> mainHandPosition = Optional.empty();
-    private Optional<Vec3> offHandPosition = Optional.empty();
-    private Optional<Vec3> hookHeadPosition = Optional.empty();
-
-    private Optional<SpaceTransformer> spaceTransformer = Optional.empty();
+    private Optional<Vec3> mainHandPositionRoom = Optional.empty();
+    private Optional<Vec3> offHandPositionRoom = Optional.empty();
+    private Optional<Vec3> mainHandPositionWorld = Optional.empty();
+    private Optional<Vec3> offHandPositionWorld = Optional.empty();
+    private Optional<Vec3> hookHeadPositionWorld = Optional.empty();
 
     private HandTracker() { }
     
-    public Optional<Vec3> getMainHandPosition() {
-        return this.mainHandPosition;
+    public Optional<Vec3> getMainHandPositionRoom() {
+        return this.mainHandPositionRoom;
     }
 
-    public Optional<Vec3> getOffHandPosition() {
-        return this.offHandPosition;
+    public Optional<Vec3> getOffHandPositionRoom() {
+        return this.offHandPositionRoom;
     }
 
-    public Optional<Vec3> getHookHeadPosition() {
-        return this.hookHeadPosition;
+    public Optional<Vec3> getMainHandPositionWorld() {
+        return this.mainHandPositionWorld;
+    }
+
+    public Optional<Vec3> getOffHandPositionWorld() {
+        return this.offHandPositionWorld;
+    }
+
+    public Optional<Vec3> getHookHeadPositionWorld() {
+        return this.hookHeadPositionWorld;
     }
 
     public static boolean isHook(ItemStack itemStack) {
@@ -94,40 +102,28 @@ public class HandTracker implements Tracker {
     @Override
     public void activeProcess(LocalPlayer player) {
         VRPose vrPoseRoom = VRClientAPI.instance().getLatestRoomPose();
-        this.mainHandPosition = Optional.ofNullable(vrPoseRoom.getMainHand().getPos());
-        this.offHandPosition = Optional.ofNullable(vrPoseRoom.getOffHand().getPos());
-        
+        this.mainHandPositionRoom = Optional.ofNullable(vrPoseRoom.getMainHand().getPos());
+        this.offHandPositionRoom = Optional.ofNullable(vrPoseRoom.getOffHand().getPos());
+
         VRPose vrPoseWorld = VRClientAPI.instance().getPreTickWorldPose();
-        if (this.spaceTransformer.isEmpty()) {
-            try {
-                this.spaceTransformer = Optional.of(new SpaceTransformer(
-                    vrPoseWorld.getOffHand().getPos(), 
-                    vrPoseWorld.getMainHand().getPos(),
-                    vrPoseWorld.getHead().getPos(), 
-                    vrPoseRoom.getOffHand().getPos(),
-                    vrPoseRoom.getMainHand().getPos(), 
-                    vrPoseRoom.getHead().getPos()
-                ));
-            } catch (IllegalArgumentException e) {
-                // pass
-            }
-        }
+        this.mainHandPositionWorld = Optional.ofNullable(vrPoseWorld.getMainHand().getPos());
+        this.offHandPositionWorld = Optional.ofNullable(vrPoseWorld.getOffHand().getPos());
         
         PlayerWithHookData hookData = (PlayerWithHookData)player;
         HookEntity hook = hookData.getHook();
         if (VrConfig.HANDLER.instance().moveAlongChain && hook.isInBlock()) {
             Vec3 hookHeadPos = new Vec3(hook.getX(), hook.getY(), hook.getZ());
-            this.hookHeadPosition = this.spaceTransformer
-                .map(spaceTransformer -> spaceTransformer.gameToRoom(hookHeadPos));
+            this.hookHeadPositionWorld = Optional.of(hookHeadPos);
         }
     }
 
     @Override
     public void inactiveProcess(LocalPlayer player) {
-        this.mainHandPosition = Optional.empty();
-        this.offHandPosition = Optional.empty();
-        this.hookHeadPosition = Optional.empty();
-        this.spaceTransformer = Optional.empty();
+        this.mainHandPositionRoom = Optional.empty();
+        this.offHandPositionRoom = Optional.empty();
+        this.mainHandPositionWorld = Optional.empty();
+        this.offHandPositionWorld = Optional.empty();
+        this.hookHeadPositionWorld = Optional.empty();
     }
     
     @Override

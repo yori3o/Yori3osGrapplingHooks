@@ -170,7 +170,7 @@ public class HookRenderer extends EntityRenderer<HookEntity, HookRendererState> 
                 && !VRClientAPI.instance().isSeated()) {
             VRPose vrPose = VRClientAPI.instance().getWorldRenderPose();
             VRBodyPartData vrHand = mainHandHoldsHook ? vrPose.getMainHand() : vrPose.getOffHand();
-            Vec3 vrHandPos = vrHand.getPos();
+            Vec3 vrHandPos = vrHand.getPos(); // TODO: Нужно поэкспериментировать с подбором параметров, влияющих на начало цепи
             Vec3 vrHandDir = vrHand.getDir();
             if (vrHandPos != null && vrHandDir != null) {
                 return vrHandPos.add(vrHandDir.scale(0.3f));
