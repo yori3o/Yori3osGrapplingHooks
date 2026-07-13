@@ -11,13 +11,22 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
-	maven {
+    maven {
         name = "Terraformers"
         url = "https://maven.terraformersmc.com/"
     }
     maven {
-        name 'Xander Maven'
-        url 'https://maven.isxander.dev/releases'
+        name = 'Xander Maven'
+        url = 'https://maven.isxander.dev/releases'
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter { includeGroup "maven.modrinth" }
     }
 }
 
@@ -32,6 +41,8 @@ dependencies {
     implementation "dev.isxander:yet-another-config-lib:${project.yacl_version}"
     
 	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	compileOnlyApi  "maven.modrinth:vivecraft:${project.vivecraft_version}"
 	
 }
 

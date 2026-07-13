@@ -10,8 +10,8 @@ import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import dev.isxander.yacl3.config.v2.api.autogen.AutoGen;
 import dev.isxander.yacl3.config.v2.api.autogen.Boolean;
 import dev.isxander.yacl3.config.v2.api.autogen.CustomDescription;
+import dev.isxander.yacl3.config.v2.api.autogen.CustomName;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
-
 
 
 public class VrConfig {
@@ -27,6 +27,14 @@ public class VrConfig {
     @AutoGen(group = "vivecraft_compat", category = "client")
     @Boolean
     @SerialEntry
-    @CustomDescription("config.yo_hooks.a.desc")
-    public boolean a = false;
+    @CustomName("vr_config.yo_hooks.remember_hook_hand_position")
+    @CustomDescription("vr_config.yo_hooks.remember_hook_hand_position.desc")
+    public boolean rememberHookHandPosition = true;
+
+    @AutoGen(group = "vivecraft_compat", category = "client")
+    @Boolean
+    @SerialEntry
+    @CustomName("vr_config.yo_hooks.move_along_chain")
+    @CustomDescription("vr_config.yo_hooks.move_along_chain.desc")
+    public boolean moveAlongChain = true;
 }

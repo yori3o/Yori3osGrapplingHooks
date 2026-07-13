@@ -4,6 +4,11 @@ package com.yori3o.yo_hooks.common.client.render;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.hookregistry.HookRegistry;
 import com.yori3o.yo_hooks.common.item.HookItem;
+import com.yori3o.yo_hooks.impl.PlatformUtil;
+
+import org.vivecraft.api.client.VRClientAPI;
+import org.vivecraft.api.data.VRBodyPartData;
+import org.vivecraft.api.data.VRPose;
 
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -150,11 +155,25 @@ public class HookRenderer extends EntityRenderer<HookEntity, HookRendererState> 
     public static final Vec3 getHandPosition(Player player, float partialTicks, EntityRenderDispatcher dispatcher) {
         int armSign = player.getMainArm() == HumanoidArm.RIGHT ? 1 : -1;
         ItemStack itemStack = player.getMainHandItem();
-        if (!(itemStack.getItem() instanceof HookItem)) {
+        boolean mainHandHoldsHook = itemStack.getItem() instanceof HookItem;
+        if (!mainHandHoldsHook) {
             if (player.getOffhandItem().getItem() instanceof HookItem) {
                 armSign = -armSign;
             } else {
                 return null;
+            }
+        }
+
+        if (player == Minecraft.getInstance().player
+                && PlatformUtil.isModLoaded("vivecraft")
+                && VRClientAPI.instance().isVRActive()
+                && !VRClientAPI.instance().isSeated()) {
+            VRPose vrPose = VRClientAPI.instance().getWorldRenderPose();
+            VRBodyPartData vrHand = mainHandHoldsHook ? vrPose.getMainHand() : vrPose.getOffHand();
+            Vec3 vrHandPos = vrHand.getPos(); // TODO: Нужно поэкспериментировать с подбором параметров, влияющих на начало цепи
+            Vec3 vrHandDir = vrHand.getDir();
+            if (vrHandPos != null && vrHandDir != null) {
+                return vrHandPos.add(vrHandDir.scale(0.3f));
             }
         }
 
