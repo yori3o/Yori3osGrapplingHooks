@@ -19,10 +19,10 @@ import net.minecraft.world.level.gameevent.GameEvent;
 
 
 
-public class ServerPacketReceiver {
+public class ServerReceiver {
 
 
-    public static void registerPackets() {
+    public static void register() {
         PlatformNetworkHelper.registerC2S(
             PlayerJumpPayload.TYPE,
             PlayerJumpPayload.CODEC,

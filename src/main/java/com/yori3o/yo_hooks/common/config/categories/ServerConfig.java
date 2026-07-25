@@ -7,7 +7,7 @@ import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import dev.isxander.yacl3.config.v2.api.autogen.AutoGen;
 import dev.isxander.yacl3.config.v2.api.autogen.Boolean;
-import dev.isxander.yacl3.config.v2.api.autogen.CustomDescription;
+import dev.isxander.yacl3.config.v2.api.autogen.FloatSlider;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
 import net.minecraft.resources.Identifier;
 
@@ -30,27 +30,21 @@ public class ServerConfig {
 
     
     @AutoGen(group = TYPE, category = TYPE)
-    @Boolean
-    @SerialEntry
-    @CustomDescription("yacl3.config.yo_hooks:" + TYPE + "-config." + /**/"decreaseSatiety"/**/ + ".desc")        
+    @FloatSlider(min = 0, max = 3, step = 0.1f)
+    @SerialEntry     
     public float decreaseSatiety = 1.1f;
 
     @AutoGen(group = TYPE, category = TYPE)
     @Boolean
     @SerialEntry
-    @CustomDescription("yacl3.config.yo_hooks:" + TYPE + "-config." + /**/"breakingFragileBlocks"/**/ + ".desc")
     public boolean breakingFragileBlocks = true;
 
-    //@AutoGen(group = TYPE, category = TYPE)
-    //@Boolean
     @SerialEntry
-    //@CustomDescription("yacl3.config.yo_hooks:" + TYPE + "-config." + /**/"funnyMode"/**/ + ".desc")
     public List<String> blocksBlacklist = new LinkedList<>();
 
     @AutoGen(group = TYPE, category = TYPE)
     @Boolean
     @SerialEntry
-    @CustomDescription("yacl3.config.yo_hooks:" + TYPE + "-config." + /**/"whitelistMode"/**/ + ".desc")
     public boolean whitelistMode = false;
     
 

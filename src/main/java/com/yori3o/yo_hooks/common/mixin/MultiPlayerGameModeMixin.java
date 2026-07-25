@@ -2,9 +2,11 @@ package com.yori3o.yo_hooks.common.mixin;
 
 
 import com.yori3o.yo_hooks.common.YoHooksClient;
+import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.item.HookItem;
 
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -28,9 +30,18 @@ public abstract class MultiPlayerGameModeMixin {
 
         ItemStack stack = player.getItemInHand(hand);
 
-        if (YoHooksClient.PREVENT_USE.isDown()) {
-            if (stack.getItem() instanceof HookItem) {
-               cir.setReturnValue(InteractionResult.PASS); 
+        if (stack.getItem() instanceof HookItem) {
+            if (YoHooksClient.PREVENT_USE.isDown()) {
+                cir.setReturnValue(InteractionResult.PASS);
+            } else if (hand == InteractionHand.OFF_HAND) {
+                if (!ConfigManager.client().usingWhileHoldingFood) {
+                    ItemStack stackMainHand = player.getItemInHand(InteractionHand.MAIN_HAND);
+                    if (stackMainHand.has(DataComponents.FOOD)) {
+                        if (!player.getFoodData().needsFood()) {
+                            cir.setReturnValue(InteractionResult.PASS);
+                        }
+                    }
+                }
             }
         }
     }

@@ -95,7 +95,7 @@ public class HookEntity extends ThrowableProjectile {
         builder.define(AGILITY_LEVEL, 0);
     }
 
-    // important: hook entity ticks at intervals of 5 ticks
+    
     @Override
     public void tick() {
         super.tick();

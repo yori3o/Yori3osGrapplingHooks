@@ -4,8 +4,8 @@ package com.yori3o.yo_hooks.fabric;
 import com.yori3o.yo_hooks.common.YoHooks;
 import com.yori3o.yo_hooks.common.event.EventHandler;
 import com.yori3o.yo_hooks.common.init.EntityRegistry;
-import com.yori3o.yo_hooks.common.network.ClientPacketReceiver;
-import com.yori3o.yo_hooks.common.network.ServerPacketReceiver;
+import com.yori3o.yo_hooks.common.network.ClientReceiver;
+import com.yori3o.yo_hooks.common.network.ServerReceiver;
 import com.yori3o.yo_hooks.impl.LootInjector;
 
 import net.fabricmc.api.ModInitializer;
@@ -23,8 +23,8 @@ public class YoHooksFabric implements ModInitializer {
         (new YoHooks()).init();
 
         EntityRegistry.register();
-        ServerPacketReceiver.registerPackets();
-        ClientPacketReceiver.registerPackets();
+        ServerReceiver.register();
+        ClientReceiver.register();
         
         LootInjector.register();
 

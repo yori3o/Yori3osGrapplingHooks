@@ -15,10 +15,10 @@ import com.google.gson.Gson;
 
 
 
-public class ClientPacketReceiver {
+public class ClientReceiver {
 
 
-    public static void registerPackets() {
+    public static void register() {
         PlatformNetworkHelper.registerS2C(
             SendCommonConfigPayload.TYPE,
             SendCommonConfigPayload.CODEC,

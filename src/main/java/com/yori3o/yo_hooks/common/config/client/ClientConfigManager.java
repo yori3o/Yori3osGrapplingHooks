@@ -1,8 +1,6 @@
 package com.yori3o.yo_hooks.common.config.client;
 
 
-import java.util.List;
-
 import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.config.categories.*;
 import com.yori3o.yo_hooks.common.network.ServerSender;
@@ -13,8 +11,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
+import java.util.List;
 
 
+/**
+ * Importing _net.minecraft.client_ breaks dedicated servers, so some of the code had to be moved here.
+ */
 public class ClientConfigManager {
 
     public static void save() {

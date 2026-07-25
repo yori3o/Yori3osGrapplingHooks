@@ -39,9 +39,9 @@ public final class ConfigScreenFactory {
                         .name(Component.literal("Common"))
 
                         .group(OptionGroup.createBuilder()
-                                .name(Component.translatable("config.yo_hooks.common"))
+                                .name(Component.translatable("yacl3.config.yo_hooks:common_config.category.common.group.common"))
                                 .description(OptionDescription.createBuilder()
-                                        .text(Component.translatable("config.yo_hooks.common.desc"))
+                                        .text(Component.translatable("config.yo_hooks:common.desc"))
                                         .build())
                                 .options(commonGroup.options())
                                 .build())
@@ -51,7 +51,7 @@ public final class ConfigScreenFactory {
                         .name(Component.literal("Server"))
 
                         .group(OptionGroup.createBuilder()
-                                .name(Component.translatable("config.yo_hooks.server"))
+                                .name(Component.translatable("yacl3.config.yo_hooks:server_config.category.server.group.server"))
 
                                 .options(serverGroup.options())
 
@@ -93,9 +93,9 @@ public final class ConfigScreenFactory {
                         .name(Component.literal("Parameters"))
 
                         .group(OptionGroup.createBuilder()
-                                .name(Component.translatable("config.yo_hooks.parameters"))
+                                .name(Component.translatable("yacl3.config.yo_hooks:parameters.category.parameters.group.parameters"))
                                 .description(OptionDescription.createBuilder()
-                                        .text(Component.translatable("config.yo_hooks.parameters.desc"))
+                                        .text(Component.translatable("config.yo_hooks:parameters.desc"))
                                         .build())
 
                                 .options(createHookOptions(HookRegistry.hooks, OverlapConfig.HANDLER.instance()))
@@ -121,10 +121,10 @@ public final class ConfigScreenFactory {
 
             options.add(
                     Option.<Integer>createBuilder()
-                            .name(Component.literal(Component.translatable("item.yo_hooks." + id + "_grappling_hook").getString() + Component.translatable("config.yo_hooks.range").getString()))
+                            .name(Component.literal(Component.translatable("item.yo_hooks." + id + "_grappling_hook").getString() + Component.translatable("config.yo_hooks:range").getString()))
                             .description(
                                 OptionDescription.createBuilder()
-                                    .text(Component.translatable("config.yo_hooks.range.desc"))
+                                    .text(Component.translatable("config.yo_hooks:range.desc"))
                                     .build()
                             )
                             .binding(
@@ -147,7 +147,7 @@ public final class ConfigScreenFactory {
 
             options.add(
                     Option.<Integer>createBuilder()
-                            .name(Component.literal(Component.translatable("item.yo_hooks." + id + "_grappling_hook").getString() + Component.translatable("config.yo_hooks.durability").getString()))
+                            .name(Component.literal(Component.translatable("item.yo_hooks." + id + "_grappling_hook").getString() + Component.translatable("config.yo_hooks:durability").getString()))
                             .binding(
                                     hook.getDurability(),
                                     () -> config.durabilityOverlap.getOrDefault(id, hook.durability),
@@ -161,7 +161,7 @@ public final class ConfigScreenFactory {
                             )
                             .description(
                                 OptionDescription.createBuilder()
-                                    .text(Component.translatable("config.yo_hooks.durability.desc"))
+                                    .text(Component.translatable("config.yo_hooks:durability.desc"))
                                     .build()
                             )
                             .controller(opt ->
