@@ -11,6 +11,7 @@ import org.vivecraft.api.data.VRBodyPart;
 
 import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
+import com.yori3o.yo_hooks.common.event.ClientEvents;
 import com.yori3o.yo_hooks.common.network.ClientSender;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
 
@@ -29,8 +30,7 @@ public class HandInteractModule implements HeldInteractModule {
     private static final int HAPTIC_COOLDOWN = 5;
 
     private List<Optional<Double>> diffPrev = Arrays.asList(Optional.empty(), Optional.empty());
-    private List<Optional<Vec3>> rememberedHookHandPositionWorld = Arrays.asList(Optional.empty(), Optional.empty());
-    private List<Optional<Vec3>> rememberedHookHandPositionRoom = Arrays.asList(Optional.empty(), Optional.empty());
+    private List<Optional<Vec3>> rememberedHookHandPosition = Arrays.asList(Optional.empty(), Optional.empty());
     private int hapticCooldown[] = {0, 0};
 
     private HandInteractModule() {}
@@ -57,30 +57,10 @@ public class HandInteractModule implements HeldInteractModule {
         return (dotProduct * dotProduct) >= minDotProductSquared;
     }
 
-    private static Vec3 getDirection(Optional<Vec3> hookHeadPositionWorld, Vec3 hookHandPositionWorld) {
-        return hookHeadPositionWorld
-            .orElseGet(() -> hookHandPositionWorld.add(Vec3.Y_AXIS))
-            .subtract(hookHandPositionWorld);
-    }
-
-    private record HandPositions(
-        Vec3 freeHandPositionWorld, 
-        Vec3 hookHandPositionWorld, 
-        Vec3 freeHandPositionRoom, 
-        Vec3 hookHandPositionRoom
-    ) {}
-
-    private HandPositions getHandPositions(InteractionHand hand) throws NoSuchElementException {
-        HandTracker ht = HandTracker.INSTANCE;
-        Vec3 mainHandPositionWorld = ht.getMainHandPositionWorld().orElseThrow();
-        Vec3 offHandPositionWorld = ht.getOffHandPositionWorld().orElseThrow();
-        Vec3 mainHandPositionRoom = ht.getMainHandPositionRoom().orElseThrow();
-        Vec3 offHandPositionRoom = ht.getOffHandPositionRoom().orElseThrow();
-        if (hand == InteractionHand.MAIN_HAND) {
-            return new HandPositions(mainHandPositionWorld, offHandPositionWorld, mainHandPositionRoom, offHandPositionRoom);
-        } else {
-            return new HandPositions(offHandPositionWorld, mainHandPositionWorld, offHandPositionRoom, mainHandPositionRoom);
-        }
+    private static Vec3 getDirection(Optional<Vec3> hookHeadPosition, Vec3 hookHandPosition) {
+        return hookHeadPosition
+            .orElseGet(() -> hookHandPosition.add(Vec3.Y_AXIS))
+            .subtract(hookHandPosition);
     }
 
     @Override
@@ -99,16 +79,19 @@ public class HandInteractModule implements HeldInteractModule {
             return false;
         }
 
-        HandPositions hp;
+        HandTracker ht = HandTracker.INSTANCE;
+
+        Vec3 freeHandPosition;
+        Vec3 hookHandPosition;
         try { // this is also a check that HandTracker is active
-            hp = getHandPositions(hand);
+            freeHandPosition = ht.getFreeHandPosition().orElseThrow();
+            hookHandPosition = ht.getHookHandPosition().orElseThrow();
         } catch (NoSuchElementException e) {
             return false;
         }
         
-        HandTracker ht = HandTracker.INSTANCE;
-        Vec3 direction = getDirection(ht.getHookHeadPositionWorld(), hp.hookHandPositionWorld);
-        return isFreeHandInCone(hp.freeHandPositionRoom, hp.hookHandPositionRoom, direction);
+        Vec3 direction = getDirection(ht.getHookHeadPosition(), hookHandPosition);
+        return isFreeHandInCone(freeHandPosition, hookHandPosition, direction);
     }
 
     @Override
@@ -125,23 +108,23 @@ public class HandInteractModule implements HeldInteractModule {
     public boolean onHoldTick(LocalPlayer player, InteractionHand hand) {
         HandTracker ht = HandTracker.INSTANCE;
 
-        HandPositions hp;
+        Vec3 freeHandPosition;
+        Vec3 hookHandPosition;
         try {
-            hp = getHandPositions(hand);
+            freeHandPosition = ht.getFreeHandPosition().orElseThrow();
+            hookHandPosition = ht.getHookHandPosition().orElseThrow();
         } catch (NoSuchElementException e) {
             return false;
         }
 
-        if (ConfigManager.vr().rememberHookHandPosition && this.rememberedHookHandPositionWorld.get(hand.ordinal()).isEmpty()) {
-            this.rememberedHookHandPositionWorld.set(hand.ordinal(), Optional.of(hp.hookHandPositionWorld));
-            this.rememberedHookHandPositionRoom.set(hand.ordinal(), Optional.of(hp.hookHandPositionRoom));
+        if (ConfigManager.vr().rememberHookHandPosition && this.rememberedHookHandPosition.get(hand.ordinal()).isEmpty()) {
+            this.rememberedHookHandPosition.set(hand.ordinal(), Optional.of(hookHandPosition));
         }
         
-        Vec3 usedHookHandPositionWorld = this.rememberedHookHandPositionWorld.get(hand.ordinal()).orElse(hp.hookHandPositionWorld);
-        Vec3 usedHookHandPositionRoom = this.rememberedHookHandPositionRoom.get(hand.ordinal()).orElse(hp.hookHandPositionRoom);
-        Vec3 direction = getDirection(ht.getHookHeadPositionWorld(), usedHookHandPositionWorld);
-        double diff = hp.freeHandPositionRoom
-            .subtract(usedHookHandPositionRoom)
+        Vec3 usedHookHandPosition = this.rememberedHookHandPosition.get(hand.ordinal()).orElse(hookHandPosition);
+        Vec3 direction = getDirection(ht.getHookHeadPosition(), usedHookHandPosition);
+        double diff = freeHandPosition
+            .subtract(usedHookHandPosition)
             .dot(direction.normalize());
 
         double diffPrev;
@@ -160,10 +143,10 @@ public class HandInteractModule implements HeldInteractModule {
         int agilityLevel = hook.getAgilityLevel();
         double ddiff = diffPrev - diff;
         if (ddiff > DDIFF_THRESHOLD) { // up
-            ClientSender.climb(true, agilityLevel, false); // Vibrate controller instead of playing sound
+            ClientSender.climb(true, agilityLevel, ClientEvents.shouldPlayClimbSound());
             hookData.setClimbing(true, agilityLevel);
         } else if (ddiff < -DDIFF_THRESHOLD) { // down
-            ClientSender.climb(false, agilityLevel, false);
+            ClientSender.climb(false, agilityLevel, ClientEvents.shouldPlayClimbSound());
             hookData.setClimbing(false, 0);
         } else {
             this.hapticCooldown[hand.ordinal()] = HAPTIC_COOLDOWN;
@@ -185,8 +168,7 @@ public class HandInteractModule implements HeldInteractModule {
     @Override
     public void onRelease(LocalPlayer player, InteractionHand hand) {
         this.diffPrev.set(hand.ordinal(), Optional.empty());
-        this.rememberedHookHandPositionWorld.set(hand.ordinal(), Optional.empty());
-        this.rememberedHookHandPositionRoom.set(hand.ordinal(), Optional.empty());
+        this.rememberedHookHandPosition.set(hand.ordinal(), Optional.empty());
         this.hapticCooldown[hand.ordinal()] = 0;
     }
 }
