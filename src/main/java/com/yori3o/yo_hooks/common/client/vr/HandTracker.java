@@ -8,7 +8,7 @@ import org.vivecraft.api.data.VRPose;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.gameplay.screenhandlers.KeyboardHandler;
 
-import com.yori3o.yo_hooks.common.config.categories.VrConfig;
+import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.item.HookItem;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
@@ -112,7 +112,7 @@ public class HandTracker implements Tracker {
         
         PlayerWithHookData hookData = (PlayerWithHookData)player;
         HookEntity hook = hookData.getHook();
-        if (VrConfig.HANDLER.instance().moveAlongChain && hook.isInBlock()) {
+        if (ConfigManager.vr().moveAlongChain && hook.isInBlock()) {
             Vec3 hookHeadPos = new Vec3(hook.getX(), hook.getY(), hook.getZ());
             this.hookHeadPositionWorld = Optional.of(hookHeadPos);
         }

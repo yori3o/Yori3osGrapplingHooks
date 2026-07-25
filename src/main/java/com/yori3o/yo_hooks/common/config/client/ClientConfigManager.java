@@ -4,7 +4,6 @@ package com.yori3o.yo_hooks.common.config.client;
 import java.util.List;
 
 import com.yori3o.yo_hooks.common.config.ConfigManager;
-import com.yori3o.yo_hooks.common.config.ModConfig;
 import com.yori3o.yo_hooks.common.config.categories.*;
 import com.yori3o.yo_hooks.common.network.ServerSender;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
@@ -18,40 +17,18 @@ import net.minecraft.server.level.ServerPlayer;
 
 public class ClientConfigManager {
 
-    public static void save(ModConfig config) {
-        ConfigManager.CONFIG = config;
-        
-        ClientConfig.Values clcv = ConfigManager.client();
-        CommonConfig.Values ccv = ConfigManager.common();
-        ServerConfig.Values scv = ConfigManager.server();
-        OverlapConfig.Values ocv = ConfigManager.overlap();
+    public static void save() {
+        ClientConfig.HANDLER.save();
+        CommonConfig.HANDLER.save();
+        ServerConfig.HANDLER.save();
+        OverlapConfig.HANDLER.save();
 
-        ccv.softHook = config.softHook;
-        ccv.stiffness = config.stiffness;
-        ccv.climbSpeed = config.climbSpeed;
-        ccv.funnyMode = config.funnyMode;
-        scv.decreaseSatiety = config.decreaseSatiety;
-        scv.breakingFragileBlocks = config.breakingFragileBlocks;
-        clcv.holdHookTightly = config.holdHookTightly;
-        clcv.climbWithMouseWheelScroll = config.climbWithMouseWheelScroll;
-        
-        ocv.rangeOverlap = config.rangeOverlap;
-        ocv.durabilityOverlap = config.durabilityOverlap;
-
-        scv.blocksBlacklist = config.blocksBlacklist;
-        scv.whitelistMode = config.whitelistMode;
-        
-
-        ConfigManager.cc.save();
-        ConfigManager.sc.save();
-        ConfigManager.clc.save();
-        ConfigManager.oc.save();
         if (PlatformUtil.isModLoaded("vivecraft")) VrConfig.HANDLER.save();
 
-        if ( Minecraft.getInstance().isLocalServer()) {   
+        if (Minecraft.getInstance().isLocalServer()) {   
 
-            PhysicVariables.updateCommonVariables(config.softHook, config.stiffness, config.climbSpeed);
-            PhysicVariables.updateFunnyModeConfig(config.funnyMode);
+            PhysicVariables.updateCommonVariables(CommonConfig.HANDLER.instance().softHook, CommonConfig.HANDLER.instance().stiffness, CommonConfig.HANDLER.instance().climbSpeed);
+            PhysicVariables.updateFunnyModeConfig(CommonConfig.HANDLER.instance().funnyMode);
 
             sendCommonConfigToAllPlayersInMultiplayer();
         }
@@ -67,7 +44,7 @@ public class ClientConfigManager {
                 ServerPlayer host = server.getPlayerList().getPlayer(mc.player.getUUID());
                 for (ServerPlayer p : players) {
                     if (host != null && p.getUUID().equals(host.getUUID())) continue;
-                    ServerSender.sendCommonConfig(p, ConfigManager.cc.get(), null);
+                    ServerSender.sendCommonConfig(p, ConfigManager.common(), null);
                 }
             }
         }

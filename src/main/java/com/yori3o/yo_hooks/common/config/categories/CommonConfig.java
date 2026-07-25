@@ -2,31 +2,55 @@ package com.yori3o.yo_hooks.common.config.categories;
 
 
 import com.yori3o.yo_hooks.common.YoHooks;
-import com.yori3o.yo_hooks.common.config.JsonConfigManager;
 
-import java.nio.file.Path;
+import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
+import dev.isxander.yacl3.config.v2.api.SerialEntry;
+import dev.isxander.yacl3.config.v2.api.autogen.AutoGen;
+import dev.isxander.yacl3.config.v2.api.autogen.Boolean;
+import dev.isxander.yacl3.config.v2.api.autogen.CustomDescription;
+import dev.isxander.yacl3.config.v2.api.autogen.FloatSlider;
+import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
+import net.minecraft.resources.Identifier;
 
 
 
-public class CommonConfig extends JsonConfigManager<CommonConfig.Values> {
 
-    public static class Values {
-        public float climbSpeed = 0.115f;
+public class CommonConfig {
 
-        public boolean softHook = false;
-        public float stiffness = 0.10f;
+    private static final String TYPE = "common";
 
-        public boolean funnyMode = false;
-    }
+    public static ConfigClassHandler<CommonConfig> HANDLER = ConfigClassHandler.createBuilder(CommonConfig.class)
+            .id(Identifier.fromNamespaceAndPath("yo_hooks", TYPE + "_config"))
+            .serializer(config -> GsonConfigSerializerBuilder.create(config)
+                    .setPath(YoHooks.CONFIG_FOLDER.resolve("yo_hooks-" + TYPE + ".json"))
+                    //.setJson5(true)
+                    .build())
+            .build();
 
-    public static final Path CONFIG_PATH = YoHooks.CONFIG_FOLDER.resolve("yo_hooks-common.json");
+    @AutoGen(group = TYPE, category = TYPE)
+    @FloatSlider(min = 0, max = 1, step = 0.01f)
+    @SerialEntry
+    @CustomDescription("yacl3.config.yo_hooks:" + TYPE + "-config." + /**/"climbSpeed"/**/ + ".desc")
+    public float climbSpeed = 0.115f;
 
-    public CommonConfig() {
-        super(Values.class, CONFIG_PATH);
-    }
+    @AutoGen(group = TYPE, category = TYPE)
+    @Boolean
+    @SerialEntry
+    @CustomDescription("yacl3.config.yo_hooks:" + TYPE + "-config." + /**/"softHook"/**/ + ".desc")
+    public boolean softHook = false;
 
-    @Override
-    protected Values getDefaultConfig() {
-        return new Values();
-    }
+    @AutoGen(group = TYPE, category = TYPE)
+    @FloatSlider(min = 0.1f, max = 1, step = 0.01f)
+    @SerialEntry
+    @CustomDescription("yacl3.config.yo_hooks:" + TYPE + "-config." + /**/"stiffness"/**/ + ".desc")
+    public float stiffness = 0.10f;
+
+    @AutoGen(group = TYPE, category = TYPE)
+    @Boolean
+    @SerialEntry
+    @CustomDescription("yacl3.config.yo_hooks:" + TYPE + "-config." + /**/"funnyMode"/**/ + ".desc")
+    public boolean funnyMode = false;
+    
+
+
 }

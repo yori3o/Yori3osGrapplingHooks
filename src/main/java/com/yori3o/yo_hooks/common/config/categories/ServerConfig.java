@@ -2,33 +2,58 @@ package com.yori3o.yo_hooks.common.config.categories;
 
 
 import com.yori3o.yo_hooks.common.YoHooks;
-import com.yori3o.yo_hooks.common.config.JsonConfigManager;
 
-import java.nio.file.Path;
+import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
+import dev.isxander.yacl3.config.v2.api.SerialEntry;
+import dev.isxander.yacl3.config.v2.api.autogen.AutoGen;
+import dev.isxander.yacl3.config.v2.api.autogen.Boolean;
+import dev.isxander.yacl3.config.v2.api.autogen.CustomDescription;
+import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
+import net.minecraft.resources.Identifier;
+
 import java.util.LinkedList;
 import java.util.List;
 
 
 
-public class ServerConfig extends JsonConfigManager<ServerConfig.Values> {
+public class ServerConfig {
 
-    public static class Values {
-        public float decreaseSatiety = 1.1f;
-        public boolean breakingFragileBlocks = true;
+    private static final String TYPE = "server";
 
-        public List<String> blocksBlacklist = new LinkedList<>();
-        public boolean whitelistMode = false;
-    }
+    public static ConfigClassHandler<ServerConfig> HANDLER = ConfigClassHandler.createBuilder(ServerConfig.class)
+            .id(Identifier.fromNamespaceAndPath("yo_hooks", TYPE + "_config"))
+            .serializer(config -> GsonConfigSerializerBuilder.create(config)
+                    .setPath(YoHooks.CONFIG_FOLDER.resolve("yo_hooks-" + TYPE + ".json"))
+                    //.setJson5(true)
+                    .build())
+            .build();
 
-    public static final Path CONFIG_PATH = YoHooks.CONFIG_FOLDER.resolve("yo_hooks-server.json");
+    
+    @AutoGen(group = TYPE, category = TYPE)
+    @Boolean
+    @SerialEntry
+    @CustomDescription("yacl3.config.yo_hooks:" + TYPE + "-config." + /**/"decreaseSatiety"/**/ + ".desc")        
+    public float decreaseSatiety = 1.1f;
 
-    public ServerConfig() {
-        super(Values.class, CONFIG_PATH);
-    }
+    @AutoGen(group = TYPE, category = TYPE)
+    @Boolean
+    @SerialEntry
+    @CustomDescription("yacl3.config.yo_hooks:" + TYPE + "-config." + /**/"breakingFragileBlocks"/**/ + ".desc")
+    public boolean breakingFragileBlocks = true;
 
-    @Override
-    protected Values getDefaultConfig() {
-        return new Values();
-    }
+    //@AutoGen(group = TYPE, category = TYPE)
+    //@Boolean
+    @SerialEntry
+    //@CustomDescription("yacl3.config.yo_hooks:" + TYPE + "-config." + /**/"funnyMode"/**/ + ".desc")
+    public List<String> blocksBlacklist = new LinkedList<>();
+
+    @AutoGen(group = TYPE, category = TYPE)
+    @Boolean
+    @SerialEntry
+    @CustomDescription("yacl3.config.yo_hooks:" + TYPE + "-config." + /**/"whitelistMode"/**/ + ".desc")
+    public boolean whitelistMode = false;
+    
+
+
 
 }

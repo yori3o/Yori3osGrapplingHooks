@@ -10,31 +10,30 @@ import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import dev.isxander.yacl3.config.v2.api.autogen.AutoGen;
 import dev.isxander.yacl3.config.v2.api.autogen.Boolean;
 import dev.isxander.yacl3.config.v2.api.autogen.CustomDescription;
-import dev.isxander.yacl3.config.v2.api.autogen.CustomName;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
 
 
 public class VrConfig {
 
+    private static final String TYPE = "vr";
+
     public static ConfigClassHandler<VrConfig> HANDLER = ConfigClassHandler.createBuilder(VrConfig.class)
-            .id(Identifier.fromNamespaceAndPath("yo_hooks", "vr_config"))
+            .id(Identifier.fromNamespaceAndPath("yo_hooks", TYPE + "_config"))
             .serializer(config -> GsonConfigSerializerBuilder.create(config)
-                    .setPath(YoHooks.CONFIG_FOLDER.resolve("yo_hooks-vr.json5"))
-                    .setJson5(true)
+                    .setPath(YoHooks.CONFIG_FOLDER.resolve("yo_hooks-" + TYPE + ".json"))
+                    //.setJson5(true)
                     .build())
             .build();
     
     @AutoGen(group = "vivecraft_compat", category = "client")
     @Boolean
     @SerialEntry
-    @CustomName("vr_config.yo_hooks.remember_hook_hand_position")
-    @CustomDescription("vr_config.yo_hooks.remember_hook_hand_position.desc")
+    @CustomDescription("yacl3.config.yo_hooks:" + TYPE + "-config." + /**/"rememberHookHandPosition"/**/ + ".desc")
     public boolean rememberHookHandPosition = true;
 
     @AutoGen(group = "vivecraft_compat", category = "client")
     @Boolean
     @SerialEntry
-    @CustomName("vr_config.yo_hooks.move_along_chain")
-    @CustomDescription("vr_config.yo_hooks.move_along_chain.desc")
+    @CustomDescription("yacl3.config.yo_hooks:" + TYPE + "-config." + /**/"moveAlongChain"/**/ + ".desc")
     public boolean moveAlongChain = true;
 }

@@ -9,7 +9,7 @@ import org.vivecraft.api.client.HeldInteractModule;
 import org.vivecraft.api.client.VRClientAPI;
 import org.vivecraft.api.data.VRBodyPart;
 
-import com.yori3o.yo_hooks.common.config.categories.VrConfig;
+import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.network.ClientSender;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
@@ -132,7 +132,7 @@ public class HandInteractModule implements HeldInteractModule {
             return false;
         }
 
-        if (VrConfig.HANDLER.instance().rememberHookHandPosition && this.rememberedHookHandPositionWorld.get(hand.ordinal()).isEmpty()) {
+        if (ConfigManager.vr().rememberHookHandPosition && this.rememberedHookHandPositionWorld.get(hand.ordinal()).isEmpty()) {
             this.rememberedHookHandPositionWorld.set(hand.ordinal(), Optional.of(hp.hookHandPositionWorld));
             this.rememberedHookHandPositionRoom.set(hand.ordinal(), Optional.of(hp.hookHandPositionRoom));
         }

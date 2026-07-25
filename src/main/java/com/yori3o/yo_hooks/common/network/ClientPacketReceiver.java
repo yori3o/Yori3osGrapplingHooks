@@ -31,7 +31,7 @@ public class ClientPacketReceiver {
                     String jsonHookLengths = new String(bytesHookLengths, StandardCharsets.UTF_8);
 
                     Gson gson = new Gson();
-                    CommonConfig.Values values = gson.fromJson(jsonConfig, CommonConfig.Values.class);
+                    CommonConfig values = gson.fromJson(jsonConfig, CommonConfig.class);
 
                     ConfigManager.commonConfigUpdate(values);
 
@@ -43,7 +43,7 @@ public class ClientPacketReceiver {
                         ItemRegistry.ALL_HOOKS.get(hookId).get().setLengthServerOverlap(length);
                     }
                 } catch (Exception e) {
-                    LoggerUtil.errorWithException("Error receiving config from server: ", e);
+                    LoggerUtil.errorWithException("Error when receiving a common config from the server: ", e);
                 }
             }
         );

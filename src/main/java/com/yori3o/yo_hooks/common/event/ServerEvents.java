@@ -30,14 +30,13 @@ public class ServerEvents {
     }
 
     public static void sendConfigToNewPlayer(ServerPlayer serverPlayer) {
-        CommonConfig cc = new CommonConfig();
-        cc.load();
+        CommonConfig cc = ConfigManager.common();
 
         Map<String, Integer> hookLengths = new HashMap<>();
         for (Supplier<HookItem> hook : ItemRegistry.ALL_HOOKS.values()) {
             hookLengths.put(hook.get().hookDefinition.id, hook.get().hookDefinition.length);
         }
-        ServerSender.sendCommonConfig(serverPlayer, cc.get(), hookLengths);
+        ServerSender.sendCommonConfig(serverPlayer, cc, hookLengths);
     }
 
     public static void checkSuddenFall(Player player, DamageSource damageSource) {
