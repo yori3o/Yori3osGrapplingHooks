@@ -81,7 +81,7 @@ public class ClientEvents {
         //climbingDownWithMouseWheel = false;
     }
 
-    private static final boolean shouldPlayClimbSound() {
+    public static final boolean shouldPlayClimbSound() {
         if (soundCooldown <= 0) {
             soundCooldown = SOUND_LENGTH_TICKS;
             return true;

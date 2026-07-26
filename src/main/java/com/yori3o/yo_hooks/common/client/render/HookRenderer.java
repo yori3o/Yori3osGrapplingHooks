@@ -1,6 +1,7 @@
 package com.yori3o.yo_hooks.common.client.render;
 
 
+import com.yori3o.yo_hooks.common.client.vr.HandTracker;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.hookregistry.HookRegistry;
 import com.yori3o.yo_hooks.common.item.HookItem;
@@ -74,7 +75,12 @@ public class HookRenderer extends EntityRenderer<HookEntity, HookRendererState> 
 
         );
 
-        Vec3 handPos = HookRenderer.getHandPosition(player, partialTicks, this.entityRenderDispatcher);
+        boolean isVR = player == Minecraft.getInstance().player
+            && PlatformUtil.isModLoaded("vivecraft")
+            && VRClientAPI.instance().isVRActive()
+            && !VRClientAPI.instance().isSeated();
+
+        Vec3 handPos = HookRenderer.getHandPosition(player, partialTicks, this.entityRenderDispatcher, isVR);
         if (handPos == null) {
             state.shouldRender = false;
             return;
@@ -83,12 +89,12 @@ public class HookRenderer extends EntityRenderer<HookEntity, HookRendererState> 
         
         Vec3 hookPos = new Vec3(
             Mth.lerp(partialTicks, hookEntity.xo, hookEntity.getX()),
-            Mth.lerp(partialTicks, hookEntity.yo, hookEntity.getY()) + hookEntity.getEyeHeight(),
+            Mth.lerp(partialTicks, hookEntity.yo, hookEntity.getY()) + (isVR ? 0 : hookEntity.getEyeHeight()),
             Mth.lerp(partialTicks, hookEntity.zo, hookEntity.getZ())
         );
 
         Vec3 vectorCable = handPos.subtract(hookPos);
-        state.length = (float)(vectorCable.length() + 0.1);
+        state.length = (float)(vectorCable.length()) + (isVR ? 0 : .1f);
         Vec3 normalized = vectorCable.normalize();
         state.pitch = (float)Math.acos(normalized.y);
         state.yawAngle = (float)Math.atan2(normalized.z, normalized.x);
@@ -152,7 +158,7 @@ public class HookRenderer extends EntityRenderer<HookEntity, HookRendererState> 
     }
 
 
-    public static final Vec3 getHandPosition(Player player, float partialTicks, EntityRenderDispatcher dispatcher) {
+    public static final Vec3 getHandPosition(Player player, float partialTicks, EntityRenderDispatcher dispatcher, boolean isVR) {
         int armSign = player.getMainArm() == HumanoidArm.RIGHT ? 1 : -1;
         ItemStack itemStack = player.getMainHandItem();
         boolean mainHandHoldsHook = itemStack.getItem() instanceof HookItem;
@@ -164,16 +170,11 @@ public class HookRenderer extends EntityRenderer<HookEntity, HookRendererState> 
             }
         }
 
-        if (player == Minecraft.getInstance().player
-                && PlatformUtil.isModLoaded("vivecraft")
-                && VRClientAPI.instance().isVRActive()
-                && !VRClientAPI.instance().isSeated()) {
+        if (isVR) {
             VRPose vrPose = VRClientAPI.instance().getWorldRenderPose();
             VRBodyPartData vrHand = mainHandHoldsHook ? vrPose.getMainHand() : vrPose.getOffHand();
-            Vec3 vrHandPos = vrHand.getPos(); // TODO: Нужно поэкспериментировать с подбором параметров, влияющих на начало цепи
-            Vec3 vrHandDir = vrHand.getDir();
-            if (vrHandPos != null && vrHandDir != null) {
-                return vrHandPos.add(vrHandDir.scale(0.3f));
+            if (vrHand != null) {
+                return HandTracker.getChainStartWorld(vrHand);
             }
         }
 
