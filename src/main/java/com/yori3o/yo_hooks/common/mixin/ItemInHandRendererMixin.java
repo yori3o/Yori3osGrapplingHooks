@@ -40,6 +40,10 @@ public class ItemInHandRendererMixin {
             ItemInHandRenderer instance,
             Operation<ItemStack> original) {
 
+        if (minecraft.player == null) {
+            return original.call(instance);
+        }
+
         ItemStack oldStack = original.call(instance);
         ItemStack newStack = minecraft.player.getMainHandItem();
 
