@@ -17,6 +17,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.gameevent.GameEvent;
 
+import java.util.function.Supplier;
+
 
 
 public class ServerReceiver {
@@ -33,22 +35,20 @@ public class ServerReceiver {
                 Player player = context.getPlayer();
                 PlayerWithHookData hookDataPlayer = (PlayerWithHookData) player;
                 
-                
                 if (hookDataPlayer == null) return;
 
-                HookEntity hookEntity = hookDataPlayer.getHook();
+                context.enqueue(() -> {
+                    HookEntity hookEntity = hookDataPlayer.getHook();
 
-                if (hookEntity != null && hookEntity.isInBlock()) {
+                    if (hookEntity != null && hookEntity.isInBlock() && !hookEntity.isRemoved()) {
 
-                    // this variable should change as quickly as possible
-                    hookDataPlayer.setUsingCancelAfterJump(usingCancel);
+                        // this variable should change as quickly as possible
+                        hookDataPlayer.setUsingCancelAfterJump(usingCancel);
 
-                    HookDefinition hookDefinition = ItemRegistry.ALL_HOOKS.get(hookEntity.getHookItemMaterial()).get().hookDefinition;
-                
-                    // but this logic should been executed in main thread
-                    context.enqueue(() -> {
+                        Supplier<HookItem> hookSupplier = ItemRegistry.ALL_HOOKS.get(hookEntity.getHookItemMaterial());
+                        HookDefinition hookDefinition = hookSupplier != null ? hookSupplier.get().hookDefinition : null;
 
-                        if (!ConfigManager.common().funnyMode && !hookDefinition.doesNotConsumeHunger) {
+                        if (!ConfigManager.common().funnyMode && hookDefinition != null && !hookDefinition.doesNotConsumeHunger) {
                             player.causeFoodExhaustion(ConfigManager.server().decreaseSatiety / 3f);
                         }
                 
@@ -57,13 +57,15 @@ public class ServerReceiver {
 
                         hookDataPlayer.setHook(null);
 
-                        player.level().playSound(null,
-                                player.getX(), player.getY() + 1, player.getZ(),
-                                SoundRegistry.getBackSound(hookDefinition.id),
-                                SoundSource.PLAYERS,
-                                1.0f,
-                                1.0f
-                        );
+                        if (hookDefinition != null) {
+                            player.level().playSound(null,
+                                    player.getX(), player.getY() + 1, player.getZ(),
+                                    SoundRegistry.getBackSound(hookDefinition.id),
+                                    SoundSource.PLAYERS,
+                                    1.0f,
+                                    1.0f
+                            );
+                        }
 
                         player.resetFallDistance();
 
@@ -74,9 +76,8 @@ public class ServerReceiver {
                         stack.set(ComponentRegistry.HOOK_ACTIVE, false);
 
                         player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
-                        
-                    });
-                }
+                    }
+                });
             }
         );
 
@@ -89,19 +90,18 @@ public class ServerReceiver {
             (payload, context) -> {
 
                 boolean up = payload.up();
-                int agility_level = payload.agilityLevel();
                 boolean shouldPlaySound = payload.playSound();
 
                 Player player = context.getPlayer();
                 PlayerWithHookData hookDataPlayer = (PlayerWithHookData) player;
 
-                
                 if (hookDataPlayer == null) return;
 
-                HookEntity hook = hookDataPlayer.getHook();
+                context.enqueue(() -> {
+                    HookEntity hook = hookDataPlayer.getHook();
 
-                if (hook != null) {
-                    context.enqueue(() -> {
+                    if (hook != null && !hook.isRemoved()) {
+                        int agility_level = hook.getAgilityLevel();
 
                         if (up) {
                             if (hook.getLength() > 0.4) {
@@ -124,9 +124,8 @@ public class ServerReceiver {
                                 0.21f, 1.0f
                             );
                         }
-
-                    });
-                }
+                    }
+                });
             }
         );
     }
