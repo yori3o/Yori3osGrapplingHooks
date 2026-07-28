@@ -38,6 +38,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.UUID;
+import java.util.function.Supplier;
 import org.jetbrains.annotations.Nullable;
 
 
@@ -107,14 +108,23 @@ public class HookEntity extends ThrowableProjectile {
         if (owner == null) {
             String uuid = this.getPlayerUUID();
             if (uuid.isEmpty()) {
-                this.discard();
+                if (!level().isClientSide()) {
+                    this.discard();
+                }
                 return;
             }
-            Player player = level().getPlayerByUUID(UUID.fromString(uuid));
-            if (player != null) {
-                setOwner(player);
-                owner = player;
-            } else {
+            try {
+                Player player = level().getPlayerByUUID(UUID.fromString(uuid));
+                if (player != null) {
+                    setOwner(player);
+                    owner = player;
+                } else if (!level().isClientSide()) {
+                    return;
+                }
+            } catch (IllegalArgumentException e) {
+                if (!level().isClientSide()) {
+                    this.discard();
+                }
                 return;
             }
             
@@ -305,11 +315,11 @@ public class HookEntity extends ThrowableProjectile {
     protected void readAdditionalSaveData(ValueInput tag) {
         this.setInBlock(tag.getBooleanOr("in_block", false));
         this.setLength(tag.getFloatOr("length", 0f));
-        this.setMaxRange(tag.getInt("hook_range").get());
-        this.setHookItemMaterial(tag.getString("hook_item_material").get());
-        this.setBlockPos(new BlockPos(tag.getInt("hook_pos_x").get(), tag.getInt("hook_pos_y").get(), tag.getInt("hook_pos_z").get()));
-        this.setPlayerUUID(tag.getString("player_uuid").get());
-        this.setAgilityLevel(tag.getInt("agility_level").get());
+        this.setMaxRange(tag.getIntOr("hook_range", 0));
+        this.setHookItemMaterial(tag.getStringOr("hook_item_material", ""));
+        this.setBlockPos(new BlockPos(tag.getIntOr("hook_pos_x", 0), tag.getIntOr("hook_pos_y", -99999), tag.getIntOr("hook_pos_z", 0)));
+        this.setPlayerUUID(tag.getStringOr("player_uuid", ""));
+        this.setAgilityLevel(tag.getIntOr("agility_level", 0));
     }
 
     // --- in block flag ---
@@ -365,9 +375,9 @@ public class HookEntity extends ThrowableProjectile {
     public ItemStack getHeadItem() {
         String hookMaterial = this.entityData.get(HOOK_ITEM_MATERIAL);
         if (hookMaterial.isEmpty()) return new ItemStack(Items.DIRT);
-        Item i = ItemRegistry.HOOK_HEADS.get(hookMaterial).get();
-        if (i != null) {
-            return new ItemStack(i);
+        Supplier<Item> supplier = ItemRegistry.HOOK_HEADS.get(hookMaterial);
+        if (supplier != null && supplier.get() != null) {
+            return new ItemStack(supplier.get());
         } else {
             return new ItemStack(Items.DIRT); 
         }
