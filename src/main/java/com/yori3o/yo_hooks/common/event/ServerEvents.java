@@ -34,7 +34,7 @@ public class ServerEvents {
 
         Map<String, Integer> hookLengths = new HashMap<>();
         for (Supplier<HookItem> hook : ItemRegistry.ALL_HOOKS.values()) {
-            hookLengths.put(hook.get().hookDefinition.id, hook.get().hookDefinition.length);
+            hookLengths.put(hook.get().hookDefinition.id, hook.get().hookDefinition.getLength());
         }
         ServerSender.sendCommonConfig(serverPlayer, cc, hookLengths);
     }

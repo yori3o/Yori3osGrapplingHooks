@@ -1,6 +1,7 @@
 package com.yori3o.yo_hooks.common.item;
 
 
+import com.yori3o.yo_hooks.common.YoHooksClient;
 import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.hookregistry.HookDefinition;
@@ -118,6 +119,8 @@ public class HookItem extends Item {
                     1.0f, 1.0f
             );
             player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
+        } else {
+            YoHooksClient.JUMP.setDown(false);
         }
     }
 

@@ -37,9 +37,7 @@ public abstract class MultiPlayerGameModeMixin {
                 if (!ConfigManager.client().usingWhileHoldingFood) {
                     ItemStack stackMainHand = player.getItemInHand(InteractionHand.MAIN_HAND);
                     if (stackMainHand.has(DataComponents.FOOD)) {
-                        //if (!player.getFoodData().needsFood()) {
-                            cir.setReturnValue(InteractionResult.PASS);
-                        //}
+                        cir.setReturnValue(InteractionResult.PASS);
                     }
                 }
             }

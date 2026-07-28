@@ -50,11 +50,12 @@ public class ClientEvents {
         if (hook.isInBlock()) {
             if (down && !jumpKeybindWasDown && !YoHooksClient.PREVENT_USE.isDown()) {
 
-                boolean usingCancel = (YoHooksClient.JUMP.same(Minecraft.getInstance().options.keyUse));
+                boolean usingCancel = YoHooksClient.JUMP.same(Minecraft.getInstance().options.keyUse);
                 hookData.setUsingCancelAfterJump(usingCancel);
                 
                 ClientSender.jumpFromHook(usingCancel);
                 hookData.setHook(null);
+                mouseWheelClimbingResetTimer = 0;
 
                 if (hookData.isJumpAllowed()) {
                     applyJumpImpulse(player, hook.getAgilityLevel());

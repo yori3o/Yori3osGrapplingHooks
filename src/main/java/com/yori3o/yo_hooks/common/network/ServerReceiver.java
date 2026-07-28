@@ -96,15 +96,12 @@ public class ServerReceiver {
 
                 Player player = context.getPlayer();
                 PlayerWithHookData hookDataPlayer = (PlayerWithHookData) player;
-                
-                if (hookDataPlayer == null) return;
 
                 HookEntity hook = hookDataPlayer.getHook();
 
-                int agility_level = hook.getAgilityLevel();
-
                 if (hook != null) {
                     context.enqueue(() -> {
+                        int agility_level = hook.getAgilityLevel();
 
                         if (up) {
                             if (hook.getLength() > 0.4) {

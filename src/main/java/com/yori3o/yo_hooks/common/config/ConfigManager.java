@@ -73,7 +73,7 @@ public class ConfigManager {
         }
     }
 
-    public static void setOverlapValues(HookDefinition def) {
+    public static HookDefinition setOverlapValuesToHook(HookDefinition def) {
         String material = def.id;
         
         OverlapConfig ocv = OverlapConfig.HANDLER.instance();
@@ -85,6 +85,8 @@ public class ConfigManager {
         if (ocv.rangeOverlap.containsKey(material)) {
             def.lengthOverlap = ocv.rangeOverlap.get(material);
         }
+
+        return def;
     }
 
     public static void saveOverlap() {

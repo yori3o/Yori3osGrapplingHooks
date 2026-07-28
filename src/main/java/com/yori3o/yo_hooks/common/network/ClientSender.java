@@ -11,10 +11,8 @@ public class ClientSender {
 
     public static void jumpFromHook(boolean cancelUsing) {
         
-            
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.getConnection() == null) return;
-
 
         PlayerJumpPayload payload = new PlayerJumpPayload(
                 cancelUsing
