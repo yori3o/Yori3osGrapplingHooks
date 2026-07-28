@@ -23,7 +23,7 @@ import org.vivecraft.api.client.VRClientAPI;
 public class YoHooksClient {
     
 
-public static final Category YO_HOOKS_CATEGORY = new Category(Identifier.fromNamespaceAndPath("yo_hooks", "hook"));
+    public static final Category YO_HOOKS_CATEGORY = Category.register(Identifier.fromNamespaceAndPath("yo_hooks", "hook"));
 
     public static final KeyMapping JUMP = new KeyMapping(
         "key.yo_hooks.jump",
@@ -43,7 +43,6 @@ public static final Category YO_HOOKS_CATEGORY = new Category(Identifier.fromNam
         InputConstants.UNKNOWN.getValue(),
         YO_HOOKS_CATEGORY
     );
-
     public static final KeyMapping PREVENT_USE = new KeyMapping(
         "key.yo_hooks.prevent_use",
         InputConstants.Type.KEYSYM,
