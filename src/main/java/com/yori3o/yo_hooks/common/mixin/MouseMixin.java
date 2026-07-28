@@ -28,7 +28,7 @@ public class MouseMixin
     )
     private void cancelHotbarScroll(long handle, double xoffset, double yoffset, CallbackInfo ci) {
         if (ConfigManager.client().holdHookTightly) {
-            if (((PlayerWithHookData)(Minecraft.getInstance().player)).getHook() != null) {
+            if (Minecraft.getInstance().player != null && ((PlayerWithHookData)(Minecraft.getInstance().player)).getHook() != null) {
                 ci.cancel();
             }
         }
