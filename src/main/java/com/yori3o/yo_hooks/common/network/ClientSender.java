@@ -23,13 +23,13 @@ public class ClientSender {
         PlatformNetworkHelper.sendToServer(payload);
     }
 
-    public static void climb(boolean up, int agility_level, boolean shouldPlaySound) {
+    public static void climb(boolean up, boolean shouldPlaySound) {
     
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.getConnection() == null) return;
 
         PlayerClimbPayload payload = new PlayerClimbPayload(
-                up, agility_level, shouldPlaySound
+                up, shouldPlaySound
         );
 
         PlatformNetworkHelper.sendToServer(payload);

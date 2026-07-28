@@ -140,13 +140,12 @@ public class HandInteractModule implements HeldInteractModule {
         if (hook == null) {
             return false;
         }
-        int agilityLevel = hook.getAgilityLevel();
         double ddiff = diffPrev - diff;
         if (ddiff > DDIFF_THRESHOLD) { // up
-            ClientSender.climb(true, agilityLevel, ClientEvents.shouldPlayClimbSound());
-            hookData.setClimbing(true, agilityLevel);
+            ClientSender.climb(true, ClientEvents.shouldPlayClimbSound());
+            hookData.setClimbing(true, hook.getAgilityLevel());
         } else if (ddiff < -DDIFF_THRESHOLD) { // down
-            ClientSender.climb(false, agilityLevel, ClientEvents.shouldPlayClimbSound());
+            ClientSender.climb(false, ClientEvents.shouldPlayClimbSound());
             hookData.setClimbing(false, 0);
         } else {
             this.hapticCooldown[hand.ordinal()] = HAPTIC_COOLDOWN;

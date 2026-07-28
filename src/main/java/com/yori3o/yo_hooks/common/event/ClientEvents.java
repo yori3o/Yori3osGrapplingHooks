@@ -62,13 +62,11 @@ public class ClientEvents {
             }
             
             if (YoHooksClient.CLIMB.isDown() || climbingUpWithMouseWheel) {
-                int agilityLevel = hook.getAgilityLevel();
-                ClientSender.climb(true, agilityLevel, shouldPlayClimbSound());
-                hookData.setClimbing(true, agilityLevel);
+                ClientSender.climb(true, shouldPlayClimbSound());
+                hookData.setClimbing(true, hook.getAgilityLevel());
             } else {
                 if (YoHooksClient.CLIMB_DOWN.isDown() || climbingDownWithMouseWheel) {
-                    int agilityLevel = hook.getAgilityLevel();
-                    ClientSender.climb(false, agilityLevel, shouldPlayClimbSound());
+                    ClientSender.climb(false, shouldPlayClimbSound());
                     hookData.setClimbing(false, 0);
                 } else {
                     hookData.setClimbing(false, 0);

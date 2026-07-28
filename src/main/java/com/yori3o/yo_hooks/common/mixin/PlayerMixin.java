@@ -111,7 +111,7 @@ public class PlayerMixin implements PlayerWithHookData {
                             vTangentialMultiplier = 1.017;
                             vRadial = (PhysicVariables.climbSpeed + (agility_level * 0.041)) * PhysicVariables.climbSpeedMultiplier;
                         } else {
-                            ClientEvents.soundCooldown++;
+                            if (player.level().isClientSide()) ClientEvents.soundCooldown++;
                         }
                     }
                 }

@@ -6,7 +6,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 
-public record PlayerClimbPayload(boolean up, int agilityLevel, boolean playSound) implements CustomPacketPayload {
+public record PlayerClimbPayload(boolean up, boolean playSound) implements CustomPacketPayload {
 
     public static final Type<PlayerClimbPayload> TYPE =
             new Type<>(Identifier.fromNamespaceAndPath("yo_hooks", "climb"));
@@ -15,12 +15,10 @@ public record PlayerClimbPayload(boolean up, int agilityLevel, boolean playSound
             StreamCodec.of(
                 (buf, payload) -> {
                     buf.writeBoolean(payload.up());
-                    buf.writeInt(payload.agilityLevel());
                     buf.writeBoolean(payload.playSound());
                 },
                 buf -> new PlayerClimbPayload(
                     buf.readBoolean(),
-                    buf.readInt(),
                     buf.readBoolean()
                 )
             );

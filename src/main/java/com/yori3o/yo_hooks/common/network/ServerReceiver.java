@@ -7,6 +7,9 @@ import com.yori3o.yo_hooks.common.init.ComponentRegistry;
 import com.yori3o.yo_hooks.common.init.ItemRegistry;
 import com.yori3o.yo_hooks.common.item.HookItem;
 import com.yori3o.yo_hooks.common.sound.SoundRegistry;
+
+import java.util.function.Supplier;
+
 import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
@@ -33,7 +36,6 @@ public class ServerReceiver {
                 Player player = context.getPlayer();
                 PlayerWithHookData hookDataPlayer = (PlayerWithHookData) player;
                 
-                
                 if (hookDataPlayer == null) return;
 
                 HookEntity hookEntity = hookDataPlayer.getHook();
@@ -43,7 +45,9 @@ public class ServerReceiver {
                     // this variable should change as quickly as possible
                     hookDataPlayer.setUsingCancelAfterJump(usingCancel);
 
-                    HookDefinition hookDefinition = ItemRegistry.ALL_HOOKS.get(hookEntity.getHookItemMaterial()).get().hookDefinition;
+                    Supplier<HookItem> supplier = ItemRegistry.ALL_HOOKS.get(hookEntity.getHookItemMaterial());
+                    if (supplier == null) return;
+                    HookDefinition hookDefinition = supplier.get().hookDefinition;
                 
                     // but this logic should been executed in main thread
                     context.enqueue(() -> {
@@ -52,7 +56,6 @@ public class ServerReceiver {
                             player.causeFoodExhaustion(ConfigManager.server().decreaseSatiety / 3f);
                         }
                 
-                        // Отцепляем крюк
                         hookEntity.discard(); 
 
                         hookDataPlayer.setHook(null);
@@ -89,24 +92,26 @@ public class ServerReceiver {
             (payload, context) -> {
 
                 boolean up = payload.up();
-                int agility_level = payload.agilityLevel();
                 boolean shouldPlaySound = payload.playSound();
 
                 Player player = context.getPlayer();
                 PlayerWithHookData hookDataPlayer = (PlayerWithHookData) player;
-
                 
                 if (hookDataPlayer == null) return;
 
                 HookEntity hook = hookDataPlayer.getHook();
+
+                int agility_level = hook.getAgilityLevel();
 
                 if (hook != null) {
                     context.enqueue(() -> {
 
                         if (up) {
                             if (hook.getLength() > 0.4) {
-                                hook.setLength((float) (hook.getLength() - ((ConfigManager.common().climbSpeed + (agility_level * 0.041))) * PhysicVariables.climbSpeedMultiplier) );
-                                if (!player.isCreative() && !ConfigManager.common().funnyMode) player.getFoodData().addExhaustion((ConfigManager.server().decreaseSatiety / 75f) + (agility_level * 0.0065f));
+                                hook.setLength(
+                                    (float)(hook.getLength() - ((ConfigManager.common().climbSpeed + (agility_level * 0.041))) * PhysicVariables.climbSpeedMultiplier)
+                                );
+                                if (!ConfigManager.common().funnyMode) player.causeFoodExhaustion((ConfigManager.server().decreaseSatiety / 75f) + (agility_level * 0.0065f));
                             }
                         } else {
                             if (hook.getLength() < hook.getMaxRange() - 2) {
