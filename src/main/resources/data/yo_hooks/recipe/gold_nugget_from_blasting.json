@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 0.1,
+  "ingredient": [
+    {
+      "item": "yo_hooks:gold_grappling_hook"
+    },
+    {
+      "item": "yo_hooks:gold_hook_head"
+    }
+  ],
+  "result": {
+    "id": "minecraft:gold_nugget"
+  }
+}

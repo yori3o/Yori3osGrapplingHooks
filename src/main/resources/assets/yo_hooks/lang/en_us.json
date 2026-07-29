@@ -1,0 +1,87 @@
+{
+  "item.yo_hooks.iron_grappling_hook": "Iron Grappling Hook",
+  "item.yo_hooks.gold_grappling_hook": "Golden Grappling Hook",
+  "item.yo_hooks.diamond_grappling_hook": "Diamond Grappling Hook",
+  "item.yo_hooks.netherite_grappling_hook": "Netherite Grappling Hook",
+  "item.yo_hooks.copper_grappling_hook": "Copper Grappling Hook",
+
+  "item.yo_hooks.iron_hook_head": "Iron Hook",
+  "item.yo_hooks.gold_hook_head": "Golden Hook",
+  "item.yo_hooks.diamond_hook_head": "Diamond Hook",
+  "item.yo_hooks.netherite_hook_head": "Netherite Hook",
+  "item.yo_hooks.copper_hook_head": "Copper Hook",
+
+  "gui.yo_hooks.hooks.desc_1": "Maximum range: %d blocks",
+  "gui.yo_hooks.hooks.desc_2": "Does not consume hunger.",
+  "gui.yo_hooks.hooks.desc_3": "Does not break fragile blocks.",
+  "gui.yo_hooks.hooks.desc_4": "Increased level of agility: +%d",
+
+  "key.yo_hooks.jump": "Hook Jump",
+  "key.yo_hooks.climb": "Climb the Chain",
+  "key.yo_hooks.climb_down": "Climb Down the Chain",
+  "key.yo_hooks.prevent_use": "Prevent Item Use",
+  "category.yo_hooks": "Yori3o's Grappling Hooks",
+  "key.category.yo_hooks.hook": "Yori3o's Grappling Hooks",
+
+  "enchantment.yo_hooks.gentle_touch": "Gentle Touch",
+  "enchantment.yo_hooks.gentle_touch.desc": "The grappling hook will not break fragile blocks such as glass or dripstone.",
+  "enchantment.yo_hooks.long_reach": "Long Reach",
+  "enchantment.yo_hooks.long_reach.desc": "Increases the length of the grappling hook.",
+  "enchantment.yo_hooks.agility": "Agility",
+  "enchantment.yo_hooks.agility.desc": "Speeds up grappling hook chain climb up and boosts the jump.",
+
+  "itemGroup.yo_hooks": "Yori3o's Grappling Hooks",
+  "entity.yo_hooks.hook_entity": "Hook",
+  "sounds.yo_hooks.cast": "Grappling hook used",
+  "stat.yo_hooks.distance_traveled_on_hook_one_cm": "Distance on the Grappling Hook",
+  "advancements.yo_hooks.adventure.sudden_fall.title": "Failed Hook",
+  "advancements.yo_hooks.adventure.sudden_fall.description": "Try to cling to a fragile block and fall to your death.",
+
+
+  "yacl3.config.yo_hooks:server_config.category.server.group.server": "Server",
+  "yacl3.config.yo_hooks:client_config.category.client.group.client": "Client",
+  "yacl3.config.yo_hooks:common_config.category.common.group.common": "Common",
+  "yacl3.config.yo_hooks:parameters.category.parameters.group.parameters": "Hook Parameters",
+
+  "config.yo_hooks:common.desc": "Synced from the server. Changes are only applied if you're playing in your own world.",
+  "config.yo_hooks:parameters.desc": "Changes are only applied after a game restart! Range is synced from the server.",
+
+  "yacl3.config.yo_hooks:common_config.funnyMode": "Funny Mode",
+  "yacl3.config.yo_hooks:common_config.funnyMode.desc": "Disables fall damage, gives increased range and durability, and allows you to jump even when the hook is down — in short, everything for fun.",
+  "yacl3.config.yo_hooks:common_config.softHook": "Soft Rope",
+  "yacl3.config.yo_hooks:common_config.softHook.desc": "The hook becomes more elastic, like a spring.",
+  "yacl3.config.yo_hooks:common_config.stiffness": "Stiffness",
+  "yacl3.config.yo_hooks:common_config.stiffness.desc": "Only for soft rope mode. The higher the value, the less elastic the rope.",
+  "yacl3.config.yo_hooks:common_config.climbSpeed": "Climbing Speed",
+  "yacl3.config.yo_hooks:common_config.climbSpeed.desc": "Increase to climb up and down faster.",
+
+  "yacl3.config.yo_hooks:server_config.decreaseSatiety": "Hunger Consumption",
+  "yacl3.config.yo_hooks:server_config.decreaseSatiety.desc": "How much hunger is consumed for a hook + jump from it. Climbing the chain also consumes hunger.",
+  "yacl3.config.yo_hooks:server_config.breakingFragileBlocks": "Break Fragile Blocks",
+  "yacl3.config.yo_hooks:server_config.breakingFragileBlocks.desc": "When attaching, the hook breaks fragile blocks: glass, dripstone, bamboo, ice, hanging sand and gravel, etc. This can also be prevented with the «Soft Touch» enchantment.",
+  "config.yo_hooks:server_config.blocksBlacklist": "Block Blacklist",
+  "config.yo_hooks:server_config.blocksBlacklist.desc": "Blocks that the hook cannot attach to. Example: \"minecraft:dirt,minecraft:stone\"",
+  "yacl3.config.yo_hooks:server_config.whitelistMode": "Whitelist",
+  "yacl3.config.yo_hooks:server_config.whitelistMode.desc": "Enable this to allow the hook to latch onto only the blocks listed below, rather than ignoring them.",
+
+  "yacl3.config.yo_hooks:client_config.holdHookTightly": "Hold Hook Tightly",
+  "yacl3.config.yo_hooks:client_config.holdHookTightly.desc": "Scrolling the mouse wheel will not scroll the hotbar while you're hooked. Useful if you're worried about accidentally falling off.",
+  "yacl3.config.yo_hooks:client_config.climbWithMouseWheelScroll": "Climbing With the Mouse Wheel",
+  "yacl3.config.yo_hooks:client_config.climbWithMouseWheelScroll.desc": "Only works with \"Hold Hook Tightly\" enabled. Allows you to climb up and down by scrolling the mouse wheel.",
+  "yacl3.config.yo_hooks:client_config.usingWhileHoldingFood": "Using the Hook When a Food in Your Main Hand",
+  "yacl3.config.yo_hooks:client_config.usingWhileHoldingFood.desc": "When you have food in your main hand and the hook in your other hand, and you're full, the hook can't be used. Useful when you're eating in mid-air and don't want to accidentally fall off.",
+
+  "config.yo_hooks:range": ", range",
+  "config.yo_hooks:durability": ", durability",
+  "config.yo_hooks:range.desc": "Change the maximum range for this hook. Changes only apply after a game restart!",
+  "config.yo_hooks:durability.desc": "Change the durability for this hook. Set to -1 for infinite durability. Changes only apply after a game restart!",
+
+  "yacl3.config.yo_hooks:vr_config.category.client.group.vivecraft_compat": "VR Settings",
+  "yacl3.config.yo_hooks:vr_config.rememberHookHandPosition": "Climb the Chain Only With Your Free Hand",
+  "yacl3.config.yo_hooks:vr_config.rememberHookHandPosition.desc": "On: You can climb up/down the chain only by moving your free hand.\nOff: You can climb up/down the chain also by moving your hand with the hook.",
+  "yacl3.config.yo_hooks:vr_config.moveAlongChain": "Grab Chain in Its Direction",
+  "yacl3.config.yo_hooks:vr_config.moveAlongChain.desc": "On: Grabbing the chain and moving the hand along the chain.\nOff: Grabbing the chain and moving the hand strictly vertically.",
+
+  "modmenu.descriptionTranslation.yo_hooks": "Adds vanilla-like and physically realistic grappling hooks.",
+  "fml.menu.mods.info.description.yo_hooks": "Adds vanilla-like and physically realistic grappling hooks."
+}

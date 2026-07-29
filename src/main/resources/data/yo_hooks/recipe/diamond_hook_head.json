@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "A": {
+      "tag": "c:gems/diamond"
+    }
+  },
+  "pattern": [
+    "AA",
+    " A"
+  ],
+  "result": {
+    "count": 1,
+    "id": "yo_hooks:diamond_hook_head"
+  }
+}

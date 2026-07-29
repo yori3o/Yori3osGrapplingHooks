@@ -1,0 +1,14 @@
+{
+  "parent" : "minecraft:item/handheld",
+  "textures" : {
+    "layer0" : "yo_hooks:item/netherite_grappling_hook"
+  },
+  "overrides" : [
+    {
+      "predicate" : {
+        "yo_hooks:grappling_hook_handle" : 1
+      },
+      "model" : "yo_hooks:item/grappling_hook_handle_netherite"
+    }
+  ]
+}

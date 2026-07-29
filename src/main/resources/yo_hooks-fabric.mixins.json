@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "com.yori3o.yo_hooks.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "client": [
+    "KeyMappingMixin"
+  ],
+  "plugin": "com.yori3o.yo_hooks.mixin.YoHooksMixinPlugin",
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
