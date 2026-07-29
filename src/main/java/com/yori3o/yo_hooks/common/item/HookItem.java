@@ -1,7 +1,8 @@
 package com.yori3o.yo_hooks.common.item;
 
 
-import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
+import com.yori3o.yo_hooks.common.YoHooksClient;
+import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.hookregistry.HookDefinition;
 import com.yori3o.yo_hooks.common.sound.SoundRegistry;
@@ -37,10 +38,10 @@ public class HookItem extends Item {
     public Integer lengthOverlap;
 
     
-    public HookItem(Properties properties, TagKey<Item> repairTag, HookDefinition hookDefinition) {
+    public HookItem(Properties properties, HookDefinition hookDefinition, TagKey<Item> repairTag) {
         super(properties);
-        this.repairTag = repairTag;
         this.hookDefinition = hookDefinition;
+        this.repairTag = repairTag;
     }
 
     @Override
@@ -58,8 +59,8 @@ public class HookItem extends Item {
         if (hook != null) {
             discard(world, player, hook);
         } else {
-            if (!world.isClientSide() && !DynamicConfigHandler.common().funnyMode && !hookDefinition.doesNotConsumeHunger) {
-                player.causeFoodExhaustion(DynamicConfigHandler.server().decreaseSatiety / 1.5f);
+            if (!world.isClientSide() && !ConfigManager.common().funnyMode && !hookDefinition.doesNotConsumeHunger) {
+                player.causeFoodExhaustion(ConfigManager.server().decreaseSatiety / 1.5f);
             }
             fire(world, player, stack);
         }
@@ -74,7 +75,7 @@ public class HookItem extends Item {
             int agilityLevel = 0;
             boolean gentleTouch = false;
 
-            if (DynamicConfigHandler.common().funnyMode) range = 79;
+            if (ConfigManager.common().funnyMode) range = 79;
             for (Entry<Holder<Enchantment>> a : stack.getEnchantments().entrySet()) {
                 if (a.getKey().getRegisteredName().equals("yo_hooks:long_reach")) {
                     range += (int)(a.getIntValue() * 3.5);
@@ -117,6 +118,8 @@ public class HookItem extends Item {
                     1.0f, 1.0f
             );
             player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
+        } else {
+            YoHooksClient.JUMP.setDown(false);
         }
     }
 
@@ -146,7 +149,7 @@ public class HookItem extends Item {
 
     public int getBasicLength() {
         if (lengthOverlap == null) {
-            return hookDefinition.length;
+            return hookDefinition.getLength();
         } else {
             return lengthOverlap;
         }

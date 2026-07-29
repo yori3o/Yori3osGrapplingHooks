@@ -1,14 +1,14 @@
 package com.yori3o.yo_hooks.common.mixin;
 
 
+import com.yori3o.yo_hooks.common.entity.HookEntity;
+
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.phys.Vec3;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-
-import com.yori3o.yo_hooks.common.entity.HookEntity;
 
 
 /**

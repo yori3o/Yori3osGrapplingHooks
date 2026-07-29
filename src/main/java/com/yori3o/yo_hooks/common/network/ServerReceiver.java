@@ -4,22 +4,27 @@ package com.yori3o.yo_hooks.common.network;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.hookregistry.HookDefinition;
 import com.yori3o.yo_hooks.common.init.ItemRegistry;
+import com.yori3o.yo_hooks.common.item.HookItem;
 import com.yori3o.yo_hooks.common.sound.SoundRegistry;
-import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
+
+import java.util.function.Supplier;
+
+import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
 import com.yori3o.yo_hooks.impl.PlatformNetworkHelper;
 
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.gameevent.GameEvent;
 
 
 
-public class ServerPacketReceiver {
+public class ServerReceiver {
 
 
-    public static void registerPackets() {
+    public static void register() {
         PlatformNetworkHelper.registerC2S(
             PlayerJumpPayload.TYPE,
             PlayerJumpPayload.CODEC,
@@ -30,7 +35,6 @@ public class ServerPacketReceiver {
                 Player player = context.getPlayer();
                 PlayerWithHookData hookDataPlayer = (PlayerWithHookData) player;
                 
-                
                 if (hookDataPlayer == null) return;
 
                 HookEntity hookEntity = hookDataPlayer.getHook();
@@ -40,16 +44,17 @@ public class ServerPacketReceiver {
                     // this variable should change as quickly as possible
                     hookDataPlayer.setUsingCancelAfterJump(usingCancel);
 
-                    HookDefinition hookDefinition = ItemRegistry.ALL_HOOKS.get(hookEntity.getHookItemMaterial()).get().hookDefinition;
+                    Supplier<HookItem> supplier = ItemRegistry.ALL_HOOKS.get(hookEntity.getHookItemMaterial());
+                    if (supplier == null) return;
+                    HookDefinition hookDefinition = supplier.get().hookDefinition;
                 
                     // but this logic should been executed in main thread
                     context.enqueue(() -> {
 
-                        if (!DynamicConfigHandler.common().funnyMode && !hookDefinition.doesNotConsumeHunger) {
-                            player.causeFoodExhaustion(DynamicConfigHandler.server().decreaseSatiety / 3f);
+                        if (!ConfigManager.common().funnyMode && !hookDefinition.doesNotConsumeHunger) {
+                            player.causeFoodExhaustion(ConfigManager.server().decreaseSatiety / 3f);
                         }
                 
-                        // Отцепляем крюк
                         hookEntity.discard(); 
 
                         hookDataPlayer.setHook(null);
@@ -63,6 +68,11 @@ public class ServerPacketReceiver {
                         );
 
                         player.resetFallDistance();
+
+                        ItemStack stack = player.getMainHandItem();
+                        if (!(stack.getItem() instanceof HookItem)) {
+                            stack = player.getOffhandItem();
+                        }
 
                         player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
                         
@@ -80,28 +90,27 @@ public class ServerPacketReceiver {
             (payload, context) -> {
 
                 boolean up = payload.up();
-                int agility_level = payload.agilityLevel();
                 boolean shouldPlaySound = payload.playSound();
 
                 Player player = context.getPlayer();
                 PlayerWithHookData hookDataPlayer = (PlayerWithHookData) player;
 
-                
-                if (hookDataPlayer == null) return;
-
                 HookEntity hook = hookDataPlayer.getHook();
 
                 if (hook != null) {
                     context.enqueue(() -> {
+                        int agility_level = hook.getAgilityLevel();
 
                         if (up) {
                             if (hook.getLength() > 0.4) {
-                                hook.setLength((float) (hook.getLength() - ((DynamicConfigHandler.common().climbSpeed + (agility_level * 0.041))) * PhysicVariables.climbSpeedMultiplier) );
-                                if (!player.isCreative() && !DynamicConfigHandler.common().funnyMode) player.getFoodData().addExhaustion((DynamicConfigHandler.server().decreaseSatiety / 75f) + (agility_level * 0.0065f));
+                                hook.setLength(
+                                    (float)(hook.getLength() - ((ConfigManager.common().climbSpeed + (agility_level * 0.041))) * PhysicVariables.climbSpeedMultiplier)
+                                );
+                                if (!ConfigManager.common().funnyMode) player.causeFoodExhaustion((ConfigManager.server().decreaseSatiety / 75f) + (agility_level * 0.0065f));
                             }
                         } else {
                             if (hook.getLength() < hook.getMaxRange() - 2) {
-                                hook.setLength(hook.getLength() + (float)(DynamicConfigHandler.common().climbSpeed * 1.5));
+                                hook.setLength(hook.getLength() + (float)(ConfigManager.common().climbSpeed * 1.5));
                             } else {
                                 return;
                             }

@@ -1,8 +1,8 @@
 package com.yori3o.yo_hooks.common.network;
 
 
-import com.yori3o.yo_hooks.common.config.CommonConfig;
-import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
+import com.yori3o.yo_hooks.common.config.categories.CommonConfig;
+import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.init.ItemRegistry;
 import com.yori3o.yo_hooks.common.util.LoggerUtil;
 import com.yori3o.yo_hooks.impl.PlatformNetworkHelper;
@@ -15,10 +15,10 @@ import com.google.gson.Gson;
 
 
 
-public class ClientPacketReceiver {
+public class ClientReceiver {
 
 
-    public static void registerPackets() {
+    public static void register() {
         PlatformNetworkHelper.registerS2C(
             SendCommonConfigPayload.TYPE,
             SendCommonConfigPayload.CODEC,
@@ -31,9 +31,9 @@ public class ClientPacketReceiver {
                     String jsonHookLengths = new String(bytesHookLengths, StandardCharsets.UTF_8);
 
                     Gson gson = new Gson();
-                    CommonConfig.Values values = gson.fromJson(jsonConfig, CommonConfig.Values.class);
+                    CommonConfig values = gson.fromJson(jsonConfig, CommonConfig.class);
 
-                    DynamicConfigHandler.commonConfigUpdate(values);
+                    ConfigManager.commonConfigUpdate(values);
 
                     @SuppressWarnings("unchecked")
                     Map<String, Object> hookLengths = gson.fromJson(jsonHookLengths, HashMap.class);
@@ -43,7 +43,7 @@ public class ClientPacketReceiver {
                         ItemRegistry.ALL_HOOKS.get(hookId).get().setLengthServerOverlap(length);
                     }
                 } catch (Exception e) {
-                    LoggerUtil.errorWithException("Error receiving config from server: ", e);
+                    LoggerUtil.errorWithException("Error when receiving a common config from the server: ", e);
                 }
             }
         );

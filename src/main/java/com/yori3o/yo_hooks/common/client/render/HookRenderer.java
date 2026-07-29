@@ -1,20 +1,25 @@
 package com.yori3o.yo_hooks.common.client.render;
 
 
-import com.yori3o.yo_hooks.common.compat.Compats;
-import com.yori3o.yo_hooks.common.compat.sable.SableCompat;
+import com.yori3o.yo_hooks.common.client.vr.HandTracker;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.hookregistry.HookRegistry;
 import com.yori3o.yo_hooks.common.item.HookItem;
+import com.yori3o.yo_hooks.impl.PlatformUtil;
+import com.yori3o.yo_hooks.common.compat.Compats;
+import com.yori3o.yo_hooks.common.compat.sable.SableCompat;
 
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import org.joml.Quaterniond;
+import org.joml.Quaternionf;
+import org.joml.Vector3d;
+import org.vivecraft.api.client.VRClientAPI;
+import org.vivecraft.api.data.VRBodyPartData;
+import org.vivecraft.api.data.VRPose;
+
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -22,12 +27,11 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.util.Mth;
-
-import org.joml.Quaterniond;
-import org.joml.Quaternionf;
-import org.joml.Vector3d;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -36,6 +40,7 @@ import com.mojang.math.Axis;
 
 public class HookRenderer extends EntityRenderer<HookEntity> {
     
+
     private final ItemRenderer itemRenderer;
 
 
@@ -44,19 +49,28 @@ public class HookRenderer extends EntityRenderer<HookEntity> {
         this.itemRenderer = context.getItemRenderer();
     }
 
+
     @Override
     public void render(HookEntity hookEntity, float yaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
         Player player = hookEntity.getPlayerOwner(); 
         
         if (player == null) return;
 
-        Vec3 handPos = getHandPosition(player, partialTicks, this.entityRenderDispatcher);
+        boolean isVR = player == Minecraft.getInstance().player
+            && PlatformUtil.isModLoaded("vivecraft")
+            && VRClientAPI.instance().isVRActive()
+            && !VRClientAPI.instance().isSeated();
 
+        Vec3 handPos = HookRenderer.getHandPosition(player, partialTicks, this.entityRenderDispatcher, isVR);
         if (handPos == null) {
             return;
         }
-
-        Vec3 hookPos = hookEntity.getPosition(partialTicks).add(0.0D, 0.25D, 0.0D);
+        
+        Vec3 hookPos = new Vec3(
+            Mth.lerp(partialTicks, hookEntity.xo, hookEntity.getX()),
+            Mth.lerp(partialTicks, hookEntity.yo, hookEntity.getY()) + (isVR ? 0 : hookEntity.getEyeHeight()),
+            Mth.lerp(partialTicks, hookEntity.zo, hookEntity.getZ())
+        );
         if (Compats.isSableLoaded) {
             hookPos = SableCompat.getGlobalPositionOfHookEntity(hookPos, hookEntity);
         }
@@ -66,13 +80,13 @@ public class HookRenderer extends EntityRenderer<HookEntity> {
 
         Vec3 vectorCable = handPos.subtract(hookPos);
         if (sableOffset != null) vectorCable = rotateVec(vectorCable, sableOffset);
-        float length = (float)(vectorCable.length());
-        vectorCable = vectorCable.normalize();
-        float pitch = (float)Math.acos(vectorCable.y);
-        float yawAngle = (float)Math.atan2(vectorCable.z, vectorCable.x);
+        float length = (float)(vectorCable.length()) + (isVR ? 0 : .1f);
+        Vec3 normalized = vectorCable.normalize();
+        float pitch = (float)Math.acos(normalized.y);
+        float yawAngle = (float)Math.atan2(normalized.z, normalized.x);
 
         poseStack.pushPose();
-
+        
         if (sableOffset != null) poseStack.mulPose(new Quaternionf(sableOffset));
 
         poseStack.mulPose(Axis.YP.rotationDegrees((1.5707964f - yawAngle) * Mth.RAD_TO_DEG));
@@ -81,6 +95,7 @@ public class HookRenderer extends EntityRenderer<HookEntity> {
         poseStack.pushPose();
         poseStack.mulPose(Axis.ZP.rotationDegrees(135.0f));
         poseStack.translate(-0.07f, -0.055f, 0f);
+
 
         ItemStack hookStack = hookEntity.getHeadItem();
 
@@ -111,7 +126,6 @@ public class HookRenderer extends EntityRenderer<HookEntity> {
         );
         PoseStack.Pose entry = poseStack.last();
 
-
         vertex(vertexConsumer, entry, -0.1f, length, 0, 0.5f, ropeAB, packedLight);
         vertex(vertexConsumer, entry, -0.1f, 0,0, 0.5f, -1.0f, packedLight);
         vertex(vertexConsumer, entry, 0.1f, 0, 0, 0, -1.0f, packedLight);
@@ -126,14 +140,7 @@ public class HookRenderer extends EntityRenderer<HookEntity> {
         super.render(hookEntity, yaw, partialTicks, poseStack, bufferSource, packedLight);
     }
 
-    public static Vec3 rotateVec(Vec3 v, Quaterniond q) {
-        Vector3d vec = new Vector3d(v.x, v.y, v.z);
-        vec.rotate(q);
-        return new Vec3(vec.x, vec.y, vec.z);
-    }
 
-
-    
     private void vertex(VertexConsumer vertexConsumer, PoseStack.Pose matrix, float x, float y, float z, float u, float v, int packedLight) {
         vertexConsumer.addVertex(matrix.pose(), x, y, z)
             .setColor(255, 255, 255, 255)
@@ -143,17 +150,29 @@ public class HookRenderer extends EntityRenderer<HookEntity> {
             .setNormal(matrix, 0.0f, 1.0f, 0.0f);
     }
 
+    public static Vec3 rotateVec(Vec3 v, Quaterniond q) {
+        Vector3d vec = new Vector3d(v.x, v.y, v.z);
+        vec.rotate(q);
+        return new Vec3(vec.x, vec.y, vec.z);
+    }
 
-
-
-    public static final Vec3 getHandPosition(Player player, float partialTicks, EntityRenderDispatcher dispatcher) {
+    public static final Vec3 getHandPosition(Player player, float partialTicks, EntityRenderDispatcher dispatcher, boolean isVR) {
         int armSign = player.getMainArm() == HumanoidArm.RIGHT ? 1 : -1;
         ItemStack itemStack = player.getMainHandItem();
-        if (!(itemStack.getItem() instanceof HookItem)) {
+        boolean mainHandHoldsHook = itemStack.getItem() instanceof HookItem;
+        if (!mainHandHoldsHook) {
             if (player.getOffhandItem().getItem() instanceof HookItem) {
                 armSign = -armSign;
             } else {
                 return null;
+            }
+        }
+
+        if (isVR) {
+            VRPose vrPose = VRClientAPI.instance().getWorldRenderPose();
+            VRBodyPartData vrHand = mainHandHoldsHook ? vrPose.getMainHand() : vrPose.getOffHand();
+            if (vrHand != null) {
+                return HandTracker.getChainStartWorld(vrHand);
             }
         }
 

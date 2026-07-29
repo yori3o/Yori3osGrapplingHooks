@@ -18,6 +18,9 @@ public class HookDefinition {
     public boolean doesNotBreakFragileBlocks;
     public int defaultAgilityLevel;
 
+    public Integer durabilityOverlap = null;
+    public Integer lengthOverlap = null;
+
 
     public HookDefinition(String id) {
         this.id = id;
@@ -28,6 +31,22 @@ public class HookDefinition {
         if (length == null) length = 20;
 
         if (repairItemsTag == null) repairItemsTag = "";
+    }
+
+    public int getLength() {
+        if (lengthOverlap == null) {
+            return length;
+        } else {
+            return lengthOverlap;
+        }
+    }
+
+    public int getDurability() {
+        if (durabilityOverlap == null) {
+            return durability;
+        } else {
+            return durabilityOverlap;
+        }
     }
 
 }

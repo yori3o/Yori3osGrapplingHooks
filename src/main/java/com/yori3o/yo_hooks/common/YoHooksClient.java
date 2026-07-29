@@ -1,19 +1,36 @@
 package com.yori3o.yo_hooks.common;
 
 
-import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
+import com.yori3o.yo_hooks.common.client.render.HookRenderer;
+import com.yori3o.yo_hooks.common.client.vr.HandInteractModule;
+import com.yori3o.yo_hooks.common.client.vr.HandTracker;
+import com.yori3o.yo_hooks.common.config.ConfigManager;
+import com.yori3o.yo_hooks.common.entity.HookEntity;
+import com.yori3o.yo_hooks.common.init.EntityRegistry;
+import com.yori3o.yo_hooks.common.init.ItemRegistry;
+import com.yori3o.yo_hooks.common.item.HookItem;
+import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
 import com.yori3o.yo_hooks.impl.PlatformKeyMappingRegistry;
+import com.yori3o.yo_hooks.impl.PlatformUtil;
 
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import com.mojang.blaze3d.platform.InputConstants;
+
+import java.util.function.Supplier;
+
+import org.vivecraft.api.client.VRClientAPI;
 
 
 
 public class YoHooksClient {
     
 
-public static final KeyMapping JUMP = new KeyMapping(
+    public static final KeyMapping JUMP = new KeyMapping(
         "key.yo_hooks.jump",
         InputConstants.Type.KEYSYM,
         InputConstants.KEY_SPACE,
@@ -44,9 +61,15 @@ public static final KeyMapping JUMP = new KeyMapping(
         PlatformKeyMappingRegistry.registerKeyMapping(CLIMB);
         PlatformKeyMappingRegistry.registerKeyMapping(CLIMB_DOWN);
         PlatformKeyMappingRegistry.registerKeyMapping(PREVENT_USE);
-        
-        DynamicConfigHandler.loadClient();
 
+        if (PlatformUtil.isModLoaded("vivecraft")) {
+            VRClientAPI.instance().addClientRegistrationHandler(event -> {
+                event.registerInteractModules(HandInteractModule.INSTANCE);
+                event.registerTrackers(HandTracker.INSTANCE);
+            });
+        }
+
+        ConfigManager.loadClient();
     }
     
 }

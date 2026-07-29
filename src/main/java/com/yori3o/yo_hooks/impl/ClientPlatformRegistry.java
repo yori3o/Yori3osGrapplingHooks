@@ -8,8 +8,8 @@ import com.yori3o.yo_hooks.common.init.ItemRegistry;
 
 import java.util.function.Supplier;
 
-import com.yori3o.yo_hooks.common.client.gui.ConfigScreen;
 import com.yori3o.yo_hooks.common.client.render.HookRenderer;
+import com.yori3o.yo_hooks.common.config.client.ConfigScreenFactory;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
 
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -40,7 +40,7 @@ public class ClientPlatformRegistry {
 
         ModLoadingContext.get().registerExtensionPoint(
             IConfigScreenFactory.class,
-            () -> (mc, parent) -> new ConfigScreen(parent)
+            () -> (mc, parent) -> ConfigScreenFactory.create(parent)
         );
   
         event.enqueueWork(() -> {

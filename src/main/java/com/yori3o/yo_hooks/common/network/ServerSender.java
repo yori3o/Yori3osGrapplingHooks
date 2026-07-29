@@ -1,7 +1,7 @@
 package com.yori3o.yo_hooks.common.network;
 
 
-import com.yori3o.yo_hooks.common.config.CommonConfig;
+import com.yori3o.yo_hooks.common.config.categories.CommonConfig;
 import com.yori3o.yo_hooks.impl.PlatformNetworkHelper;
 
 import net.minecraft.server.level.ServerPlayer;
@@ -15,7 +15,7 @@ import com.google.gson.Gson;
 public class ServerSender {
 
     
-    public static void sendCommonConfig(ServerPlayer serverPlayer, CommonConfig.Values values, Map<String, Integer> HookLengths) {
+    public static void sendCommonConfig(ServerPlayer serverPlayer, CommonConfig values, Map<String, Integer> HookLengths) {
 
         Gson gson = new Gson();
         byte[] bytesConfig = gson.toJson(values).getBytes(StandardCharsets.UTF_8);

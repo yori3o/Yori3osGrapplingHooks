@@ -4,16 +4,12 @@ package com.yori3o.yo_hooks.common;
 import java.nio.file.Path;
 
 import com.yori3o.yo_hooks.common.compat.Compats;
-import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
+import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.hookregistry.HookRegistry;
 import com.yori3o.yo_hooks.common.hookregistry.LootTableRegistry;
 import com.yori3o.yo_hooks.common.init.EntityRegistry;
 import com.yori3o.yo_hooks.common.util.ConfigFilesMover;
 import com.yori3o.yo_hooks.impl.PlatformUtil;
-
-import net.minecraft.data.recipes.RecipeBuilder;
-import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Recipe;
 
 
 
@@ -28,9 +24,9 @@ public class YoHooks {
 	public void init() {
 
         ConfigFilesMover.moveConfigFiles();
-        DynamicConfigHandler.loadCommon();
-        DynamicConfigHandler.loadServer();
-        DynamicConfigHandler.loadOverlap();
+        ConfigManager.loadCommon();
+        ConfigManager.loadServer();
+        ConfigManager.loadOverlap();
 
         HookRegistry.loadAndRegisterHooks();
         LootTableRegistry.load();

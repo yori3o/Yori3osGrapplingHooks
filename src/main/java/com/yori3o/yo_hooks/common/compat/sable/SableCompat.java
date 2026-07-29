@@ -116,8 +116,13 @@ public class SableCompat {
     }
 
     public static Vec3 getHookPos(Vec3 vec3, HookEntity hookEntity) {
-        if (!Compats.isSableLoaded) return vec3;
-        HookWithSableData data = SableCompat.hooks.get(hookEntity);
+        //if (!Compats.isSableLoaded) return vec3;
+        HookWithSableData data;
+        if (hookEntity.level().isClientSide) {
+            data = SableCompat.hooksClient.get(hookEntity);
+        } else {
+            data = SableCompat.hooks.get(hookEntity);
+        }
         if (data != null) {
             Vec3 physicsPos = data.attachedShip.logicalPose().transformPosition(data.localAttachPos);
             return SableCompat.projectOutOfSubLevel(hookEntity.level(), physicsPos);

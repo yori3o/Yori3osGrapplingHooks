@@ -4,16 +4,14 @@ package com.yori3o.yo_hooks.common.entity;
 import com.yori3o.yo_hooks.common.compat.Compats;
 import com.yori3o.yo_hooks.common.compat.sable.HookWithSableData;
 import com.yori3o.yo_hooks.common.compat.sable.SableCompat;
-import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
+import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.item.HookItem;
 import com.yori3o.yo_hooks.common.sound.SoundRegistry;
 import com.yori3o.yo_hooks.common.init.EntityRegistry;
 import com.yori3o.yo_hooks.common.init.ItemRegistry;
 import com.yori3o.yo_hooks.common.init.TagRegistry;
-import com.yori3o.yo_hooks.common.util.LoggerUtil;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
-import com.yori3o.yo_hooks.common.util.RedstoneOreInteract;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -49,8 +47,7 @@ public class HookEntity extends ThrowableProjectile {
 
     private static final EntityDataAccessor<Boolean> IN_BLOCK =
             SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> IN_SABLE_BLOCK =
-            SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> IN_SABLE_BLOCK;
     private static final EntityDataAccessor<Float> LENGTH =
             SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Integer> HOOK_RANGE = 
@@ -60,11 +57,19 @@ public class HookEntity extends ThrowableProjectile {
     private static final EntityDataAccessor<BlockPos> BLOCK_POS = 
             SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.BLOCK_POS);
     private static final EntityDataAccessor<Boolean> GENTLE_TOUCH =
-            SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.BOOLEAN);
+            SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.BOOLEAN);        
     private static final EntityDataAccessor<String> PLAYER_UUID = 
             SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Integer> AGILITY_LEVEL = 
             SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.INT);
+
+    static {
+        if (Compats.isSableLoaded) {
+            IN_SABLE_BLOCK = SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.BOOLEAN);
+        } else {
+            IN_SABLE_BLOCK = null;
+        }
+    }
             
     public int damageOnHit = 1;
     private boolean hookedOnFallingBlock = false;
@@ -91,7 +96,7 @@ public class HookEntity extends ThrowableProjectile {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(IN_BLOCK, false);
-        builder.define(IN_SABLE_BLOCK, false);
+        if (Compats.isSableLoaded) builder.define(IN_SABLE_BLOCK, false);
         builder.define(LENGTH, 0.0F);
         builder.define(HOOK_RANGE, 0);
         builder.define(HOOK_ITEM_MATERIAL, "");
@@ -101,11 +106,15 @@ public class HookEntity extends ThrowableProjectile {
         builder.define(AGILITY_LEVEL, 0);
     }
 
-    // important: hook entity ticks at intervals of 5 ticks
+    
     @Override
     public void tick() {
         super.tick();
         if (this.isRemoved()) return;
+
+        if (level().isClientSide() && tickCount == 1) {
+            return;
+        }
 
         Player owner = this.getPlayerOwner();   
 
@@ -123,21 +132,20 @@ public class HookEntity extends ThrowableProjectile {
             } else {
                 return;
             }
-            
-        }
-
-        if (Compats.isSableLoaded && this.isInSableBlock()) {
-            HookWithSableData data = SableCompat.hooks.get(this);
-            if (data == null) {
-                if (!SableCompat.onHookHitBlock(this, this.position()) && !level().isClientSide()) {
-                    ((PlayerWithHookData) owner).setHook(null);
-                    this.discard();
-                    return;
-                }
-            }
         }
 
         if (!level().isClientSide()) {
+
+            if (Compats.isSableLoaded && this.isInSableBlock()) {
+                HookWithSableData data = SableCompat.hooks.get(this);
+                if (data == null) {
+                    if (!SableCompat.onHookHitBlock(this, this.position())) {
+                        ((PlayerWithHookData) owner).setHook(null);
+                        this.discard();
+                        return;
+                    }
+                }
+            }
             
             if (this.discardIfInvalid(owner)) {
                 return;
@@ -165,6 +173,16 @@ public class HookEntity extends ThrowableProjectile {
                     SoundSource.AMBIENT,
                     1.0f, 1.0f
                 );
+            }
+        } else {
+            if (Compats.isSableLoaded && this.isInSableBlock()) {
+                HookWithSableData data = SableCompat.hooksClient.get(this);
+                if (data == null) {
+                    if (!SableCompat.onHookHitBlock(this, this.position())) {
+                        ((PlayerWithHookData) owner).setHook(null);
+                        return;
+                    }
+                }
             }
         }
     }
@@ -223,13 +241,12 @@ public class HookEntity extends ThrowableProjectile {
     protected void onHitBlock(BlockHitResult result) {
         super.onHitBlock(result);
 
-        if (Compats.isSableLoaded) {
-            if (SableCompat.onHookHitBlock(this, result.getLocation())) {
-                this.setInSableBlock(true);
+        if (!level().isClientSide()) {
+            if (Compats.isSableLoaded) {
+                if (SableCompat.onHookHitBlock(this, result.getLocation())) {
+                    this.setInSableBlock(true);
+                }
             }
-        }
-
-        if (!level().isClientSide()) {  
 
             setBlockPos(result.getBlockPos());
 
@@ -241,9 +258,9 @@ public class HookEntity extends ThrowableProjectile {
             BlockPos pos = this.entityData.get(BLOCK_POS);
             BlockState bs = level.getBlockState(pos);
 
-            if (!DynamicConfigHandler.server().blocksBlacklist.isEmpty()) {
-                boolean isThisBlockBanned = (DynamicConfigHandler.server().blocksBlacklist.contains(bs.getBlockHolder().getRegisteredName()));
-                if (DynamicConfigHandler.server().whitelistMode) isThisBlockBanned = !isThisBlockBanned;
+            if (!ConfigManager.server().blocksBlacklist.isEmpty()) {
+                boolean isThisBlockBanned = (ConfigManager.server().blocksBlacklist.contains(bs.getBlockHolder().getRegisteredName()));
+                if (ConfigManager.server().whitelistMode) isThisBlockBanned = !isThisBlockBanned;
                 if (isThisBlockBanned) {
                     this.discard();
                     ((PlayerWithHookData) player).setHook(null);
@@ -251,7 +268,7 @@ public class HookEntity extends ThrowableProjectile {
                 }
             }
 
-            if (!DynamicConfigHandler.common().funnyMode) {
+            if (!ConfigManager.common().funnyMode) {
                 if (!player.isCreative()) {
                     ItemStack stack = player.getMainHandItem();
                     EquipmentSlot hand = EquipmentSlot.MAINHAND;
@@ -262,8 +279,7 @@ public class HookEntity extends ThrowableProjectile {
                     stack.hurtAndBreak(1, player, hand);
                 }
             }
-
-            if (DynamicConfigHandler.server().breakingFragileBlocks) {
+            if (ConfigManager.server().breakingFragileBlocks) {
                 if (!this.isGentleTouch()) {
                     if (bs.is(TagRegistry.FRAGILE_BLOCKS)) {
                         level.destroyBlock(pos, true);
@@ -272,24 +288,12 @@ public class HookEntity extends ThrowableProjectile {
                         ((PlayerWithHookData) player).setSuddenFall(true);
                         return;
                     }
-                }
-
-                if (DynamicConfigHandler.server().breakingFragileBlocks) {
-                    if (!this.isGentleTouch()) {
-                        if (bs.is(TagRegistry.FRAGILE_BLOCKS)) {
-                            level.destroyBlock(pos, true);
-                            this.discard();
-                            ((PlayerWithHookData) player).setHook(null);
-                            ((PlayerWithHookData) player).setSuddenFall(true);
-                            return;
-                        }
-                        if (bs.getBlock() instanceof FallingBlock) {
-                            level.scheduleTick(pos, bs.getBlock(), 1);
-                            hookedOnFallingBlock = true;
-                        } else if (bs.getBlock() instanceof RedStoneOreBlock) {
-                            RedstoneOreInteract.invoke(bs, level, pos);
-                        }
-                    }
+                    if (bs.getBlock() instanceof FallingBlock) {
+                        level.scheduleTick(pos, bs.getBlock(), 1);
+                        hookedOnFallingBlock = true;
+                    }/*  else if (bs.getBlock() instanceof RedStoneOreBlock) {
+                        RedStoneOreBlock.interact(bs, level, pos);
+                    }*/
                 }
             }
 
@@ -326,7 +330,7 @@ public class HookEntity extends ThrowableProjectile {
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
         tag.putBoolean("in_block", this.isInBlock());
-        tag.putBoolean("in_sable_block", this.isInSableBlock());
+        if (Compats.isSableLoaded) tag.putBoolean("in_sable_block", this.isInSableBlock());
         tag.putFloat("length", this.getLength());
         tag.putInt("hook_range", this.getMaxRange());
         tag.putString("hook_item_material", this.getHookItemMaterial());
@@ -340,7 +344,7 @@ public class HookEntity extends ThrowableProjectile {
     @Override
     protected void readAdditionalSaveData(CompoundTag tag) {
         this.setInBlock(tag.getBoolean("in_block"));
-        this.setInSableBlock(tag.getBoolean("in_sable_block"));
+        if (Compats.isSableLoaded) this.setInSableBlock(tag.getBoolean("in_sable_block"));
         this.setLength(tag.getFloat("length"));
         this.setMaxRange(tag.getInt("hook_range"));
         this.setHookItemMaterial(tag.getString("hook_item_material"));
@@ -451,7 +455,6 @@ public class HookEntity extends ThrowableProjectile {
     public int getAgilityLevel() {
         return this.entityData.get(AGILITY_LEVEL);
     }
-
 
 
 

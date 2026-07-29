@@ -1,12 +1,12 @@
 package com.yori3o.yo_hooks.common.mixin;
 
 
-import com.yori3o.yo_hooks.common.compat.Compats;
-import com.yori3o.yo_hooks.common.compat.sable.SableCompat;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.event.ClientEvents;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
+import com.yori3o.yo_hooks.common.compat.Compats;
+import com.yori3o.yo_hooks.common.compat.sable.SableCompat;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -30,6 +30,8 @@ public class PlayerMixin implements PlayerWithHookData {
     private boolean usingCancelAfterJump;
     private int agility_level;
     
+    private boolean allowStatsIncrease;
+    private Vec3 oldPosition;
     
     private boolean suddenFall = false;
 
@@ -76,9 +78,13 @@ public class PlayerMixin implements PlayerWithHookData {
     private void onTravel(Vec3 travelVector, CallbackInfo ci) {
         Player player = (Player) (Object) this;
 
+        allowStatsIncrease = false;
+
         // --- HOOK HANDLING ---
         if (this.hookEntity != null && this.hookEntity.isInBlock()) {
-        
+            
+            oldPosition = player.position();
+
             // --- variables ---
             Vec3 hookPos = this.hookEntity.position();
             if (Compats.isSableLoaded) {
@@ -86,7 +92,6 @@ public class PlayerMixin implements PlayerWithHookData {
                 if (hookPos == null) return;
             }
             Vec3 playerEyePos = player.getEyePosition();
-            
             Vec3 vecToHook = hookPos.subtract(playerEyePos);
             Vec3 unitVector = vecToHook.normalize();
 
@@ -106,11 +111,13 @@ public class PlayerMixin implements PlayerWithHookData {
                 vTangentialMultiplier = 1.047;
 
                 if (isClimbingUp) {
-                    if (MAX_R > 0.4) {
-                        vTangentialMultiplier = 1.017;
-                        vRadial = (PhysicVariables.climbSpeed + (agility_level * 0.041)) * PhysicVariables.climbSpeedMultiplier;
-                    } else {
-                        ClientEvents.soundCooldown++;
+                    if (!PhysicVariables.softHook) {
+                        if (MAX_R > 0.4) {
+                            vTangentialMultiplier = 1.017;
+                            vRadial = (PhysicVariables.climbSpeed + (agility_level * 0.041)) * PhysicVariables.climbSpeedMultiplier;
+                        } else {
+                            if (player.level().isClientSide()) ClientEvents.soundCooldown++;
+                        }
                     }
                 }
 
@@ -150,6 +157,7 @@ public class PlayerMixin implements PlayerWithHookData {
                 if (!player.onGround()) {
                     player.hurtMarked = false;
                     if ((dist + 0.6) > MAX_R) {
+                        allowStatsIncrease = true;
                         if (unitVector.y > -0.15) { 
                             player.resetFallDistance();
                         }

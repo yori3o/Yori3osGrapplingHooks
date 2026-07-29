@@ -16,6 +16,19 @@ repositories {
         name = 'NeoForged'
         url = 'https://maven.neoforged.net/releases'
     }
+    maven {
+        name 'Xander Maven'
+        url 'https://maven.isxander.dev/releases'
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter { includeGroup "maven.modrinth" }
+    }
 
     exclusiveContent { // Sable
         forRepository {
@@ -39,7 +52,11 @@ dependencies {
     minecraft "net.minecraft:minecraft:$project.minecraft_version"
     mappings loom.officialMojangMappings()
     neoForge "net.neoforged:neoforge:$project.neoforge_version"
-    api "dev.ryanhcode.sable:sable-common-1.21.1:1.2.2"
+    api "dev.ryanhcode.sable:sable-common-1.21.1:2.0.3"
+
+    modImplementation "dev.isxander:yet-another-config-lib:${project.yacl_version}"
+    
+	modImplementation  "maven.modrinth:vivecraft:${project.vivecraft_version}"
 }
 
 processResources {

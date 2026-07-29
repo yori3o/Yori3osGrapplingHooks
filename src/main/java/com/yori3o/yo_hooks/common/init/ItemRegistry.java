@@ -34,15 +34,19 @@ public class ItemRegistry {
 
     public static void registerHook(HookDefinition def) {
         String material = def.id;
-        int durability = def.durability;
+        int durability = def.getDurability();
         boolean fireResistant = def.fireResistant;
         String repairItemsTag = def.repairItemsTag;
 
         String hookId = material + "_grappling_hook";
         String hookHeadId = material + "_hook_head";
 
-        Item.Properties hookProperties = new Item.Properties().stacksTo(1).durability(durability);
+        Item.Properties hookProperties = new Item.Properties().stacksTo(1);
         Item.Properties hookHeadProperties = new Item.Properties().stacksTo(64);
+
+        if (durability > 0) {
+            hookProperties = hookProperties.durability(durability);
+        }
 
         if (fireResistant) {
             hookHeadProperties = hookHeadProperties.fireResistant();
@@ -52,9 +56,6 @@ public class ItemRegistry {
         TagKey<Item> tag = null;
         if (!repairItemsTag.isEmpty()) {
             tag = TagKey.create(Registries.ITEM, ResourceLocation.parse(repairItemsTag));
-
-            //hookHeadProperties = hookHeadProperties.repairable(tag);
-            //hookProperties = hookProperties.repairable(tag);
         }
 
         final Item.Properties hookHeadPropertiesFinal = hookHeadProperties;
@@ -63,8 +64,8 @@ public class ItemRegistry {
 
         Supplier<HookItem> hook = PlatformItemRegistry.registerItem(ResourceLocation.fromNamespaceAndPath(YoHooks.MOD_ID, hookId), () -> new HookItem(
             hookPropertiesFinal,
-            tagFinal,
-            def
+            def,
+            tagFinal
         ));
         Supplier<Item> hookHead = PlatformItemRegistry.registerItem(ResourceLocation.fromNamespaceAndPath(YoHooks.MOD_ID, hookHeadId), () -> new Item(
             hookHeadPropertiesFinal

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.gson.Gson;
-import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
+import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.init.ItemRegistry;
 import com.yori3o.yo_hooks.common.sound.SoundRegistry;
 import com.yori3o.yo_hooks.common.util.LoggerUtil;
@@ -37,11 +37,11 @@ public final class HookRegistry {
 
     private static void registerAllHooks() {
         for (HookDefinition def : hooks.values()) {
-            DynamicConfigHandler.setOverlapValues(def);
-            DynamicConfigHandler.addNewHookToOverlaps(def.id, def.durability, def.length);
+            def = ConfigManager.setOverlapValuesToHook(def);
+            ConfigManager.addNewHookToOverlaps(def.id, def.durability, def.length);
             ItemRegistry.registerHook(def);
         }
-        DynamicConfigHandler.saveOverlap();
+        ConfigManager.saveOverlap();
     }
 
     private static void load() {
