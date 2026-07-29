@@ -10,7 +10,6 @@ import org.joml.Vector3d;
 
 import com.yori3o.yo_hooks.common.compat.Compats;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
-import com.yori3o.yo_hooks.common.util.LoggerUtil;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -51,9 +50,7 @@ public class SableCompat {
 
     public static boolean onHookHitBlock(HookEntity hookEntity, Vec3 vec) {
         SubLevel potentialShip = getSubLevel(hookEntity.level(), vec);
-        LoggerUtil.info("onHookHitBlockl");
         if (potentialShip != null) {
-            LoggerUtil.info("onHookHitBlockl 2");
             HookWithSableData sableData = new HookWithSableData();
             sableData.attachedShip = potentialShip;
             sableData.localAttachPos = convertToLocal(potentialShip, vec, hookEntity.level());

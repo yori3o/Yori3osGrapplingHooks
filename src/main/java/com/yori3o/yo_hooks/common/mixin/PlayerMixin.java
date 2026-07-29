@@ -4,7 +4,6 @@ package com.yori3o.yo_hooks.common.mixin;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.event.ClientEvents;
 import com.yori3o.yo_hooks.common.init.StatsRegistry;
-import com.yori3o.yo_hooks.common.util.LoggerUtil;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
 import com.yori3o.yo_hooks.common.compat.Compats;
@@ -91,7 +90,6 @@ public class PlayerMixin implements PlayerWithHookData {
             Vec3 hookPos = this.hookEntity.position();
             if (Compats.isSableLoaded) {
                 hookPos = SableCompat.getHookPos(hookPos, this.hookEntity);
-                LoggerUtil.info("hookPos " + hookPos);
                 if (hookPos == null) return;
             }
             Vec3 playerEyePos = player.getEyePosition();

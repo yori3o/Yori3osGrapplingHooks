@@ -10,13 +10,11 @@ import com.yori3o.yo_hooks.common.sound.SoundRegistry;
 import com.yori3o.yo_hooks.common.init.EntityRegistry;
 import com.yori3o.yo_hooks.common.init.ItemRegistry;
 import com.yori3o.yo_hooks.common.init.TagRegistry;
-import com.yori3o.yo_hooks.common.util.LoggerUtil;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -27,7 +25,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -38,7 +35,6 @@ import net.minecraft.world.level.block.RedStoneOreBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.UUID;
@@ -108,19 +104,17 @@ public class HookEntity extends ThrowableProjectile {
         builder.define(PLAYER_UUID, "");
         builder.define(GENTLE_TOUCH, false);
         builder.define(AGILITY_LEVEL, 0);
-        LoggerUtil.info("defineSynchedData");
     }
 
     
     @Override
     public void tick() {
-        HitResult hit = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
-
-LoggerUtil.info(level().isClientSide + " " + hit.getType());
         super.tick();
         if (this.isRemoved()) return;
 
-        LoggerUtil.info(level().isClientSide + " " + tickCount + " " + getHookItemMaterial());
+        if (level().isClientSide() && tickCount == 1) {
+            return;
+        }
 
         Player owner = this.getPlayerOwner();   
 
@@ -180,6 +174,16 @@ LoggerUtil.info(level().isClientSide + " " + hit.getType());
                     1.0f, 1.0f
                 );
             }
+        } else {
+            if (Compats.isSableLoaded && this.isInSableBlock()) {
+                HookWithSableData data = SableCompat.hooksClient.get(this);
+                if (data == null) {
+                    if (!SableCompat.onHookHitBlock(this, this.position())) {
+                        ((PlayerWithHookData) owner).setHook(null);
+                        return;
+                    }
+                }
+            }
         }
     }
 
@@ -237,16 +241,12 @@ LoggerUtil.info(level().isClientSide + " " + hit.getType());
     protected void onHitBlock(BlockHitResult result) {
         super.onHitBlock(result);
 
-        LoggerUtil.info("onHookHitBlockl 0");
-
-        if (Compats.isSableLoaded) {
-            LoggerUtil.info("onHookHitBlockl -1");
-            if (SableCompat.onHookHitBlock(this, result.getLocation())) {
-                this.setInSableBlock(true);
-            }
-        }
-
         if (!level().isClientSide()) {
+            if (Compats.isSableLoaded) {
+                if (SableCompat.onHookHitBlock(this, result.getLocation())) {
+                    this.setInSableBlock(true);
+                }
+            }
 
             setBlockPos(result.getBlockPos());
 
@@ -316,7 +316,12 @@ LoggerUtil.info(level().isClientSide + " " + hit.getType());
             this.setNoGravity(true);
             
             if (player != null) {
-                double dist = player.getEyePosition().subtract(result.getLocation()).length();
+                double dist;
+                if (Compats.isSableLoaded) {
+                    dist = SableCompat.calculateDist(this, player, result);
+                } else {
+                    dist = player.getEyePosition().subtract(result.getLocation()).length();
+                }
                 this.setLength((float)dist);
             }
         }
@@ -452,13 +457,6 @@ LoggerUtil.info(level().isClientSide + " " + hit.getType());
     }
 
 
-
-    @Override
-public void recreateFromPacket(ClientboundAddEntityPacket packet) {
-    super.recreateFromPacket(packet);
-    LoggerUtil.info("recreate, packet:");
-    LoggerUtil.info(packet.toString());
-}
 
     @Override
     protected Entity.MovementEmission getMovementEmission() {
