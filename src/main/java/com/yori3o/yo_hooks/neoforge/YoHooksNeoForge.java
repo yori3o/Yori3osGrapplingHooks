@@ -44,7 +44,7 @@ public final class YoHooksNeoForge {
 
     private void tick(ClientTickEvent.Pre event) {
         EventHandler.whenClientTickStart();
-        if (Compats.isSableLoaded) SableCompat.tick();
+        if (Compats.isSableLoaded) SableCompat.tickClient();
     }
 
     private void serverTick(ServerTickEvent.Pre event) {

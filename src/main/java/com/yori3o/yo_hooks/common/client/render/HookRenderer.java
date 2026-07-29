@@ -2,7 +2,6 @@ package com.yori3o.yo_hooks.common.client.render;
 
 
 import com.yori3o.yo_hooks.common.compat.Compats;
-import com.yori3o.yo_hooks.common.compat.sable.HookWithSableData;
 import com.yori3o.yo_hooks.common.compat.sable.SableCompat;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.hookregistry.HookRegistry;
@@ -59,26 +58,14 @@ public class HookRenderer extends EntityRenderer<HookEntity> {
 
         Vec3 hookPos = hookEntity.getPosition(partialTicks).add(0.0D, 0.25D, 0.0D);
         if (Compats.isSableLoaded) {
-            HookWithSableData data = SableCompat.hooks.get(hookEntity);
-            if (data != null) {
-                if (data.attachedShip == null) return;
-                Vec3 physicsPos = data.attachedShip.logicalPose().transformPosition(data.localAttachPos);
-                hookPos = SableCompat.projectOutOfSubLevel(hookEntity.level(), physicsPos);
-            }
+            hookPos = SableCompat.getGlobalPositionOfHookEntity(hookPos, hookEntity);
         }
 
-        Quaterniond inv = null;
-
-        if (Compats.isSableLoaded) {
-            HookWithSableData data = SableCompat.hooks.get(hookEntity);
-            if (data != null && data.attachedShip != null) {
-                Quaterniond shipRot = data.attachedShip.logicalPose().orientation();
-                inv = new Quaterniond(shipRot).invert();
-            }
-        }
+        Quaterniond sableOffset = null;
+        if (Compats.isSableLoaded) { sableOffset = SableCompat.getGlobalRotationOfSubLevel(hookEntity); }
 
         Vec3 vectorCable = handPos.subtract(hookPos);
-        if (inv != null) vectorCable = rotateVec(vectorCable, inv);
+        if (sableOffset != null) vectorCable = rotateVec(vectorCable, sableOffset);
         float length = (float)(vectorCable.length());
         vectorCable = vectorCable.normalize();
         float pitch = (float)Math.acos(vectorCable.y);
@@ -86,7 +73,7 @@ public class HookRenderer extends EntityRenderer<HookEntity> {
 
         poseStack.pushPose();
 
-        if (inv != null) poseStack.mulPose(new Quaternionf((float)inv.x, (float)inv.y, (float)inv.z, (float)inv.w));
+        if (sableOffset != null) poseStack.mulPose(new Quaternionf(sableOffset));
 
         poseStack.mulPose(Axis.YP.rotationDegrees((1.5707964f - yawAngle) * Mth.RAD_TO_DEG));
         poseStack.mulPose(Axis.XP.rotationDegrees(pitch * Mth.RAD_TO_DEG));

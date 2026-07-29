@@ -4,12 +4,12 @@ package com.yori3o.yo_hooks.common.compat.sable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Logger;
-
+import org.joml.Quaterniond;
+import org.joml.Quaterniondc;
 import org.joml.Vector3d;
 
+import com.yori3o.yo_hooks.common.compat.Compats;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
-import com.yori3o.yo_hooks.common.util.LoggerUtil;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -18,6 +18,7 @@ import net.minecraft.world.phys.Vec3;
 
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.companion.math.JOMLConversion;
+import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 
 
@@ -25,6 +26,7 @@ import dev.ryanhcode.sable.sublevel.SubLevel;
 public class SableCompat {
 
     public static Map<HookEntity, HookWithSableData> hooks = new HashMap<>();
+    public static Map<HookEntity, HookWithSableData> hooksClient = new HashMap<>();
 
 
 
@@ -52,14 +54,28 @@ public class SableCompat {
             HookWithSableData sableData = new HookWithSableData();
             sableData.attachedShip = potentialShip;
             sableData.localAttachPos = convertToLocal(potentialShip, vec, hookEntity.level());
-            hooks.put(hookEntity, sableData);
+            if (hookEntity.level().isClientSide) {
+                hooksClient.put(hookEntity, sableData);
+            } else {
+                hooks.put(hookEntity, sableData);
+            }
             return true;
         }
         return false;
     }
 
-    public static void tick() {
+    public static void tick() { // server-side
         Iterator<HookEntity> iterator = hooks.keySet().iterator();
+        while (iterator.hasNext()) {
+            HookEntity hookEntity = iterator.next();
+            if (hookEntity.isRemoved()) {
+                iterator.remove();
+            }
+        }
+    }
+
+    public static void tickClient() {
+        Iterator<HookEntity> iterator = hooksClient.keySet().iterator();
         while (iterator.hasNext()) {
             HookEntity hookEntity = iterator.next();
             if (hookEntity.isRemoved()) {
@@ -75,6 +91,42 @@ public class SableCompat {
 
     public static Vec3 projectOutOfSubLevel(Level level, Vec3 pos) {
         return Sable.HELPER.projectOutOfSubLevel(level, pos);
+    }
+
+    public static Vec3 getGlobalPositionOfHookEntity(Vec3 position, HookEntity hookEntity) {
+        if (!hookEntity.level().isClientSide) return position;
+        HookWithSableData data = SableCompat.hooksClient.get(hookEntity);
+        if (data != null) {
+            if (data.attachedShip != null) {
+                Vec3 physicsPos = ((ClientSubLevel)data.attachedShip).renderPose().transformPosition(data.localAttachPos);
+                return SableCompat.projectOutOfSubLevel(hookEntity.level(), physicsPos);
+            }
+        }
+        return position;
+    }
+
+    public static Quaterniond getGlobalRotationOfSubLevel(HookEntity hookEntity) {
+        if (!hookEntity.level().isClientSide) return null;
+        HookWithSableData data = SableCompat.hooksClient.get(hookEntity);
+        if (data != null && data.attachedShip != null) {
+            Quaterniondc shipRot = ((ClientSubLevel)(data.attachedShip)).renderPose().orientation();
+            return new Quaterniond(shipRot).invert();
+        }
+        return null;
+    }
+
+    public static Vec3 getHookPos(Vec3 vec3, HookEntity hookEntity) {
+        if (!Compats.isSableLoaded) return vec3;
+        HookWithSableData data = SableCompat.hooks.get(hookEntity);
+        if (data != null) {
+            Vec3 physicsPos = data.attachedShip.logicalPose().transformPosition(data.localAttachPos);
+            return SableCompat.projectOutOfSubLevel(hookEntity.level(), physicsPos);
+        } else {
+            if (hookEntity.isInSableBlock()) {
+                return null;
+            }
+        }
+        return vec3;
     }
 
 }
