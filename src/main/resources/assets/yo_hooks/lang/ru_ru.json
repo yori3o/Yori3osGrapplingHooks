@@ -37,21 +37,52 @@
   "advancements.yo_hooks.adventure.sudden_fall.title": "Неудачный зацеп",
   "advancements.yo_hooks.adventure.sudden_fall.description": "Попробуйте прицепиться за хрупкий блок и разбейтесь насмерть",
 
-  "settings.yo_hooks.save_and_close": "Сохранить и выйти",
-  "settings.yo_hooks.reset_settings": "Сбросить настройки по умолчанию",
-  "settings.yo_hooks.open_folder": "Открыть папку",
-  "settings.yo_hooks.server": "Серверные (server)",
-  "settings.yo_hooks.client": "Клиентские (client)",
-  "settings.yo_hooks.common": "Общие (common)",
-  "settings.yo_hooks.funny_mode": "Весёлый режим",
-  "settings.yo_hooks.soft_hook": "Мягкая верёвка",
-  "settings.yo_hooks.stiffness": "Жёсткость",
-  "settings.yo_hooks.climb_speed": "Скорость карабканья",
-  "settings.yo_hooks.decrease_satiety": "Потребление сытости",
-  "settings.yo_hooks.breaking_fragile_blocks": "Ломать хрупкие блоки",
-  "settings.yo_hooks.hold_hook_tightly": "Держать крюк крепко",
-  "settings.yo_hooks.file_note": "Некоторые значения можно отрегулировать только в файлах конфига:",
 
-  "modmenu.descriptionTranslation.yo_hooks": "Добавляет похожие на ванилу крюки-кошки с реалистичной физикой. Отдельная бета версия с поддержкой Sable (Create Aeronautics)!",
-  "fml.menu.mods.info.description.yo_hooks": "Добавляет похожие на ванилу крюки-кошки с реалистичной физикой. Отдельная бета версия с поддержкой Sable (Create Aeronautics)!"
+  "yacl3.config.yo_hooks:server_config.category.server.group.server": "Серверные (server)",
+  "yacl3.config.yo_hooks:client_config.category.client.group.client": "Клиентские (client)",
+  "yacl3.config.yo_hooks:common_config.category.common.group.common": "Общие (common)",
+  "yacl3.config.yo_hooks:parameters.category.parameters.group.parameters": "Характеристики крюков", 
+
+  "config.yo_hooks:common.desc": "Синхронизируются с сервера. Изменения применяются, только если вы играете в своём мире.",
+  "config.yo_hooks:parameters.desc": "Изменения применяются только после перезапуска игры! Дальность синхронизируется с сервера.",
+
+  "yacl3.config.yo_hooks:common_config.funnyMode": "Весёлый режим",
+  "yacl3.config.yo_hooks:common_config.funnyMode.desc": "Отключает урон от падения, дает большую дальность и прочность, возможность прыгать, даже когда крюк снизу — одним словом, всё для веселья.",
+  "yacl3.config.yo_hooks:common_config.softHook": "Мягкая верёвка",
+  "yacl3.config.yo_hooks:common_config.softHook.desc": "Крюк становится более упругим, как пружина.",
+  "yacl3.config.yo_hooks:common_config.stiffness": "Жёсткость",
+  "yacl3.config.yo_hooks:common_config.stiffness.desc": "Только для режима мягкой верёвки. Чем больше, тем менее упругая верёвка.",
+  "yacl3.config.yo_hooks:common_config.climbSpeed": "Скорость карабканья",
+  "yacl3.config.yo_hooks:common_config.climbSpeed.desc": "Увеличьте, чтобы карабкаться и спускаться по цепи быстрее.",
+
+  "yacl3.config.yo_hooks:server_config.decreaseSatiety": "Потребление сытости",
+  "yacl3.config.yo_hooks:server_config.decreaseSatiety.desc": "Сколько тратится голода за прицеп + прыжок. Также голод тратит и карабканье по цепи.",
+  "yacl3.config.yo_hooks:server_config.breakingFragileBlocks": "Ломать хрупкие блоки",
+  "yacl3.config.yo_hooks:server_config.breakingFragileBlocks.desc": "Крюк при прицепе ломает хрупкие блоки: стекло, капельник, бамбук, лёд, висячий песок и гравий и т. д.. Это также можно предотвратить зачарованием «Мягкое касание».",
+  "config.yo_hooks:server_config.blocksBlacklist": "Черный список блоков",
+  "config.yo_hooks:server_config.blocksBlacklist.desc": "Блоки, за которые не может прицепится крюк. Пример: \"minecraft:dirt,minecraft:stone\"",
+  "yacl3.config.yo_hooks:server_config.whitelistMode": "Белый список",
+  "yacl3.config.yo_hooks:server_config.whitelistMode.desc": "Включите, чтобы крюк наоборот мог прицепится только за нижеуказанные блоки, а не игнорировать их.",
+
+  "yacl3.config.yo_hooks:client_config.holdHookTightly": "Держать крюк крепко",
+  "yacl3.config.yo_hooks:client_config.holdHookTightly.desc": "Прокручивание колёсика мыши не прокрутит хотбар, когда вы висите на крюке. Полезно, если вы боитесь случайно упасть из-за этого.",
+  "yacl3.config.yo_hooks:client_config.climbWithMouseWheelScroll": "Карабканье с колёсиком мыши",
+  "yacl3.config.yo_hooks:client_config.climbWithMouseWheelScroll.desc": "Работает только с включённым \"Держать крюк крепко\". Позволяет карабкаться вверх и вниз прокручиванием колёсика мыши.",
+  "yacl3.config.yo_hooks:client_config.usingWhileHoldingFood": "Использование крюка при еде в главной руке",
+  "yacl3.config.yo_hooks:client_config.usingWhileHoldingFood.desc": "Когда еда в главной руке, а крюк в другой, и вы сыты, крюк не может быть использован. Полезно, когда вы едите в воздухе и боитесь случайно упасть после этого.",
+
+  "config.yo_hooks:range": ", дальность",
+  "config.yo_hooks:durability": ", прочность",
+  "config.yo_hooks:range.desc": "Изменить максимальную дальность для этого крюка. Изменения применяются только после перезапуска игры!",
+  "config.yo_hooks:durability.desc": "Изменить прочность для этого крюка. Установите -1 для бесконечной прочности. Изменения применяются только после перезапуска игры!",
+  
+  "yacl3.config.yo_hooks:vr_config.category.client.group.vivecraft_compat": "Настройки для VR",
+  "yacl3.config.yo_hooks:vr_config.rememberHookHandPosition": "Подъем/спуск только свободной рукой",
+  "yacl3.config.yo_hooks:vr_config.rememberHookHandPosition.desc": "Вкл.: Можно подниматься/спускаться по цепи только перемещением свободной руки\nВыкл.: Можно подниматься/спускаться по цепи еще и перемещением руки с крюком",
+  "yacl3.config.yo_hooks:vr_config.moveAlongChain": "Захват цепи по её направлению",
+  "yacl3.config.yo_hooks:vr_config.moveAlongChain.desc": "Вкл.: Захват цепи и перемещение руки вдоль цепи\nВыкл.: Захват цепи и перемещение руки строго вертикально",
+
+
+  "modmenu.descriptionTranslation.yo_hooks": "Добавляет похожие на ванилу крюки-кошки с реалистичной физикой.",
+  "fml.menu.mods.info.description.yo_hooks": "Добавляет похожие на ванилу крюки-кошки с реалистичной физикой."
 }
