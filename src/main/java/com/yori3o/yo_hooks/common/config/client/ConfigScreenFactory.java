@@ -170,6 +170,32 @@ public final class ConfigScreenFactory {
                                             .step(1))
                             .build()
             );
+
+            options.add(
+                    Option.<Integer>createBuilder()
+                            .name(Component.literal(Component.translatable("item.yo_hooks." + id + "_grappling_hook").getString() + Component.translatable("config.yo_hooks:damage").getString()))
+                            .binding(
+                                    hook.getDamage(),
+                                    () -> config.damageOverlap.getOrDefault(id, hook.damageOnHit),
+                                    value -> {
+                                        if (value.intValue() == hook.damageOnHit) {
+                                            config.damageOverlap.remove(id);
+                                        } else {
+                                            config.damageOverlap.put(id, value.intValue());
+                                        }
+                                    }
+                            )
+                            .description(
+                                OptionDescription.createBuilder()
+                                    .text(Component.translatable("config.yo_hooks:damage.desc"))
+                                    .build()
+                            )
+                            .controller(opt ->
+                                    IntegerSliderControllerBuilder.create(opt)
+                                            .range(0, 100)
+                                            .step(1))
+                            .build()
+            );
         }
 
         return options;

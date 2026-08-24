@@ -30,4 +30,8 @@ public class EventHandler {
         ClientEvents.clientTickStart();
     }
 
+    public static void clientDisconnect() {
+        ClientEvents.clearServerOverlays();
+	}
+
 }

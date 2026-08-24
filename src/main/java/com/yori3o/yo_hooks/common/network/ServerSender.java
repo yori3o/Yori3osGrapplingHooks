@@ -15,15 +15,17 @@ import com.google.gson.Gson;
 public class ServerSender {
 
     
-    public static void sendCommonConfig(ServerPlayer serverPlayer, CommonConfig values, Map<String, Integer> HookLengths) {
+    public static void sendCommonConfig(ServerPlayer serverPlayer, CommonConfig values, Map<String, Integer> hookLengths, Map<String, Integer> hookDamages) {
 
         Gson gson = new Gson();
         byte[] bytesConfig = gson.toJson(values).getBytes(StandardCharsets.UTF_8);
         
-        byte[] bytesHookLengths = gson.toJson(HookLengths).getBytes(StandardCharsets.UTF_8);
+        byte[] bytesHookLengths = gson.toJson(hookLengths).getBytes(StandardCharsets.UTF_8);
+        
+        byte[] bytesHookDamages = gson.toJson(hookDamages).getBytes(StandardCharsets.UTF_8);
 
         SendCommonConfigPayload payload = new SendCommonConfigPayload(
-                bytesConfig, bytesHookLengths
+                bytesConfig, bytesHookLengths, bytesHookDamages
         );
 
         PlatformNetworkHelper.sendToPlayer(serverPlayer, payload);

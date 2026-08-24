@@ -1,9 +1,8 @@
 package com.yori3o.yo_hooks.common.config.client;
 
 
-import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.config.categories.*;
-import com.yori3o.yo_hooks.common.network.ServerSender;
+import com.yori3o.yo_hooks.common.event.ServerEvents;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
 import com.yori3o.yo_hooks.impl.PlatformUtil;
 
@@ -46,7 +45,7 @@ public class ClientConfigManager {
                 ServerPlayer host = server.getPlayerList().getPlayer(mc.player.getUUID());
                 for (ServerPlayer p : players) {
                     if (host != null && p.getUUID().equals(host.getUUID())) continue;
-                    ServerSender.sendCommonConfig(p, ConfigManager.common(), null);
+                    ServerEvents.sendConfigToNewPlayer(p);
                 }
             }
         }

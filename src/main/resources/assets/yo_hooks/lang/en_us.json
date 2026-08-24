@@ -15,6 +15,7 @@
   "gui.yo_hooks.hooks.desc_2": "Does not consume hunger.",
   "gui.yo_hooks.hooks.desc_3": "Does not break fragile blocks.",
   "gui.yo_hooks.hooks.desc_4": "Increased level of agility: +%d",
+  "gui.yo_hooks.hooks.desc_5": "Damage on hit: %d",
 
   "key.yo_hooks.jump": "Hook Jump",
   "key.yo_hooks.climb": "Climb the Chain",
@@ -70,11 +71,15 @@
   "yacl3.config.yo_hooks:client_config.climbWithMouseWheelScroll.desc": "Only works with \"Hold Hook Tightly\" enabled. Allows you to climb up and down by scrolling the mouse wheel.",
   "yacl3.config.yo_hooks:client_config.usingWhileHoldingFood": "Using the Hook When a Food in Your Main Hand",
   "yacl3.config.yo_hooks:client_config.usingWhileHoldingFood.desc": "When you have food in your main hand and the hook in your other hand, and you're full, the hook can't be used. Useful when you're eating in mid-air and don't want to accidentally fall off.",
+  "yacl3.config.yo_hooks:client_config.showDamageOnHit": "Show Damage on Hit",
+  "yacl3.config.yo_hooks:client_config.showDamageOnHit.desc": "Shows damage when hitting someone in the item description.",
 
   "config.yo_hooks:range": ", range",
   "config.yo_hooks:durability": ", durability",
+  "config.yo_hooks:damage": ", damage",
   "config.yo_hooks:range.desc": "Change the maximum range for this hook. Changes only apply after a game restart!",
   "config.yo_hooks:durability.desc": "Change the durability for this hook. Set to -1 for infinite durability. Changes only apply after a game restart!",
+  "config.yo_hooks:damage.desc": "Change the damage when hitting someone for this hook. Changes only apply after a game restart!",
 
   "yacl3.config.yo_hooks:vr_config.category.client.group.vivecraft_compat": "VR Settings",
   "yacl3.config.yo_hooks:vr_config.rememberHookHandPosition": "Climb the Chain Only With Your Free Hand",

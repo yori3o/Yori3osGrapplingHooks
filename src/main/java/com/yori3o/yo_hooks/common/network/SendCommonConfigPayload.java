@@ -8,7 +8,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 
 
-public record SendCommonConfigPayload(byte[] values, byte[] hookLengths) implements CustomPacketPayload {
+public record SendCommonConfigPayload(byte[] values, byte[] hookLengths, byte[] hookDamages) implements CustomPacketPayload {
 
     public static final Type<SendCommonConfigPayload> TYPE =
             new Type<>(Identifier.fromNamespaceAndPath("yo_hooks", "send_common_config"));
@@ -18,8 +18,10 @@ public record SendCommonConfigPayload(byte[] values, byte[] hookLengths) impleme
                 (buf, payload) -> {
                     buf.writeByteArray(payload.values());
                     buf.writeByteArray(payload.hookLengths());
+                    buf.writeByteArray(payload.hookDamages());
                 },
                 buf -> new SendCommonConfigPayload(
+                    buf.readByteArray(),
                     buf.readByteArray(),
                     buf.readByteArray()
                 )

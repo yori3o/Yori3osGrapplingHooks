@@ -10,6 +10,7 @@ import com.yori3o.yo_hooks.impl.PlatformNetworkHelper;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.google.gson.Gson;
 
@@ -26,9 +27,11 @@ public class ClientReceiver {
                 try {
                     byte[] bytesConfig = payload.values();
                     byte[] bytesHookLengths = payload.hookLengths();
+                    byte[] bytesHookDamages = payload.hookDamages();
 
                     String jsonConfig = new String(bytesConfig, StandardCharsets.UTF_8);
                     String jsonHookLengths = new String(bytesHookLengths, StandardCharsets.UTF_8);
+                    String jsonHookDamages = new String(bytesHookDamages, StandardCharsets.UTF_8);
 
                     Gson gson = new Gson();
                     CommonConfig values = gson.fromJson(jsonConfig, CommonConfig.class);
@@ -38,8 +41,20 @@ public class ClientReceiver {
                     @SuppressWarnings("unchecked")
                     Map<String, Object> hookLengths = gson.fromJson(jsonHookLengths, HashMap.class);
 
-                    for (String hookId : hookLengths.keySet()) {
-                        int length = ((Double)hookLengths.get(hookId)).intValue();
+                    if (jsonHookDamages != null && !jsonHookDamages.isEmpty()) {
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> hookDamages = gson.fromJson(jsonHookDamages, HashMap.class);
+
+                        for (Entry<String, Object> entry : hookDamages.entrySet()) {
+                            String hookId = entry.getKey();
+                            int damage = ((Double)entry.getValue()).intValue();
+                            ItemRegistry.ALL_HOOKS.get(hookId).get().setDamageServerOverlap(damage);
+                        }
+                    }
+
+                    for (Entry<String, Object> entry : hookLengths.entrySet()) {
+                        String hookId = entry.getKey();
+                        int length = ((Double)entry.getValue()).intValue();
                         ItemRegistry.ALL_HOOKS.get(hookId).get().setLengthServerOverlap(length);
                     }
                 } catch (Exception e) {

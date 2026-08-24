@@ -36,7 +36,13 @@ public class ServerEvents {
         for (Supplier<HookItem> hook : ItemRegistry.ALL_HOOKS.values()) {
             hookLengths.put(hook.get().hookDefinition.id, hook.get().hookDefinition.getLength());
         }
-        ServerSender.sendCommonConfig(serverPlayer, cc, hookLengths);
+        Map<String, Integer> hookDamages = new HashMap<>();
+        for (Supplier<HookItem> hook : ItemRegistry.ALL_HOOKS.values()) {
+            Integer a = hook.get().hookDefinition.getDamageOverlap();
+            if (a != null) hookDamages.put(hook.get().hookDefinition.id, a);
+        }
+        if (hookDamages.isEmpty()) hookDamages = null;
+        ServerSender.sendCommonConfig(serverPlayer, cc, hookLengths, hookDamages);
     }
 
     public static void checkSuddenFall(Player player, DamageSource damageSource) {

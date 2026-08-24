@@ -38,7 +38,7 @@ public final class HookRegistry {
     private static void registerAllHooks() {
         for (HookDefinition def : hooks.values()) {
             def = ConfigManager.setOverlapValuesToHook(def);
-            ConfigManager.addNewHookToOverlaps(def.id, def.durability, def.length);
+            ConfigManager.addNewHookToOverlaps(def.id, def.durability, def.length, def.damageOnHit);
             ItemRegistry.registerHook(def);
         }
         ConfigManager.saveOverlap();

@@ -36,6 +36,7 @@ public class HookItem extends Item {
     public final HookDefinition hookDefinition;
     
     public Integer lengthOverlap;
+    public Integer damageOverlap;
 
     
     public HookItem(Properties properties, HookDefinition hookDefinition) {
@@ -92,7 +93,7 @@ public class HookItem extends Item {
             }
             agilityLevel += hookDefinition.defaultAgilityLevel;
 
-            world.addFreshEntity(new HookEntity(world, player, range, stack, agilityLevel, gentleTouch, hookDefinition.damageOnHit));
+            world.addFreshEntity(new HookEntity(world, player, range, stack, agilityLevel, gentleTouch, getBasicDamage()));
         
 
             player.awardStat(Stats.ITEM_USED.get(this));
@@ -135,6 +136,9 @@ public class HookItem extends Item {
             }
         }
         consumer.accept(Component.translatable("gui.yo_hooks.hooks.desc_1", range).withColor(0xFF5555FF));
+        if (ConfigManager.client().showDamageOnHit) {
+            consumer.accept(Component.translatable("gui.yo_hooks.hooks.desc_5", getBasicDamage()).withColor(0xFF5555FF));
+        }
         if (this.hookDefinition.doesNotConsumeHunger && !PhysicVariables.funnyMode) {
             consumer.accept(Component.translatable("gui.yo_hooks.hooks.desc_2").withColor(0xFF5555FF));
         }
@@ -146,7 +150,7 @@ public class HookItem extends Item {
         }
     }
 
-    public void setLengthServerOverlap(int lengthOverlap) {
+    public void setLengthServerOverlap(Integer lengthOverlap) {
         this.lengthOverlap = lengthOverlap;
     }
 
@@ -155,6 +159,18 @@ public class HookItem extends Item {
             return hookDefinition.getLength();
         } else {
             return lengthOverlap;
+        }
+    }
+
+    public void setDamageServerOverlap(Integer damageOverlap) {
+        this.damageOverlap = damageOverlap;
+    }
+
+    public int getBasicDamage() {
+        if (damageOverlap == null) {
+            return hookDefinition.getDamage();
+        } else {
+            return damageOverlap;
         }
     }
 

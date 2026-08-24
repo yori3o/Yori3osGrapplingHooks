@@ -4,6 +4,7 @@ package com.yori3o.yo_hooks.common.event;
 import com.yori3o.yo_hooks.common.YoHooksClient;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.init.ComponentRegistry;
+import com.yori3o.yo_hooks.common.init.ItemRegistry;
 import com.yori3o.yo_hooks.common.network.ClientSender;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
@@ -88,6 +89,13 @@ public class ClientEvents {
         return false;
     }
 
+    protected static void clearServerOverlays() {
+        ItemRegistry.ALL_HOOKS.forEach((a, hookSupplier) -> {
+            hookSupplier.get().setDamageServerOverlap(null);
+            hookSupplier.get().setLengthServerOverlap(null);
+        });
+    }
+
     private static final void hookDiscardIfInvalid(Player player, PlayerWithHookData hookData, HookEntity hook) {
         if (player.getMainHandItem().getOrDefault(ComponentRegistry.HOOK_ACTIVE, false) || player.getOffhandItem().getOrDefault(ComponentRegistry.HOOK_ACTIVE, false)) {
             if (hook.distanceTo(player) <= hook.getMaxRange()) {    
@@ -103,7 +111,7 @@ public class ClientEvents {
         hookData.setHook(null);
         mouseWheelClimbingResetTimer = 0;
     }
-
+    
     private static final void tickMouseWheelClimbing() {
         if (mouseWheelClimbingResetTimer <= 0) {
             climbingUpWithMouseWheel = false;
