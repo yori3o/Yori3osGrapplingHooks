@@ -1,7 +1,6 @@
 package com.yori3o.yo_hooks.common.mixin;
 
 
-import com.yori3o.yo_hooks.common.util.LoggerUtil;
 import com.yori3o.yo_hooks.common.util.interfaces.AvatarRendererAccess;
 
 import net.minecraft.client.entity.ClientAvatarEntity;
@@ -36,7 +35,6 @@ public abstract class AvatarRendererMixin<AvatarlikeEntity extends Avatar & Clie
         CallbackInfo ci
     ) {
         this.yo_hooks$states.put(entity.getId(), state);
-        LoggerUtil.info("dfdf "  + entity.getId());
     }
 
     @Override
