@@ -1,0 +1,42 @@
+package com.yori3o.yo_hooks.common.util;
+
+
+import com.yori3o.yo_hooks.common.entity.HookEntity;
+import com.yori3o.yo_hooks.common.init.ComponentRegistry;
+import com.yori3o.yo_hooks.common.util.interfaces.PlayerWithHookData;
+import com.mojang.serialization.MapCodec;
+
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.item.properties.conditional.ConditionalItemModelProperty;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+
+import org.jetbrains.annotations.Nullable;
+
+
+
+public record HookActiveProperty() implements ConditionalItemModelProperty {
+
+
+    public static final MapCodec<HookActiveProperty> MAP_CODEC = MapCodec.unit(new HookActiveProperty());
+
+
+    @Override
+    public boolean get(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed, ItemDisplayContext itemDisplayContext) {
+        if (entity == null || !(entity instanceof Player)) {
+            return false;
+        }
+        Player player = (Player) entity;
+        HookEntity hook = ((PlayerWithHookData) player).yo_hooks$getHook();
+
+        if (hook == null || hook.isRemoved()) return false;
+
+        return stack.getOrDefault(ComponentRegistry.HOOK_ACTIVE, false);
+    }
+
+    public MapCodec<HookActiveProperty> type() {
+        return MAP_CODEC;
+    }
+}
