@@ -1,7 +1,7 @@
 package com.yori3o.yo_hooks.common.mixin;
 
 
-import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
+import com.yori3o.yo_hooks.common.util.interfaces.PlayerWithHookData;
 
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -26,14 +26,14 @@ public class ServerGamePacketListenerImplMixin {
 
 
     @Inject(method = "handleMovePlayer", at = @At("TAIL"))
-    private void onTravel(ServerboundMovePlayerPacket serverboundMovePlayerPacket, CallbackInfo ci) {
+    private void yo_hooks$onTravel(ServerboundMovePlayerPacket serverboundMovePlayerPacket, CallbackInfo ci) {
 
         Player player = (Player)(((ServerGamePacketListenerImpl)(Object)this).player);
 
         PlayerWithHookData hookData = (PlayerWithHookData)player;
 
-        if (hookData.getHook() != null) {
-            if (hookData.getHook().isInBlock()) {
+        if (hookData.yo_hooks$getHook() != null) {
+            if (hookData.yo_hooks$getHook().isInBlock()) {
                 clientIsFloating = false;
             }
         }

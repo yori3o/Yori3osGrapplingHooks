@@ -6,7 +6,7 @@ import com.yori3o.yo_hooks.common.config.categories.CommonConfig;
 import com.yori3o.yo_hooks.common.init.ItemRegistry;
 import com.yori3o.yo_hooks.common.item.HookItem;
 import com.yori3o.yo_hooks.common.network.ServerSender;
-import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
+import com.yori3o.yo_hooks.common.util.interfaces.PlayerWithHookData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +46,7 @@ public class ServerEvents {
     }
 
     public static void checkSuddenFall(Player player, DamageSource damageSource) {
-        if (((PlayerWithHookData) player).isSuddenFall()) {
+        if (((PlayerWithHookData) player).yo_hooks$isSuddenFall()) {
             if (damageSource.is(DamageTypes.FALL)) {
                 if (player instanceof ServerPlayer serverPlayer) {
                     serverPlayer.getAdvancements().award(

@@ -26,7 +26,7 @@ public abstract class MultiPlayerGameModeMixin {
 
     
     @Inject(method = "useItem", at = @At("HEAD"), cancellable = true)
-    private void cancelHookUse(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
+    private void yo_hooks$cancelHookUse(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
 
         ItemStack stack = player.getItemInHand(hand);
 

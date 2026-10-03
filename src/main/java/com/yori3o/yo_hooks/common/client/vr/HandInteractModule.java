@@ -13,7 +13,7 @@ import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.event.ClientEvents;
 import com.yori3o.yo_hooks.common.network.ClientSender;
-import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
+import com.yori3o.yo_hooks.common.util.interfaces.PlayerWithHookData;
 
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.Identifier;
@@ -136,20 +136,20 @@ public class HandInteractModule implements HeldInteractModule {
         }
 
         PlayerWithHookData hookData = (PlayerWithHookData)player;
-        HookEntity hook = hookData.getHook();
+        HookEntity hook = hookData.yo_hooks$getHook();
         if (hook == null) {
             return false;
         }
         double ddiff = diffPrev - diff;
         if (ddiff > DDIFF_THRESHOLD) { // up
             ClientSender.climb(true, ClientEvents.shouldPlayClimbSound());
-            hookData.setClimbing(true, hook.getAgilityLevel());
+            hookData.yo_hooks$setClimbing(true, hook.getAgilityLevel());
         } else if (ddiff < -DDIFF_THRESHOLD) { // down
             ClientSender.climb(false, ClientEvents.shouldPlayClimbSound());
-            hookData.setClimbing(false, 0);
+            hookData.yo_hooks$setClimbing(false, 0);
         } else {
             this.hapticCooldown[hand.ordinal()] = HAPTIC_COOLDOWN;
-            hookData.setClimbing(false, 0);
+            hookData.yo_hooks$setClimbing(false, 0);
         }
 
         if (this.hapticCooldown[hand.ordinal()] == 0) {

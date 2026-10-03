@@ -128,7 +128,7 @@ public final class ConfigScreenFactory {
                                     .build()
                             )
                             .binding(
-                                    hook.getLength(),
+                                    hook.length,
                                     () -> config.rangeOverlap.getOrDefault(id, hook.length),
                                     value -> {
                                         if (value.intValue() == hook.length) {
@@ -149,7 +149,7 @@ public final class ConfigScreenFactory {
                     Option.<Integer>createBuilder()
                             .name(Component.literal(Component.translatable("item.yo_hooks." + id + "_grappling_hook").getString() + Component.translatable("config.yo_hooks:durability").getString()))
                             .binding(
-                                    hook.getDurability(),
+                                    hook.durability,
                                     () -> config.durabilityOverlap.getOrDefault(id, hook.durability),
                                     value -> {
                                         if (value.intValue() == hook.durability) {
@@ -175,7 +175,7 @@ public final class ConfigScreenFactory {
                     Option.<Integer>createBuilder()
                             .name(Component.literal(Component.translatable("item.yo_hooks." + id + "_grappling_hook").getString() + Component.translatable("config.yo_hooks:damage").getString()))
                             .binding(
-                                    hook.getDamage(),
+                                    hook.damageOnHit,
                                     () -> config.damageOverlap.getOrDefault(id, hook.damageOnHit),
                                     value -> {
                                         if (value.intValue() == hook.damageOnHit) {

@@ -6,9 +6,9 @@
                     "type": "minecraft:item",
                     "name": "yo_hooks:diamond_grappling_hook",
                     "weight": 1,
-                    "functions": [
+                    "modifier": [
                         {
-                            "function": "minecraft:enchant_with_levels",
+                            "type": "minecraft:enchant_with_levels",
                             "levels": {
                                 "type": "minecraft:uniform",
                                 "max": 39.0,
@@ -22,9 +22,9 @@
                     "type": "minecraft:item",
                     "name": "yo_hooks:iron_grappling_hook",
                     "weight": 1,
-                    "functions": [
+                    "modifier": [
                         {
-                            "function": "minecraft:enchant_with_levels",
+                            "type": "minecraft:enchant_with_levels",
                             "levels": {
                                 "type": "minecraft:uniform",
                                 "max": 39.0,

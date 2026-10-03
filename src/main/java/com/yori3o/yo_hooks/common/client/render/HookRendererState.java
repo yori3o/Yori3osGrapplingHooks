@@ -14,7 +14,6 @@ public class HookRendererState extends EntityRenderState {
     public float pitch;
     public float yawAngle;
     public boolean shouldRender = false;
-    //public int packedLight;
     public final ItemStackRenderState itemRenderState = new ItemStackRenderState();
     public Identifier ropeTexture;
 

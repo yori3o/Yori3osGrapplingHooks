@@ -5,24 +5,26 @@ import com.yori3o.yo_hooks.common.client.vr.HandTracker;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.hookregistry.HookRegistry;
 import com.yori3o.yo_hooks.common.item.HookItem;
+import com.yori3o.yo_hooks.common.util.interfaces.AvatarRendererAccess;
 import com.yori3o.yo_hooks.impl.PlatformUtil;
-
-import org.vivecraft.api.client.VRClientAPI;
-import org.vivecraft.api.data.VRBodyPartData;
-import org.vivecraft.api.data.VRPose;
 
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.player.AvatarRenderer;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.Direction;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.Identifier;
@@ -30,6 +32,13 @@ import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+
+import org.vivecraft.api.client.VRClientAPI;
+import org.vivecraft.api.data.VRBodyPartData;
+import org.vivecraft.api.data.VRPose;
+
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 
 
@@ -94,7 +103,7 @@ public class HookRenderer extends EntityRenderer<HookEntity, HookRendererState> 
         );
 
         Vec3 vectorCable = handPos.subtract(hookPos);
-        state.length = (float)(vectorCable.length()) + (isVR ? 0 : .1f);
+        state.length = Math.max(0f, (float) (vectorCable.length() - 0.05f + (isVR ? 0 : 0.1f)));
         Vec3 normalized = vectorCable.normalize();
         state.pitch = (float)Math.acos(normalized.y);
         state.yawAngle = (float)Math.atan2(normalized.z, normalized.x);
@@ -178,24 +187,128 @@ public class HookRenderer extends EntityRenderer<HookEntity, HookRendererState> 
             }
         }
 
-        // copied from vanilla fishing rod
         // --- first person view ---
         if (dispatcher.options.getCameraType().isFirstPerson() && player == Minecraft.getInstance().player) {
             double fovScale = 960.0D / (double)dispatcher.options.fov().get();
-            float f = Mth.sin(Mth.sqrt(player.getAttackAnim(partialTicks)) * 3.1415927F);
-            Vec3 vec3 = dispatcher.camera.getNearPlane(dispatcher.options.fov().get()).getPointOnPlane((float)armSign * 0.825F, -0.5F).yRot(f * 0.5F).xRot(-f * 0.7F).scale(fovScale);
+            float swing = Mth.sin((double)(Mth.sqrt(player.getAttackAnim(partialTicks)) * 3.1415927F));
+            
+            Vec3 baseVec = dispatcher.camera.getNearPlane(dispatcher.options.fov().get())
+                    .getPointOnPlane((float) armSign * 0.825F, -0.5F)
+                    .scale(fovScale); // without swing offset
 
+            Quaternionf camRot = new Quaternionf(dispatcher.camera.rotation());
+            Quaternionf camRotInv = new Quaternionf(camRot).conjugate();
+
+            Vector3f v = new Vector3f((float) baseVec.x, (float) baseVec.y, (float) baseVec.z);
+
+            v.rotate(camRotInv); // we switch to the camera's local space
+
+            // the same swaying motion, but now in local axes
+            Quaternionf swingRot = new Quaternionf()
+                    .rotateY(swing * 0.5F)
+                    .rotateX(-swing * 0.7F);
+            v.rotate(swingRot);
+
+            v.rotate(camRot); // back
+
+            Vec3 vec3 = new Vec3(v.x, v.y, v.z);
             return player.getEyePosition(partialTicks).add(vec3);
             
         } else { // --- third person view ---
-            float h = Mth.lerp(partialTicks, player.yBodyRotO, player.yBodyRot) * 0.017453292F;
-            double d = (double)Mth.sin(h);
-            double e = (double)Mth.cos(h);
-            float j = player.getScale();
-            double k = (double)armSign * 0.35D * (double)j;
-            double l = 0.4D * (double)j;
-            float m = player.isCrouching() ? -0.1875F : 0.0F;
-            return player.getEyePosition(partialTicks).add(-e * k - d * l, (double)m - 0.55 * (double)j, -d * k + e * l);
+
+            AvatarRenderer renderer =
+                (AvatarRenderer) Minecraft.getInstance()
+                    .getEntityRenderDispatcher()
+                    .getRenderer(player);
+
+            PlayerModel model = (PlayerModel)renderer.getModel();
+
+            AvatarRenderState state =
+                    ((AvatarRendererAccess) renderer).yo_hooks$getState(player.getId());
+
+            if (state == null) {
+                state = (AvatarRenderState)renderer.createRenderState(player, partialTicks);
+                model.setupAnim(state);
+            }
+
+            PoseStack poseStack = new PoseStack();
+
+            // player position and rotation
+            Vec3 pos = player.getPosition(partialTicks);
+            poseStack.translate(pos.x, pos.y, pos.z);
+
+            float bodyYaw = Mth.rotLerp(partialTicks, player.yBodyRotO, player.yBodyRot);
+            if (!state.hasPose(Pose.SLEEPING)) {
+                poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - bodyYaw));
+            }
+
+            // lying rotations
+            float swimAmount = state.swimAmount;
+            if (state.isFallFlying) {
+                float scale = state.fallFlyingScale();
+                if (!state.isAutoSpinAttack) {
+                    poseStack.mulPose(Axis.XP.rotationDegrees(scale * (-90.0F - state.xRot)));
+                }
+                if (state.shouldApplyFlyingYRot) {
+                    poseStack.mulPose(Axis.YP.rotation(state.flyingYRot));
+                }
+            } else if (swimAmount > 0.0F) {
+                float xRot = state.xRot;
+                float scale = state.isInWater ? -90.0F - xRot : -90.0F;
+                float xAngle = Mth.lerp(swimAmount, 0.0F, scale);
+                poseStack.mulPose(Axis.XP.rotationDegrees(xAngle));
+
+                if (state.isVisuallySwimming) {
+                    poseStack.translate(0.0F, -1.0F, 0.3F);
+                }
+            } else if (state.hasPose(Pose.SLEEPING)) {
+                Direction bedOrientation = state.bedOrientation;
+                float angle = bedOrientation != null ? sleepDirectionToRotation(bedOrientation) : bodyYaw;
+                poseStack.mulPose(Axis.YP.rotationDegrees(angle));
+                poseStack.mulPose(Axis.ZP.rotationDegrees(90f));
+                poseStack.mulPose(Axis.YP.rotationDegrees(270.0F));
+            }
+            
+            poseStack.scale(-1.0F, -1.0F, 1.0F);
+            poseStack.translate(0.0F, -1.501F, 0.0F);
+            
+            // translate and rotate to the hand and desired point
+            model.translateToHand(state, armSign == 1 ? HumanoidArm.RIGHT : HumanoidArm.LEFT, poseStack);
+
+            poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
+            poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+
+            float offsetX = 0.25F;
+            float offsetY = 5.0F;
+            float offsetZ = -5.8F;
+            poseStack.translate((float)armSign * offsetX / 16.0F, offsetY / 16.0F, offsetZ / 16.0F);
+
+            Vector3f translation = poseStack.last().pose().getTranslation(new Vector3f());
+            Vec3 position = new Vec3(translation.x, translation.y, translation.z);
+
+            return position;
         }
     }
+
+    private static final float sleepDirectionToRotation(final Direction direction) {
+      float var10000;
+      switch(direction.ordinal()) {
+      case 1:
+         var10000 = 90.0F;
+         break;
+      case 2:
+         var10000 = 0.0F;
+         break;
+      case 3:
+         var10000 = 270.0F;
+         break;
+      case 4:
+         var10000 = 180.0F;
+         break;
+      default:
+         var10000 = 0.0F;
+      }
+
+      return var10000;
+   }
 }

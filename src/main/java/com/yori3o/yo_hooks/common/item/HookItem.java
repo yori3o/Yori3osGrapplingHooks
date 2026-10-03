@@ -8,7 +8,7 @@ import com.yori3o.yo_hooks.common.hookregistry.HookDefinition;
 import com.yori3o.yo_hooks.common.init.ComponentRegistry;
 import com.yori3o.yo_hooks.common.sound.SoundRegistry;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
-import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
+import com.yori3o.yo_hooks.common.util.interfaces.PlayerWithHookData;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -48,11 +48,11 @@ public class HookItem extends Item {
     public InteractionResult use(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         PlayerWithHookData hookData = (PlayerWithHookData) player;
-        HookEntity hook = hookData.getHook();
+        HookEntity hook = hookData.yo_hooks$getHook();
         
 
-        if (hookData.isUsingCancelAfterJump()) {
-            hookData.setUsingCancelAfterJump(false);
+        if (hookData.yo_hooks$isUsingCancelAfterJump()) {
+            hookData.yo_hooks$setUsingCancelAfterJump(false);
             return InteractionResult.PASS;
         }
 
@@ -108,7 +108,7 @@ public class HookItem extends Item {
     }
 
     private void discard(Level world, Player player, HookEntity hook) {
-        ((PlayerWithHookData) player).setHook(null);
+        ((PlayerWithHookData) player).yo_hooks$setHook(null);
         if (!world.isClientSide()) {
             
             hook.discard();
@@ -120,6 +120,12 @@ public class HookItem extends Item {
                     1.0f, 1.0f
             );
             player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
+
+            for (ItemStack stack : player.getInventory()) {
+                if (stack.getOrDefault(ComponentRegistry.HOOK_ACTIVE, false)) {
+                    stack.set(ComponentRegistry.HOOK_ACTIVE, false);
+                }
+            }
         } else {
             YoHooksClient.JUMP.setDown(false);
         }

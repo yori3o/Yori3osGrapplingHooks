@@ -9,7 +9,7 @@ import com.yori3o.yo_hooks.common.init.EntityRegistry;
 import com.yori3o.yo_hooks.common.init.ItemRegistry;
 import com.yori3o.yo_hooks.common.init.TagRegistry;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
-import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
+import com.yori3o.yo_hooks.common.util.interfaces.PlayerWithHookData;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -130,15 +130,15 @@ public class HookEntity extends ThrowableProjectile {
                 if (this.level().getBlockState(this.entityData.get(BLOCK_POS)).isAir() && this.isNoGravity()) {
                     this.discard();
                     if (hookedOnFallingBlock) {
-                        ((PlayerWithHookData) owner).setSuddenFall(true);
+                        ((PlayerWithHookData) owner).yo_hooks$setSuddenFall(true);
                         hookedOnFallingBlock = false;
                     }
                     return;
                 }
             }
 
-            if (((PlayerWithHookData) owner).getHook() == null) {
-                ((PlayerWithHookData) owner).setHook(this);
+            if (((PlayerWithHookData) owner).yo_hooks$getHook() == null) {
+                ((PlayerWithHookData) owner).yo_hooks$setHook(this);
             }
 
             if (this.random.nextFloat() > 0.9955) {
@@ -157,12 +157,11 @@ public class HookEntity extends ThrowableProjectile {
                 || !((player.getMainHandItem().getOrDefault(ComponentRegistry.HOOK_ACTIVE, false)) 
                 || (player.getOffhandItem().getOrDefault(ComponentRegistry.HOOK_ACTIVE, false))) 
                 || this.distanceTo(player) > getMaxRange()) {
-            ((PlayerWithHookData) player).setHook(null);
+            ((PlayerWithHookData) player).yo_hooks$setHook(null);
             this.discard();
             for (ItemStack stack : player.getInventory()) {
                 if (stack.getOrDefault(ComponentRegistry.HOOK_ACTIVE, false)) {
                     stack.set(ComponentRegistry.HOOK_ACTIVE, false);
-                    break;
                 }
             }
             return true;
@@ -229,7 +228,7 @@ public class HookEntity extends ThrowableProjectile {
                 if (ConfigManager.server().whitelistMode) isThisBlockBanned = !isThisBlockBanned;
                 if (isThisBlockBanned) {
                     this.discard();
-                    ((PlayerWithHookData) player).setHook(null);
+                    ((PlayerWithHookData) player).yo_hooks$setHook(null);
                     return;
                 }
             }
@@ -250,8 +249,8 @@ public class HookEntity extends ThrowableProjectile {
                     if (bs.is(TagRegistry.FRAGILE_BLOCKS)) {
                         level.destroyBlock(pos, true);
                         this.discard();
-                        ((PlayerWithHookData) player).setHook(null);
-                        ((PlayerWithHookData) player).setSuddenFall(true);
+                        ((PlayerWithHookData) player).yo_hooks$setHook(null);
+                        ((PlayerWithHookData) player).yo_hooks$setSuddenFall(true);
                         return;
                     }
                     if (bs.getBlock() instanceof FallingBlock) {
@@ -429,7 +428,7 @@ public class HookEntity extends ThrowableProjectile {
     private void setHookForPlayer(@Nullable HookEntity hookEntity) {
         Player player = this.getPlayerOwner();
         if (player instanceof PlayerWithHookData data) {
-            data.setHook(hookEntity);
+            data.yo_hooks$setHook(hookEntity);
         }
     }
 

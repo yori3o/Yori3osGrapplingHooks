@@ -6,9 +6,9 @@
                     "type": "minecraft:item",
                     "name": "yo_hooks:gold_grappling_hook",
                     "weight": 1,
-                    "functions": [
+                    "modifier": [
                         {
-                            "function": "minecraft:set_damage", 
+                            "type": "minecraft:set_damage", 
                             "add": false,
                             "damage": {
                                 "type": "minecraft:uniform",
@@ -17,7 +17,7 @@
                             }
                         },
                         {
-                            "function": "minecraft:enchant_randomly",
+                            "type": "minecraft:enchant_randomly",
                             "options": "#minecraft:on_random_loot"
                         }
                     ]

@@ -45,10 +45,12 @@ public class ClientReceiver {
                         @SuppressWarnings("unchecked")
                         Map<String, Object> hookDamages = gson.fromJson(jsonHookDamages, HashMap.class);
 
-                        for (Entry<String, Object> entry : hookDamages.entrySet()) {
-                            String hookId = entry.getKey();
-                            int damage = ((Double)entry.getValue()).intValue();
-                            ItemRegistry.ALL_HOOKS.get(hookId).get().setDamageServerOverlap(damage);
+                        if (hookDamages != null) {
+                            for (Entry<String, Object> entry : hookDamages.entrySet()) {
+                                String hookId = entry.getKey();
+                                int damage = ((Double)entry.getValue()).intValue();
+                                ItemRegistry.ALL_HOOKS.get(hookId).get().setDamageServerOverlap(damage);
+                            }
                         }
                     }
 

@@ -6,9 +6,9 @@
                     "type": "minecraft:item",
                     "name": "yo_hooks:netherite_grappling_hook",
                     "weight": 4,
-                    "functions": [
+                    "modifier": [
                         {
-                            "function": "minecraft:set_damage", 
+                            "type": "minecraft:set_damage", 
                             "add": false,
                             "damage": {
                                 "type": "minecraft:uniform",

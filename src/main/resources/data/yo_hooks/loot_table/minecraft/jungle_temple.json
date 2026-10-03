@@ -6,9 +6,9 @@
                     "type": "minecraft:item",
                     "name": "yo_hooks:gold_grappling_hook",
                     "weight": 2,
-                    "functions": [
+                    "modifier": [
                         {
-                            "function": "minecraft:set_damage", 
+                            "type": "minecraft:set_damage", 
                             "add": false,
                             "damage": {
                                 "type": "minecraft:uniform",
@@ -22,9 +22,9 @@
                     "type": "minecraft:item",
                     "name": "yo_hooks:iron_grappling_hook",
                     "weight": 1,
-                    "functions": [
+                    "modifier": [
                         {
-                            "function": "minecraft:set_damage", 
+                            "type": "minecraft:set_damage", 
                             "add": false,
                             "damage": {
                                 "type": "minecraft:uniform",
