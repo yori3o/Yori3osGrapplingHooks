@@ -11,7 +11,7 @@
       "options": "#minecraft:on_traded_equipment"
     },
     {
-      "type": "minecraft:filtered",
+      "function": "minecraft:filtered",
       "item_filter": {
         "items": "yo_hooks:iron_grappling_hook",
         "predicates": {
@@ -21,7 +21,7 @@
         }
       },
       "on_fail": {
-        "type": "minecraft:discard"
+        "function": "minecraft:discard"
       }
     }
   ],
