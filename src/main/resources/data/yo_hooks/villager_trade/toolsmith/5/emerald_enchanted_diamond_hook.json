@@ -1,7 +1,7 @@
 {
-  "given_item_modifier": [
+  "given_item_modifiers": [
     {
-      "type": "minecraft:enchant_with_levels",
+      "function": "minecraft:enchant_with_levels",
       "include_additional_cost_component": true,
       "levels": {
         "type": "minecraft:uniform",
