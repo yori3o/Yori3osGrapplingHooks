@@ -1,0 +1,18 @@
+{
+    "pools": [
+        {
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "yo_hooks:iron_grappling_hook",
+                    "weight": 1
+                },
+                {
+                    "type": "empty",
+                    "weight": 2
+                }
+            ],
+            "rolls": 1.0
+        }
+    ]
+}

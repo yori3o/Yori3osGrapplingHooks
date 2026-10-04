@@ -1,0 +1,27 @@
+{
+  "values": [
+    "#c:glass_panes",
+    "#c:glass_blocks",
+    "minecraft:ice",
+    "minecraft:amethyst_cluster",
+    "minecraft:large_amethyst_bud",
+    "minecraft:medium_amethyst_bud",
+    "minecraft:small_amethyst_bud",
+    "minecraft:pointed_dripstone",
+    "minecraft:flower_pot",
+    "minecraft:decorated_pot",
+    "minecraft:turtle_egg",
+    "minecraft:sniffer_egg",
+    "minecraft:lily_pad",
+    "minecraft:big_dripleaf",
+    "minecraft:chorus_plant",
+    "minecraft:sea_pickle",
+    "minecraft:bamboo",
+    "minecraft:cocoa",
+    "minecraft:scaffolding",
+    "#minecraft:candles",
+    "minecraft:sea_lantern",
+    "minecraft:glowstone",
+    "minecraft:end_rod"
+  ]
+}

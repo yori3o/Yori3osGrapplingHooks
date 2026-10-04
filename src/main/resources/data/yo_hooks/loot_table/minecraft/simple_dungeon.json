@@ -1,0 +1,39 @@
+{
+    "pools": [
+        {
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "yo_hooks:copper_grappling_hook",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_damage", 
+                            "add": false,
+                            "damage": {
+                                "type": "minecraft:uniform",
+                                "max": 0.9,
+                                "min": 0.6
+                            }
+                        },
+                        {
+                            "function": "minecraft:enchant_randomly",
+                            "options": "#minecraft:on_random_loot",
+                            "conditions": [ 
+                                {
+                                    "condition": "minecraft:random_chance",
+                                    "chance": 0.6
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "empty",
+                    "weight": 4
+                }
+            ],
+            "rolls": 1.0
+        }
+    ]
+}

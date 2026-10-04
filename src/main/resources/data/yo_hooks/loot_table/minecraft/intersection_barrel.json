@@ -1,0 +1,47 @@
+{
+    "pools": [
+        {
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "yo_hooks:diamond_grappling_hook",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_damage", 
+                            "add": false,
+                            "damage": {
+                                "type": "minecraft:uniform",
+                                "max": 0.6,
+                                "min": 0.2
+                            }
+                        },
+                        {
+                            "function": "minecraft:enchant_randomly",
+                            "options": "#minecraft:on_random_loot"
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "yo_hooks:iron_grappling_hook",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_damage", 
+                            "add": false,
+                            "damage": {
+                                "type": "minecraft:uniform",
+                                "max": 0.8,
+                                "min": 0.4
+                            }
+                        },
+                        {
+                            "function": "minecraft:enchant_randomly",
+                            "options": "#minecraft:on_random_loot"
+                        }
+                    ]
+                }
+            ],
+            "rolls": 1.0
+        }
+    ]
+}

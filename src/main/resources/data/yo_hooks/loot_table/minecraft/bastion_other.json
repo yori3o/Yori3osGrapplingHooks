@@ -1,0 +1,33 @@
+{
+    "pools": [
+        {
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "yo_hooks:gold_grappling_hook",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_damage", 
+                            "add": false,
+                            "damage": {
+                                "type": "minecraft:uniform",
+                                "max": 0.9,
+                                "min": 0.4
+                            }
+                        },
+                        {
+                            "function": "minecraft:enchant_randomly",
+                            "options": "#minecraft:on_random_loot"
+                        }
+                    ]
+                },
+                {
+                    "type": "empty",
+                    "weight": 3
+                }
+            ],
+            "rolls": 1.0
+        }
+    ]
+}

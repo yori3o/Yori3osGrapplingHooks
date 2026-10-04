@@ -1,0 +1,45 @@
+{
+    "pools": [
+        {
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "yo_hooks:gold_grappling_hook",
+                    "weight": 2,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_damage", 
+                            "add": false,
+                            "damage": {
+                                "type": "minecraft:uniform",
+                                "max": 0.8,
+                                "min": 0.4
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "yo_hooks:iron_grappling_hook",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_damage", 
+                            "add": false,
+                            "damage": {
+                                "type": "minecraft:uniform",
+                                "max": 0.6,
+                                "min": 0.3
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "empty",
+                    "weight": 2
+                }
+            ],
+            "rolls": 1.0
+        }
+    ]
+}
