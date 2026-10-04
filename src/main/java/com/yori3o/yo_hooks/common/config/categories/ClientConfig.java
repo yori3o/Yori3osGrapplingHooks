@@ -38,4 +38,9 @@ public class ClientConfig {
     @SerialEntry
     public boolean usingWhileHoldingFood = false;
 
+    @AutoGen(group = TYPE, category = TYPE)
+    @Boolean
+    @SerialEntry
+    public boolean showDamageOnHit = false;
+
 }

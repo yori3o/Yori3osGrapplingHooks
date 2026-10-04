@@ -11,7 +11,7 @@ import com.yori3o.yo_hooks.common.init.EntityRegistry;
 import com.yori3o.yo_hooks.common.init.ItemRegistry;
 import com.yori3o.yo_hooks.common.init.TagRegistry;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
-import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
+import com.yori3o.yo_hooks.common.util.interfaces.PlayerWithHookData;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -140,7 +140,7 @@ public class HookEntity extends ThrowableProjectile {
                 HookWithSableData data = SableCompat.hooks.get(this);
                 if (data == null) {
                     if (!SableCompat.onHookHitBlock(this, this.position())) {
-                        ((PlayerWithHookData) owner).setHook(null);
+                        ((PlayerWithHookData) owner).yo_hooks$setHook(null);
                         this.discard();
                         return;
                     }
@@ -155,15 +155,15 @@ public class HookEntity extends ThrowableProjectile {
                 if (this.level().getBlockState(this.entityData.get(BLOCK_POS)).isAir() && this.isNoGravity()) {
                     this.discard();
                     if (hookedOnFallingBlock) {
-                        ((PlayerWithHookData) owner).setSuddenFall(true);
+                        ((PlayerWithHookData) owner).yo_hooks$setSuddenFall(true);
                         hookedOnFallingBlock = false;
                     }
                     return;
                 }
             }
 
-            if (((PlayerWithHookData) owner).getHook() == null) {
-                ((PlayerWithHookData) owner).setHook(this);
+            if (((PlayerWithHookData) owner).yo_hooks$getHook() == null) {
+                ((PlayerWithHookData) owner).yo_hooks$setHook(this);
             }
 
             if (this.random.nextFloat() > 0.9955) {
@@ -179,7 +179,7 @@ public class HookEntity extends ThrowableProjectile {
                 HookWithSableData data = SableCompat.hooksClient.get(this);
                 if (data == null) {
                     if (!SableCompat.onHookHitBlock(this, this.position())) {
-                        ((PlayerWithHookData) owner).setHook(null);
+                        ((PlayerWithHookData) owner).yo_hooks$setHook(null);
                         return;
                     }
                 }
@@ -192,7 +192,7 @@ public class HookEntity extends ThrowableProjectile {
                 || !((player.getMainHandItem().getItem() instanceof HookItem) 
                 || (player.getOffhandItem().getItem() instanceof HookItem)) 
                 || this.distanceTo(player) > getMaxRange()) {
-            ((PlayerWithHookData) player).setHook(null);
+            ((PlayerWithHookData) player).yo_hooks$setHook(null);
             this.discard();
             return true;
         }
@@ -263,7 +263,7 @@ public class HookEntity extends ThrowableProjectile {
                 if (ConfigManager.server().whitelistMode) isThisBlockBanned = !isThisBlockBanned;
                 if (isThisBlockBanned) {
                     this.discard();
-                    ((PlayerWithHookData) player).setHook(null);
+                    ((PlayerWithHookData) player).yo_hooks$setHook(null);
                     return;
                 }
             }
@@ -284,16 +284,14 @@ public class HookEntity extends ThrowableProjectile {
                     if (bs.is(TagRegistry.FRAGILE_BLOCKS)) {
                         level.destroyBlock(pos, true);
                         this.discard();
-                        ((PlayerWithHookData) player).setHook(null);
-                        ((PlayerWithHookData) player).setSuddenFall(true);
+                        ((PlayerWithHookData) player).yo_hooks$setHook(null);
+                        ((PlayerWithHookData) player).yo_hooks$setSuddenFall(true);
                         return;
                     }
                     if (bs.getBlock() instanceof FallingBlock) {
                         level.scheduleTick(pos, bs.getBlock(), 1);
                         hookedOnFallingBlock = true;
-                    }/*  else if (bs.getBlock() instanceof RedStoneOreBlock) {
-                        RedStoneOreBlock.interact(bs, level, pos);
-                    }*/
+                    }
                 }
             }
 
@@ -478,7 +476,7 @@ public class HookEntity extends ThrowableProjectile {
     private void setHookForPlayer(@Nullable HookEntity hookEntity) {
         Player player = this.getPlayerOwner();
         if (player instanceof PlayerWithHookData data) {
-            data.setHook(hookEntity);
+            data.yo_hooks$setHook(hookEntity);
         }
     }
 

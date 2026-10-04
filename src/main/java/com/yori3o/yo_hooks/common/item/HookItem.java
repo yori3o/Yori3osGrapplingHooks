@@ -7,7 +7,7 @@ import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.hookregistry.HookDefinition;
 import com.yori3o.yo_hooks.common.sound.SoundRegistry;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
-import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
+import com.yori3o.yo_hooks.common.util.interfaces.PlayerWithHookData;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -25,6 +25,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 
 import java.util.List;
+import java.util.Properties;
+
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 
 
@@ -36,6 +38,7 @@ public class HookItem extends Item {
     public final HookDefinition hookDefinition;
     
     public Integer lengthOverlap;
+    public Integer damageOverlap;
 
     
     public HookItem(Properties properties, HookDefinition hookDefinition, TagKey<Item> repairTag) {
@@ -48,11 +51,11 @@ public class HookItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         PlayerWithHookData hookData = (PlayerWithHookData) player;
-        HookEntity hook = hookData.getHook();
+        HookEntity hook = hookData.yo_hooks$getHook();
         
 
-        if (hookData.isUsingCancelAfterJump()) {
-            hookData.setUsingCancelAfterJump(false);
+        if (hookData.yo_hooks$isUsingCancelAfterJump()) {
+            hookData.yo_hooks$setUsingCancelAfterJump(false);
             return InteractionResultHolder.pass(stack);
         }
 
@@ -91,7 +94,7 @@ public class HookItem extends Item {
             }
             agilityLevel += hookDefinition.defaultAgilityLevel;
 
-            world.addFreshEntity(new HookEntity(world, player, range, stack, agilityLevel, gentleTouch, hookDefinition.damageOnHit));
+            world.addFreshEntity(new HookEntity(world, player, range, stack, agilityLevel, gentleTouch, getBasicDamage()));
         
 
             player.awardStat(Stats.ITEM_USED.get(this));
@@ -106,7 +109,7 @@ public class HookItem extends Item {
     }
 
     private void discard(Level world, Player player, HookEntity hook) {
-        ((PlayerWithHookData) player).setHook(null);
+        ((PlayerWithHookData) player).yo_hooks$setHook(null);
         if (!world.isClientSide()) {
             
             hook.discard();
@@ -132,6 +135,9 @@ public class HookItem extends Item {
             }
         }
         tooltip.add(Component.translatable("gui.yo_hooks.hooks.desc_1", range).withColor(0xFF5555FF));
+        if (ConfigManager.client().showDamageOnHit) {
+            tooltip.add(Component.translatable("gui.yo_hooks.hooks.desc_5", getBasicDamage()).withColor(0xFF5555FF));
+        }
         if (this.hookDefinition.doesNotConsumeHunger && !PhysicVariables.funnyMode) {
             tooltip.add(Component.translatable("gui.yo_hooks.hooks.desc_2").withColor(0xFF5555FF));
         }
@@ -143,7 +149,7 @@ public class HookItem extends Item {
         }
     }
 
-    public void setLengthServerOverlap(int lengthOverlap) {
+        public void setLengthServerOverlap(Integer lengthOverlap) {
         this.lengthOverlap = lengthOverlap;
     }
 
@@ -152,6 +158,18 @@ public class HookItem extends Item {
             return hookDefinition.getLength();
         } else {
             return lengthOverlap;
+        }
+    }
+
+    public void setDamageServerOverlap(Integer damageOverlap) {
+        this.damageOverlap = damageOverlap;
+    }
+
+    public int getBasicDamage() {
+        if (damageOverlap == null) {
+            return hookDefinition.getDamage();
+        } else {
+            return damageOverlap;
         }
     }
 

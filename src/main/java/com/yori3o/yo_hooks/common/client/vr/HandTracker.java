@@ -13,7 +13,7 @@ import org.vivecraft.client_vr.gameplay.screenhandlers.KeyboardHandler;
 import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.item.HookItem;
-import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
+import com.yori3o.yo_hooks.common.util.interfaces.PlayerWithHookData;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -72,7 +72,7 @@ public class HandTracker implements Tracker {
         }
 
         PlayerWithHookData hookData = (PlayerWithHookData)player;
-        HookEntity hook = hookData.getHook();
+        HookEntity hook = hookData.yo_hooks$getHook();
         if (hook == null || !hook.isInBlock()) {
             return false;
         }
@@ -127,7 +127,7 @@ public class HandTracker implements Tracker {
         }
         
         PlayerWithHookData hookData = (PlayerWithHookData)player;
-        HookEntity hook = hookData.getHook();
+        HookEntity hook = hookData.yo_hooks$getHook();
         if (ConfigManager.vr().moveAlongChain && hook.isInBlock()) {
             Vec3 hookHeadPosWorld = new Vec3(hook.getX(), hook.getY(), hook.getZ());
             Vec3 hookHeadPosRoom = new Vec3(VRPlayer.worldToRoomPos(hookHeadPosWorld, ClientDataHolderVR.getInstance().vrPlayer.vrdata_world_pre));

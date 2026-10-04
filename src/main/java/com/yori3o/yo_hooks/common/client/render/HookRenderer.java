@@ -12,6 +12,7 @@ import com.yori3o.yo_hooks.common.compat.sable.SableCompat;
 import org.joml.Quaterniond;
 import org.joml.Quaternionf;
 import org.joml.Vector3d;
+import org.joml.Vector3f;
 import org.vivecraft.api.client.VRClientAPI;
 import org.vivecraft.api.data.VRBodyPartData;
 import org.vivecraft.api.data.VRPose;
@@ -180,9 +181,28 @@ public class HookRenderer extends EntityRenderer<HookEntity> {
         // --- first person view ---
         if (dispatcher.options.getCameraType().isFirstPerson() && player == Minecraft.getInstance().player) {
             double fovScale = 960.0D / (double)dispatcher.options.fov().get();
-            float f = Mth.sin(Mth.sqrt(player.getAttackAnim(partialTicks)) * 3.1415927F);
-            Vec3 vec3 = dispatcher.camera.getNearPlane().getPointOnPlane((float)armSign * 0.825F, -0.5F).scale(fovScale).yRot(f * 0.5F).xRot(-f * 0.7F);
+            float swing = Mth.sin((Mth.sqrt(player.getAttackAnim(partialTicks)) * 3.1415927F));
+            
+            Vec3 baseVec = dispatcher.camera.getNearPlane()
+                    .getPointOnPlane((float) armSign * 0.825F, -0.5F)
+                    .scale(fovScale); // without swing offset
 
+            Quaternionf camRot = new Quaternionf(dispatcher.camera.rotation());
+            Quaternionf camRotInv = new Quaternionf(camRot).conjugate();
+
+            Vector3f v = new Vector3f((float) baseVec.x, (float) baseVec.y, (float) baseVec.z);
+
+            v.rotate(camRotInv); // we switch to the camera's local space
+
+            // the same swaying motion, but now in local axes
+            Quaternionf swingRot = new Quaternionf()
+                    .rotateY(swing * 0.5F)
+                    .rotateX(-swing * 0.7F);
+            v.rotate(swingRot);
+
+            v.rotate(camRot); // back
+
+            Vec3 vec3 = new Vec3(v.x, v.y, v.z);
             return player.getEyePosition(partialTicks).add(vec3);
             
         } else { // --- third person view ---

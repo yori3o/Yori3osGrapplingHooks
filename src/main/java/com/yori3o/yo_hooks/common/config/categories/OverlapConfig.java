@@ -29,4 +29,7 @@ public class OverlapConfig {
     @SerialEntry
     public Map<String, Integer> rangeOverlap = new HashMap<>();
 
+    @SerialEntry
+    public Map<String, Integer> damageOverlap = new HashMap<>();
+
 }

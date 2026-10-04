@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 
 import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
-import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
+import com.yori3o.yo_hooks.common.util.interfaces.PlayerWithHookData;
 import com.yori3o.yo_hooks.impl.PlatformNetworkHelper;
 
 import net.minecraft.sounds.SoundSource;
@@ -37,12 +37,12 @@ public class ServerReceiver {
                 
                 if (hookDataPlayer == null) return;
 
-                HookEntity hookEntity = hookDataPlayer.getHook();
+                HookEntity hookEntity = hookDataPlayer.yo_hooks$getHook();
 
                 if (hookEntity != null && hookEntity.isInBlock()) {
 
                     // this variable should change as quickly as possible
-                    hookDataPlayer.setUsingCancelAfterJump(usingCancel);
+                    hookDataPlayer.yo_hooks$setUsingCancelAfterJump(usingCancel);
 
                     Supplier<HookItem> supplier = ItemRegistry.ALL_HOOKS.get(hookEntity.getHookItemMaterial());
                     if (supplier == null) return;
@@ -57,7 +57,7 @@ public class ServerReceiver {
                 
                         hookEntity.discard(); 
 
-                        hookDataPlayer.setHook(null);
+                        hookDataPlayer.yo_hooks$setHook(null);
 
                         player.level().playSound(null,
                                 player.getX(), player.getY() + 1, player.getZ(),
@@ -95,7 +95,7 @@ public class ServerReceiver {
                 Player player = context.getPlayer();
                 PlayerWithHookData hookDataPlayer = (PlayerWithHookData) player;
 
-                HookEntity hook = hookDataPlayer.getHook();
+                HookEntity hook = hookDataPlayer.yo_hooks$getHook();
 
                 if (hook != null) {
                     context.enqueue(() -> {

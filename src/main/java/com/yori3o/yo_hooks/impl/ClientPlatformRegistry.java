@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 
 import com.yori3o.yo_hooks.common.client.render.HookRenderer;
 import com.yori3o.yo_hooks.common.config.client.ConfigScreenFactory;
-import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
+import com.yori3o.yo_hooks.common.util.interfaces.*;
 
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
@@ -54,7 +54,7 @@ public class ClientPlatformRegistry {
                             return 0.0F;
                         }
                         Player player = (Player) entity;
-                        HookEntity hook = ((PlayerWithHookData) player).getHook();
+                        HookEntity hook = ((PlayerWithHookData) player).yo_hooks$getHook();
                         ItemStack mainHandItem = player.getMainHandItem();
 
                         boolean flag = mainHandItem == stack;

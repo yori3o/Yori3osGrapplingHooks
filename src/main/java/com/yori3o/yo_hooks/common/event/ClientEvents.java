@@ -3,10 +3,11 @@ package com.yori3o.yo_hooks.common.event;
 
 import com.yori3o.yo_hooks.common.YoHooksClient;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
+import com.yori3o.yo_hooks.common.init.ItemRegistry;
 import com.yori3o.yo_hooks.common.item.HookItem;
 import com.yori3o.yo_hooks.common.network.ClientSender;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
-import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
+import com.yori3o.yo_hooks.common.util.interfaces.PlayerWithHookData;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
@@ -32,7 +33,7 @@ public class ClientEvents {
 
         PlayerWithHookData hookData = (PlayerWithHookData)player;
 
-        HookEntity hook = hookData.getHook();
+        HookEntity hook = hookData.yo_hooks$getHook();
         if (hook != null) {
             hookDiscardIfInvalid(player, hookData, hook);
             clientTickKeybindsHandler(player, hookData, hook);
@@ -51,26 +52,26 @@ public class ClientEvents {
             if (down && !jumpKeybindWasDown && !YoHooksClient.PREVENT_USE.isDown()) {
 
                 boolean usingCancel = YoHooksClient.JUMP.same(Minecraft.getInstance().options.keyUse);
-                hookData.setUsingCancelAfterJump(usingCancel);
+                hookData.yo_hooks$setUsingCancelAfterJump(usingCancel);
                 
                 ClientSender.jumpFromHook(usingCancel);
-                hookData.setHook(null);
+                hookData.yo_hooks$setHook(null);
                 mouseWheelClimbingResetTimer = 0;
 
-                if (hookData.isJumpAllowed()) {
+                if (hookData.yo_hooks$isJumpAllowed()) {
                     applyJumpImpulse(player, hook.getAgilityLevel());
                 }
             }
             
             if (YoHooksClient.CLIMB.isDown() || climbingUpWithMouseWheel) {
                 ClientSender.climb(true, shouldPlayClimbSound());
-                hookData.setClimbing(true, hook.getAgilityLevel());
+                hookData.yo_hooks$setClimbing(true, hook.getAgilityLevel());
             } else {
                 if (YoHooksClient.CLIMB_DOWN.isDown() || climbingDownWithMouseWheel) {
                     ClientSender.climb(false, shouldPlayClimbSound());
-                    hookData.setClimbing(false, 0);
+                    hookData.yo_hooks$setClimbing(false, 0);
                 } else {
-                    hookData.setClimbing(false, 0);
+                    hookData.yo_hooks$setClimbing(false, 0);
                 }
             }
         }
@@ -88,6 +89,13 @@ public class ClientEvents {
         return false;
     }
 
+    protected static void clearServerOverlays() {
+        ItemRegistry.ALL_HOOKS.forEach((a, hookSupplier) -> {
+            hookSupplier.get().setDamageServerOverlap(null);
+            hookSupplier.get().setLengthServerOverlap(null);
+        });
+    }
+
     private static final void hookDiscardIfInvalid(Player player, PlayerWithHookData hookData, HookEntity hook) {
         if (player.getMainHandItem().getItem() instanceof HookItem || player.getOffhandItem().getItem() instanceof HookItem) {
             if (hook.distanceTo(player) <= hook.getMaxRange()) {    
@@ -100,10 +108,10 @@ public class ClientEvents {
                 }
             }
         }
-        hookData.setHook(null);
+        hookData.yo_hooks$setHook(null);
         mouseWheelClimbingResetTimer = 0;
     }
-
+    
     private static final void tickMouseWheelClimbing() {
         if (mouseWheelClimbingResetTimer <= 0) {
             climbingUpWithMouseWheel = false;

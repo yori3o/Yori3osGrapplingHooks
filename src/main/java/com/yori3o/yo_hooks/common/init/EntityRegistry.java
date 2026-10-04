@@ -5,7 +5,9 @@ import com.yori3o.yo_hooks.common.YoHooks;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.impl.PlatformEntityRegistry;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 
@@ -26,7 +28,7 @@ public class EntityRegistry {
             .sized(0.25f, 0.25f)
             .clientTrackingRange(4)
             .updateInterval(4)
-            .build(YoHooks.MOD_ID + ":" + "hook_entity")
+            .build("yo_hooks:hook_entity")
                     
         );
 
