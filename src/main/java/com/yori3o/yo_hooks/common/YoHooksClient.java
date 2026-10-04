@@ -9,7 +9,7 @@ import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.init.EntityRegistry;
 import com.yori3o.yo_hooks.common.init.ItemRegistry;
 import com.yori3o.yo_hooks.common.item.HookItem;
-import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
+import com.yori3o.yo_hooks.common.util.interfaces.PlayerWithHookData;
 import com.yori3o.yo_hooks.impl.PlatformEntityRendererRegistry;
 import com.yori3o.yo_hooks.impl.PlatformKeyMappingRegistry;
 import com.yori3o.yo_hooks.impl.PlatformUtil;
@@ -73,7 +73,7 @@ public class YoHooksClient {
         ConfigManager.loadClient();
 
         PlatformEntityRendererRegistry.registerEntityRenderer(EntityRegistry.HOOK_ENTITY.get(), HookRenderer::new);
-
+    
         registerItemProperty();
     }
 
@@ -88,7 +88,7 @@ public class YoHooksClient {
                         return 0.0F;
                     }
                     Player player = (Player) entity;
-                    HookEntity hook = ((PlayerWithHookData) player).getHook();
+                    HookEntity hook = ((PlayerWithHookData) player).yo_hooks$getHook();
                     ItemStack mainHandItem = player.getMainHandItem();
 
                     boolean flag = mainHandItem == stack;

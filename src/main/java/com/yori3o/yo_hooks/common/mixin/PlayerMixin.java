@@ -5,9 +5,7 @@ import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.event.ClientEvents;
 import com.yori3o.yo_hooks.common.init.StatsRegistry;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
-import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
-import com.yori3o.yo_hooks.common.compat.Compats;
-import com.yori3o.yo_hooks.common.compat.sable.SableCompat;
+import com.yori3o.yo_hooks.common.util.interfaces.PlayerWithHookData;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -38,45 +36,45 @@ public class PlayerMixin implements PlayerWithHookData {
 
 
     @Override
-    public void setUsingCancelAfterJump(boolean bl) {
+    public void yo_hooks$setUsingCancelAfterJump(boolean bl) {
         usingCancelAfterJump = bl;
     }
     @Override
-    public boolean isUsingCancelAfterJump() {
+    public boolean yo_hooks$isUsingCancelAfterJump() {
         return usingCancelAfterJump;
     }
 
     @Override
-    public boolean isJumpAllowed() {
+    public boolean yo_hooks$isJumpAllowed() {
         return this.isJumpAllowed;
     }
 
     @Override
-    public void setClimbing(boolean up, int level) {
+    public void yo_hooks$setClimbing(boolean up, int level) {
         agility_level = level;
         isClimbingUp = up;
     }
 
     @Override
-    public void setHook(HookEntity value) {
+    public void yo_hooks$setHook(HookEntity value) {
         this.hookEntity = value;
     }
     @Override
-    public HookEntity getHook() {
+    public HookEntity yo_hooks$getHook() {
         return this.hookEntity;
     }
 
     @Override
-    public void setSuddenFall(boolean bool) {
+    public void yo_hooks$setSuddenFall(boolean bool) {
         suddenFall = bool;
     }
     @Override
-    public boolean isSuddenFall() {
+    public boolean yo_hooks$isSuddenFall() {
         return suddenFall;
     }
 
     @Inject(method = "travel", at = @At("HEAD"))
-    private void onTravel(Vec3 travelVector, CallbackInfo ci) {
+    private void yo_hooks$onTravel(Vec3 travelVector, CallbackInfo ci) {
         Player player = (Player) (Object) this;
 
         allowStatsIncrease = false;
@@ -88,10 +86,6 @@ public class PlayerMixin implements PlayerWithHookData {
 
             // --- variables ---
             Vec3 hookPos = this.hookEntity.position();
-            if (Compats.isSableLoaded) {
-                hookPos = SableCompat.getHookPos(hookPos, this.hookEntity);
-                if (hookPos == null) return;
-            }
             Vec3 playerEyePos = player.getEyePosition();
             Vec3 vecToHook = hookPos.subtract(playerEyePos);
             Vec3 unitVector = vecToHook.normalize();
@@ -156,7 +150,7 @@ public class PlayerMixin implements PlayerWithHookData {
                     player.resetFallDistance();
                 }
                 if (!player.onGround()) {
-                    player.hurtMarked = false;
+                    //player.hurt = false;
                     if ((dist + 0.6) > MAX_R) {
                         allowStatsIncrease = true;
                         if (unitVector.y > -0.15) { 
@@ -169,7 +163,7 @@ public class PlayerMixin implements PlayerWithHookData {
     }
 
     @Inject(method = "travel", at = @At("TAIL"))
-    private void afterTravel(Vec3 travelVector, CallbackInfo ci) {
+    private void yo_hooks$afterTravel(Vec3 travelVector, CallbackInfo ci) {
         Player player = (Player) (Object) this;
 
         if (allowStatsIncrease) {

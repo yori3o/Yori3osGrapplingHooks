@@ -32,7 +32,8 @@
     ],
     "accessWidener": "yo_hooks.accesswidener",
     "depends": {
-        "minecraft": ">=1.21 <1.21.2",
+        "fabricloader": "*",
+        "minecraft": ">=1.21 <=1.21.1",
         "fabric-api": "*",
         "yet_another_config_lib_v3": "*"
     },
@@ -45,7 +46,6 @@
             "links": {
                 "modmenu.curseforge":"https://www.curseforge.com/minecraft/mc-mods/yori3os-grappling-hooks",
                 "modmenu.modrinth":"https://modrinth.com/mod/yori3os-grappling-hooks",
-                "modmenu.donate":"https://sprightly-smakager-c8e2b1.netlify.app",
                 "modmenu.youtube":"https://www.youtube.com/watch?v=R_HgY7vfMeI"
             }
         }

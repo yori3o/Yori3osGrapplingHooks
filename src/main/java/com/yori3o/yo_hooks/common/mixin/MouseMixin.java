@@ -3,7 +3,7 @@ package com.yori3o.yo_hooks.common.mixin;
 
 import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.event.ClientEvents;
-import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
+import com.yori3o.yo_hooks.common.util.interfaces.PlayerWithHookData;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
@@ -22,13 +22,13 @@ public class MouseMixin
         method = "onScroll",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/world/entity/player/Inventory;swapPaint(I)V"
+            target = "Lnet/minecraft/world/entity/player/Inventory;swapPaint(D)V"
         ),
         cancellable = true
     )
-    private void cancelHotbarScroll(long handle, double xoffset, double yoffset, CallbackInfo ci) {
+    private void yo_hooks$cancelHotbarScroll(long handle, double xoffset, double yoffset, CallbackInfo ci) {
         if (ConfigManager.client().holdHookTightly) {
-            if (((PlayerWithHookData)(Minecraft.getInstance().player)).getHook() != null) {
+            if (((PlayerWithHookData)(Minecraft.getInstance().player)).yo_hooks$getHook() != null) {
                 ci.cancel();
             }
         }

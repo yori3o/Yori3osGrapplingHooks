@@ -128,7 +128,7 @@ public final class ConfigScreenFactory {
                                     .build()
                             )
                             .binding(
-                                    hook.getLength(),
+                                    hook.length,
                                     () -> config.rangeOverlap.getOrDefault(id, hook.length),
                                     value -> {
                                         if (value.intValue() == hook.length) {
@@ -149,7 +149,7 @@ public final class ConfigScreenFactory {
                     Option.<Integer>createBuilder()
                             .name(Component.literal(Component.translatable("item.yo_hooks." + id + "_grappling_hook").getString() + Component.translatable("config.yo_hooks:durability").getString()))
                             .binding(
-                                    hook.getDurability(),
+                                    hook.durability,
                                     () -> config.durabilityOverlap.getOrDefault(id, hook.durability),
                                     value -> {
                                         if (value.intValue() == hook.durability) {
@@ -167,6 +167,32 @@ public final class ConfigScreenFactory {
                             .controller(opt ->
                                     IntegerSliderControllerBuilder.create(opt)
                                             .range(-1, 960)
+                                            .step(1))
+                            .build()
+            );
+
+            options.add(
+                    Option.<Integer>createBuilder()
+                            .name(Component.literal(Component.translatable("item.yo_hooks." + id + "_grappling_hook").getString() + Component.translatable("config.yo_hooks:damage").getString()))
+                            .binding(
+                                    hook.damageOnHit,
+                                    () -> config.damageOverlap.getOrDefault(id, hook.damageOnHit),
+                                    value -> {
+                                        if (value.intValue() == hook.damageOnHit) {
+                                            config.damageOverlap.remove(id);
+                                        } else {
+                                            config.damageOverlap.put(id, value.intValue());
+                                        }
+                                    }
+                            )
+                            .description(
+                                OptionDescription.createBuilder()
+                                    .text(Component.translatable("config.yo_hooks:damage.desc"))
+                                    .build()
+                            )
+                            .controller(opt ->
+                                    IntegerSliderControllerBuilder.create(opt)
+                                            .range(0, 100)
                                             .step(1))
                             .build()
             );

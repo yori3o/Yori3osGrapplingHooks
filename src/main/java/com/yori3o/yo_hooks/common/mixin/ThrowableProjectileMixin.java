@@ -25,7 +25,7 @@ public class ThrowableProjectileMixin {
             target = "Lnet/minecraft/world/entity/projectile/ThrowableProjectile;setPos(Lnet/minecraft/world/phys/Vec3;)V"
         )
     )
-    private void modifySetPos(ThrowableProjectile self, Vec3 pos) {
+    private void yo_hooks$modifySetPos(ThrowableProjectile self, Vec3 pos) {
         if (self instanceof HookEntity) {
             self.setPos(self.position().add(self.getDeltaMovement()));
         } else {

@@ -20,6 +20,7 @@ public class HookDefinition {
 
     public Integer durabilityOverlap = null;
     public Integer lengthOverlap = null;
+    public Integer damageOverlap = null;
 
 
     public HookDefinition(String id) {
@@ -47,6 +48,18 @@ public class HookDefinition {
         } else {
             return durabilityOverlap;
         }
+    }
+
+    public int getDamage() {
+        if (damageOverlap == null) {
+            return damageOnHit;
+        } else {
+            return damageOverlap;
+        }
+    }
+
+    public Integer getDamageOverlap() {
+        return damageOverlap;
     }
 
 }

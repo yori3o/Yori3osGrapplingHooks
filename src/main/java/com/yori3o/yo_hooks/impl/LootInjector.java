@@ -21,7 +21,7 @@ public class LootInjector {
         LootTableEvents.MODIFY.register((key, tableBuilder, source, registries) -> {
 
             for (LootTableDefinition lootTable : LootTableRegistry.lootTables) {
-                if (key.location().equals(ResourceLocation.parse(lootTable.lootTableForInject))) {
+                if (key.location().equals(ResourceLocation.parse(lootTable.lootTableForInject))) { // 26.2-
 
                     LootPool.Builder pool = LootPool.lootPool()
                         .add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.parse(lootTable.lootTable))));

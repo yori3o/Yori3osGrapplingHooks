@@ -15,6 +15,7 @@
   "gui.yo_hooks.hooks.desc_2": "Не расходует сытость.",
   "gui.yo_hooks.hooks.desc_3": "Не ломает хрупкие блоки.",
   "gui.yo_hooks.hooks.desc_4": "Повышенный уровень ловкости: +%d",
+  "gui.yo_hooks.hooks.desc_5": "Урон при попадании: %d",
 
   "key.yo_hooks.jump": "Прыжок с крюка",
   "key.yo_hooks.climb": "Взобраться по цепи",
@@ -70,11 +71,15 @@
   "yacl3.config.yo_hooks:client_config.climbWithMouseWheelScroll.desc": "Работает только с включённым \"Держать крюк крепко\". Позволяет карабкаться вверх и вниз прокручиванием колёсика мыши.",
   "yacl3.config.yo_hooks:client_config.usingWhileHoldingFood": "Использование крюка при еде в главной руке",
   "yacl3.config.yo_hooks:client_config.usingWhileHoldingFood.desc": "Когда еда в главной руке, а крюк в другой, и вы сыты, крюк не может быть использован. Полезно, когда вы едите в воздухе и боитесь случайно упасть после этого.",
+  "yacl3.config.yo_hooks:client_config.showDamageOnHit": "Показывать урон при попадании",
+  "yacl3.config.yo_hooks:client_config.showDamageOnHit.desc": "Показывает в описании предмета урон при попадании в кого-то.",
 
   "config.yo_hooks:range": ", дальность",
   "config.yo_hooks:durability": ", прочность",
+  "config.yo_hooks:damage": ", урон",
   "config.yo_hooks:range.desc": "Изменить максимальную дальность для этого крюка. Изменения применяются только после перезапуска игры!",
   "config.yo_hooks:durability.desc": "Изменить прочность для этого крюка. Установите -1 для бесконечной прочности. Изменения применяются только после перезапуска игры!",
+  "config.yo_hooks:damage.desc": "Изменить урон при попадании в кого-то для этого крюка. Изменения применяются только после перезапуска игры!",
   
   "yacl3.config.yo_hooks:vr_config.category.client.group.vivecraft_compat": "Настройки для VR",
   "yacl3.config.yo_hooks:vr_config.rememberHookHandPosition": "Подъем/спуск только свободной рукой",

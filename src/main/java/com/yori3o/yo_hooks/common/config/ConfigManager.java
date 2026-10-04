@@ -61,7 +61,7 @@ public class ConfigManager {
         PhysicVariables.updateFunnyModeConfig(a.funnyMode);
     }
 
-    public static void addNewHookToOverlaps(String material, int durability, int range) {
+    public static void addNewHookToOverlaps(String material, int durability, int range, int damage) {
         OverlapConfig ocv = OverlapConfig.HANDLER.instance();
 
         if (!ocv.durabilityOverlap.containsKey(material)) {
@@ -70,6 +70,10 @@ public class ConfigManager {
 
         if (!ocv.rangeOverlap.containsKey(material)) {
             ocv.rangeOverlap.put(material, range);
+        }
+
+        if (!ocv.damageOverlap.containsKey(material)) {
+            ocv.damageOverlap.put(material, damage);
         }
     }
 
@@ -84,6 +88,10 @@ public class ConfigManager {
 
         if (ocv.rangeOverlap.containsKey(material)) {
             def.lengthOverlap = ocv.rangeOverlap.get(material);
+        }
+
+        if (ocv.damageOverlap.containsKey(material)) {
+            def.damageOverlap = ocv.damageOverlap.get(material);
         }
 
         return def;

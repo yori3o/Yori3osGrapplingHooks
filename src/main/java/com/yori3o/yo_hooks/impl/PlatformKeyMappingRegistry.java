@@ -1,9 +1,9 @@
 package com.yori3o.yo_hooks.impl;
 
 
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 
 
 
