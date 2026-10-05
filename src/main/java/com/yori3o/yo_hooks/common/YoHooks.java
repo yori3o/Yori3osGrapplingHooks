@@ -3,6 +3,7 @@ package com.yori3o.yo_hooks.common;
 
 import java.nio.file.Path;
 
+import com.yori3o.yo_hooks.common.compat.Compats;
 import com.yori3o.yo_hooks.common.config.ConfigManager;
 import com.yori3o.yo_hooks.common.hookregistry.HookRegistry;
 import com.yori3o.yo_hooks.common.hookregistry.LootTableRegistry;
@@ -32,6 +33,7 @@ public class YoHooks {
 
 		EntityRegistry.register();
 
+        Compats.checkForLoadedMods();
 		
 		if (PlatformUtil.isClient()) {
             YoHooksClient.initClient();
