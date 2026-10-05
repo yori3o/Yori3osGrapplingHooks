@@ -8,7 +8,8 @@ import net.minecraft.world.phys.Vec3;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 
 
 /**
@@ -18,18 +19,19 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class ThrowableProjectileMixin {
     
 
-    @Redirect(
+    @WrapOperation(
         method = "tick",
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/world/entity/projectile/ThrowableProjectile;setPos(Lnet/minecraft/world/phys/Vec3;)V"
         )
     )
-    private void yo_hooks$modifySetPos(ThrowableProjectile self, Vec3 pos) {
+    private void yo_hooks$modifySetPos(ThrowableProjectile self, Vec3 vec3, Operation<Void> original) {
         if (self instanceof HookEntity) {
-            self.setPos(self.position().add(self.getDeltaMovement()));
-        } else {
-            self.setPos(pos);
+            original.call(self, self.position().add(self.getDeltaMovement()));
+            return;
         }
+
+        original.call(self, vec3);
     }
 }

@@ -32,5 +32,10 @@
       { "name": "yo_hooks:hit_2" },
       { "name": "yo_hooks:hit_3" }
     ]
+  },
+  "breaking": {
+    "sounds": [
+      { "name": "yo_hooks:breaking" }
+    ]
   }
 }

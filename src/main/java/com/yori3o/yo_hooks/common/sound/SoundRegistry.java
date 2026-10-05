@@ -22,6 +22,7 @@ public class SoundRegistry {
     public static final SoundEvent AMBIENT = SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath("yo_hooks", "ambient"));
     public static final SoundEvent CLIMB = SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath("yo_hooks", "climb"));
     public static final SoundEvent HIT = SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath("yo_hooks", "hit"));
+    public static final SoundEvent BREAKING = SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath("yo_hooks", "breaking"));
 
     public static final Map<String, CustomSoundsHolder> customSounds = new HashMap<>();
 
@@ -34,6 +35,7 @@ public class SoundRegistry {
         PlatformSoundRegistry.registerSound(AMBIENT.location(), AMBIENT);
         PlatformSoundRegistry.registerSound(CLIMB.location(), CLIMB);
         PlatformSoundRegistry.registerSound(HIT.location(), HIT);
+        PlatformSoundRegistry.registerSound(BREAKING.location(), BREAKING);
     }
 
     public static void registerNewCustomSounds(String material) {
@@ -44,14 +46,16 @@ public class SoundRegistry {
         final SoundEvent AMBIENT_CUSTOM = SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath("yo_hooks", "ambient_" + material));
         final SoundEvent CLIMB_CUSTOM = SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath("yo_hooks", "climb_" + material));
         final SoundEvent HIT_CUSTOM = SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath("yo_hooks", "hit_" + material));
+        final SoundEvent BREAKING_CUSTOM = SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath("yo_hooks", "breaking_" + material));
 
         PlatformSoundRegistry.registerSound(CAST_CUSTOM.location(), CAST_CUSTOM);
         PlatformSoundRegistry.registerSound(BACK_CUSTOM.location(), BACK_CUSTOM);
         PlatformSoundRegistry.registerSound(AMBIENT_CUSTOM.location(), AMBIENT_CUSTOM);
         PlatformSoundRegistry.registerSound(CLIMB_CUSTOM.location(), CLIMB_CUSTOM);
         PlatformSoundRegistry.registerSound(HIT_CUSTOM.location(), HIT_CUSTOM);
+        PlatformSoundRegistry.registerSound(BREAKING_CUSTOM.location(), BREAKING_CUSTOM);
 
-        customSounds.put(material, new CustomSoundsHolder(CAST_CUSTOM, BACK_CUSTOM, AMBIENT_CUSTOM, CLIMB_CUSTOM, HIT_CUSTOM));
+        customSounds.put(material, new CustomSoundsHolder(CAST_CUSTOM, BACK_CUSTOM, AMBIENT_CUSTOM, CLIMB_CUSTOM, HIT_CUSTOM, BREAKING_CUSTOM));
     }
     
     public static SoundEvent getCastSound(String material) {
@@ -99,19 +103,30 @@ public class SoundRegistry {
         }
     }
 
+    public static SoundEvent getBreakingSound(String material) {
+        if (noOneCustomVisual) return BREAKING;
+        if (HookRegistry.hookMaterialsWithCustomVisuals.contains(material)) {
+            return customSounds.get(material).BREAKING;
+        } else {
+            return BREAKING;
+        }
+    }
+
     public static class CustomSoundsHolder {
         public final SoundEvent CAST;
         public final SoundEvent BACK;
         public final SoundEvent AMBIENT;
         public final SoundEvent CLIMB;
         public final SoundEvent HIT;
+        public final SoundEvent BREAKING;
 
-        public CustomSoundsHolder(SoundEvent cast, SoundEvent back, SoundEvent ambient, SoundEvent climb, SoundEvent hit) {
+        public CustomSoundsHolder(SoundEvent cast, SoundEvent back, SoundEvent ambient, SoundEvent climb, SoundEvent hit, SoundEvent breaking) {
             CAST = cast;
             BACK = back;
             AMBIENT = ambient;
             CLIMB = climb;
             HIT = hit;
+            BREAKING = breaking;
         }
     }
 

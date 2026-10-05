@@ -12,6 +12,7 @@ import com.yori3o.yo_hooks.common.util.PhysicVariables;
 import com.yori3o.yo_hooks.common.util.interfaces.PlayerWithHookData;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -153,20 +154,39 @@ public class HookEntity extends ThrowableProjectile {
     }
 
     private boolean discardIfInvalid(Player player) {
-        if (!player.isAlive() || player.isRemoved() 
-                || !((player.getMainHandItem().getOrDefault(ComponentRegistry.HOOK_ACTIVE, false)) 
-                || (player.getOffhandItem().getOrDefault(ComponentRegistry.HOOK_ACTIVE, false))) 
-                || this.distanceTo(player) > getMaxRange()) {
-            ((PlayerWithHookData) player).yo_hooks$setHook(null);
-            this.discard();
-            for (ItemStack stack : player.getInventory()) {
-                if (stack.getOrDefault(ComponentRegistry.HOOK_ACTIVE, false)) {
-                    stack.set(ComponentRegistry.HOOK_ACTIVE, false);
-                }
-            }
-            return true;
+        boolean hookActive =
+            player.getMainHandItem().getOrDefault(ComponentRegistry.HOOK_ACTIVE, false)
+            || player.getOffhandItem().getOrDefault(ComponentRegistry.HOOK_ACTIVE, false);
+
+        boolean outOfRange = this.distanceTo(player) > getMaxRange();
+
+        if (player.isAlive() && !player.isRemoved() && hookActive && !outOfRange) {
+            return false;
         }
-        return false;
+
+        if (outOfRange) {
+            playBreakSound();
+        }
+
+        // destroy the hook and clear the components for the player
+        ((PlayerWithHookData) player).yo_hooks$setHook(null);
+        this.discard();
+        for (ItemStack stack : player.getInventory()) {
+            if (stack.getOrDefault(ComponentRegistry.HOOK_ACTIVE, false)) {
+                stack.set(ComponentRegistry.HOOK_ACTIVE, false);
+            }
+        }
+
+        return true;
+    }
+
+    private void playBreakSound() {
+        this.level().playSound(null,
+            getPlayerOwner(),
+            SoundRegistry.getBreakingSound(getHookItemMaterial()),
+            SoundSource.PLAYERS,
+            1.0f, 1.0f
+        );
     }
 
     @Override
@@ -224,7 +244,7 @@ public class HookEntity extends ThrowableProjectile {
             BlockState bs = level.getBlockState(pos);
 
             if (!ConfigManager.server().blocksBlacklist.isEmpty()) {
-                boolean isThisBlockBanned = (ConfigManager.server().blocksBlacklist.contains(bs.getBlock().properties().blockIdOrThrow().identifier().toString()));
+                boolean isThisBlockBanned = (ConfigManager.server().blocksBlacklist.contains(BuiltInRegistries.BLOCK.getKey(bs.getBlock()).toString()));
                 if (ConfigManager.server().whitelistMode) isThisBlockBanned = !isThisBlockBanned;
                 if (isThisBlockBanned) {
                     this.discard();

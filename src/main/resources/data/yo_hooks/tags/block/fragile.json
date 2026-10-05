@@ -22,6 +22,7 @@
     "#minecraft:candles",
     "minecraft:sea_lantern",
     "minecraft:glowstone",
-    "minecraft:end_rod"
+    "minecraft:end_rod",
+    "minecraft:sulfur_spike"
   ]
 }
