@@ -23,6 +23,8 @@ public class YoHooks {
     
 	public void init() {
 
+        Compats.checkForLoadedMods();
+
         ConfigFilesMover.moveConfigFiles();
         ConfigManager.loadCommon();
         ConfigManager.loadServer();
@@ -32,8 +34,6 @@ public class YoHooks {
         LootTableRegistry.load();
 
 		EntityRegistry.register();
-
-        Compats.checkForLoadedMods();
 		
 		if (PlatformUtil.isClient()) {
             YoHooksClient.initClient();
