@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 0.1,
+  "ingredient": [
+    "yo_hooks:iron_grappling_hook",
+    "yo_hooks:iron_hook_head"
+  ],
+  "result": {
+    "id": "minecraft:iron_nugget"
+  }
+}

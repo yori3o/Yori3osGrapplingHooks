@@ -1,0 +1,17 @@
+{
+    "pools": [
+        {
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "yo_hooks:gold_grappling_hook"
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "yo_hooks:iron_grappling_hook"
+                }
+            ],
+            "rolls": 1.0
+        }
+    ]
+}

@@ -1,0 +1,42 @@
+// Opt-in regression harness; no test classes are packaged in published jars.
+allprojects { p ->
+    if (p.name == '26.3-fabric') {
+        p.afterEvaluate {
+            def regression = p.sourceSets.create('hookRegression')
+            regression.java.srcDir(p.rootProject.file('tools/hook-regression'))
+            regression.resources.srcDir(p.rootProject.file('tools/hook-regression-resources'))
+            regression.compileClasspath += p.sourceSets.main.output + p.sourceSets.main.compileClasspath
+            regression.runtimeClasspath += regression.compileClasspath
+            p.extensions.getByName('loom').mods.create('yo_hooks_regression') { sourceSet(regression) }
+            p.tasks.register('regressionClasspath') {
+                doLast { p.rootProject.file('build/regression-classpath.txt').text = regression.compileClasspath.asPath }
+            }
+            p.tasks.named('runServer') {
+                dependsOn(p.tasks.named('hookRegressionClasses'))
+                classpath(regression.output)
+                workingDir(p.rootProject.file('run/hook-regression'))
+                systemProperty('fabric-api.gametest', 'true')
+                systemProperty('fabric-api.gametest.report-file', p.rootProject.file('build/hook-regression.xml').absolutePath)
+                doFirst {
+                    p.rootProject.file('run/hook-regression').mkdirs()
+                    p.rootProject.file('build/hook-regression.xml').delete()
+                }
+                doLast {
+                    def report = p.rootProject.file('build/hook-regression.xml')
+                    if (!report.isFile()) throw new GradleException('Missing hook regression report')
+                    def xml = javax.xml.parsers.DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(report)
+                    def cases = xml.getElementsByTagName('testcase')
+                    int ownTests = 0
+                    for (int i = 0; i < cases.length; i++) {
+                        if (cases.item(i).getAttribute('name').startsWith('yo_hooks_regression:')) ownTests++
+                    }
+                    if (ownTests != 15 || xml.getElementsByTagName('failure').length != 0
+                        || xml.getElementsByTagName('error').length != 0) {
+                        throw new GradleException("Hook regression suite incomplete or failed: ${ownTests}/15 tests")
+                    }
+                    logger.lifecycle('Verified all 15 hook regression tests')
+                }
+            }
+        }
+    }
+}

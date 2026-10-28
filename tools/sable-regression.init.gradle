@@ -1,0 +1,14 @@
+// Pure transform tests use the real 1.21.1/Sable math classes; no test code enters release jars.
+allprojects { p ->
+    if (p.name == '1.21.1-fabric') p.afterEvaluate {
+        def regression = p.sourceSets.create('sableRegression')
+        regression.java.srcDir(p.rootProject.file('tools/sable-regression'))
+        regression.compileClasspath += p.sourceSets.main.output + p.sourceSets.main.compileClasspath
+        p.tasks.register('sableRegression', JavaExec) {
+            dependsOn(p.tasks.named('sableRegressionClasses'))
+            classpath(regression.output, regression.compileClasspath)
+            mainClass.set('com.yori3o.yo_hooks.tests.SableTransformTests')
+            javaLauncher.set(p.javaToolchains.launcherFor(p.java.toolchain))
+        }
+    }
+}

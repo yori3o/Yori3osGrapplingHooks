@@ -1,0 +1,32 @@
+license = "MIT"
+
+modLoader="javafml"
+loaderVersion="[1,)"
+
+[[mods]]
+modId = "${id}"
+displayName = "${name}"
+version = "${version}"
+authors = "Yori3o"
+description = "Adds configurable grappling hooks to the game."
+
+logoFile = "logo.png"
+displayURL = "https://github.com/yori3o/Yori3osGrapplingHooks"
+#issueTrackerUrl = "..."
+
+[[mixins]]
+config = "yo_hooks-common.mixins.json"
+
+[[dependencies.${id}]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft}"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.${id}]]
+modId = "yet_another_config_lib_v3"
+type = "required"
+versionRange = "*"
+ordering = "NONE"
+side = "BOTH"

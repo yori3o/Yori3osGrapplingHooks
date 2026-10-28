@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "package": "com.yori3o.yo_hooks.common.mixin",
+  "compatibilityLevel": "${java}",
+  "minVersion": "0.8",
+  "client": [${client_mixins}],
+${refmap}  "mixins": [
+    "PlayerMixin",
+    "ServerGamePacketListenerImplMixin",
+    "ThrowableProjectileMixin",
+    "EntityMixin",
+    "RedStoneOreBlockAccess"
+  ],
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

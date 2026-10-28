@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "A": "#c:ingots/copper",
+    "B": "#c:nuggets/copper"
+  },
+  "pattern": [
+    "AA",
+    "BA"
+  ],
+  "result": {
+    "count": 1,
+    "id": "yo_hooks:copper_hook_head"
+  }
+}

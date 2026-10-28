@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "yo_hooks_regression",
+  "version": "1",
+  "environment": "server",
+  "entrypoints": {
+    "fabric-gametest": [
+      "com.yori3o.yo_hooks.common.network.HookRegressionTests"
+    ]
+  },
+  "depends": {
+    "yo_hooks": "*",
+    "fabric-gametest-api-v1": "*"
+  }
+}

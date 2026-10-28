@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "minecraft:netherite_ingot",
+  "base": "yo_hooks:diamond_grappling_hook",
+  "result": {
+    "count": 1,
+    "id": "yo_hooks:netherite_grappling_hook"
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

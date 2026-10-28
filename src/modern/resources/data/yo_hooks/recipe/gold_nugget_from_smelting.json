@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.1,
+  "ingredient": [
+    "yo_hooks:gold_grappling_hook",
+    "yo_hooks:gold_hook_head"
+  ],
+  "result": {
+    "id": "minecraft:gold_nugget"
+  }
+}

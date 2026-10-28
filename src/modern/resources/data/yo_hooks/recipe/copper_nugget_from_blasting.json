@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 0.1,
+  "ingredient": [
+    "yo_hooks:copper_grappling_hook",
+    "yo_hooks:copper_hook_head"
+  ],
+  "result": {
+    "id": "minecraft:copper_nugget"
+  }
+}

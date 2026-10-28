@@ -1,0 +1,56 @@
+# gradle
+
+.gradle/
+build/
+out/
+classes/
+.kotlin/
+
+# local machine settings
+
+local.properties
+
+# eclipse
+
+*.launch
+
+# idea
+
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# vscode
+
+.settings/
+.vscode/
+bin/
+.classpath
+.project
+
+# macos
+
+*.DS_Store
+Thumbs.db
+Desktop.ini
+
+# fabric
+
+run/
+
+# java
+
+hs_err_*.log
+replay_*.log
+*.hprof
+*.jfr
+*.class
+
+# logs and temporary editor files
+
+*.log
+*.tmp
+*.swp
+*.swo
+*~
