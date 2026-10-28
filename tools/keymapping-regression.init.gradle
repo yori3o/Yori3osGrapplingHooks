@@ -1,0 +1,31 @@
+// Runs against Fabric's transformed client classes before Minecraft creates a window.
+allprojects { p ->
+    if (p.name == '1.21.1-fabric') p.afterEvaluate {
+        def regression = p.sourceSets.create('keyMappingRegression')
+        regression.java.srcDir(p.rootProject.file('tools/keymapping-regression'))
+        regression.resources.srcDir(p.rootProject.file('tools/keymapping-regression-resources'))
+        regression.compileClasspath += p.sourceSets.main.output + p.sourceSets.main.compileClasspath
+        p.extensions.getByName('loom').mods.create('yo_hooks_key_regression') { sourceSet(regression) }
+        p.tasks.register('keyMappingRegression', JavaExec) {
+            dependsOn(p.tasks.named('keyMappingRegressionClasses'), p.tasks.named('configureLaunch'))
+            def client = p.tasks.named('runClient').get()
+            classpath(client.classpath, regression.output)
+            mainClass.set(client.mainClass)
+            systemProperties(client.systemProperties)
+            systemProperty('fabric.dli.main', 'net.fabricmc.loader.impl.launch.knot.KnotClient')
+            systemProperty('fabric.dli.env', 'client')
+            systemProperty('fabric.dli.config', p.rootProject.file('.gradle/loom-cache/projects/1.21.1-fabric/launch.cfg').absolutePath)
+            jvmArgs(client.jvmArgs)
+            args(client.args)
+            javaLauncher.set(client.javaLauncher)
+            workingDir(p.rootProject.file('run/keymapping-regression'))
+            doFirst {
+                workingDir.mkdirs()
+                new File(workingDir, 'passed.txt').delete()
+            }
+            doLast {
+                if (!new File(workingDir, 'passed.txt').isFile()) throw new GradleException('Key mapping regression did not run')
+            }
+        }
+    }
+}

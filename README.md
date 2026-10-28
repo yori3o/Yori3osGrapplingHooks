@@ -11,8 +11,6 @@ Want to add some variety to your parkour or how you move around the world? This 
 
 </div>
 
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/R_HgY7vfMeI?si=IgQ6ttceO7bUAPNb" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="display: block; margin: 0 auto;"></iframe>
-
 ## **Features:**
 
 - Hooks made of various materials, varying in length and durability. They can be repaired and enchanted with various enchantments, including three new ones;

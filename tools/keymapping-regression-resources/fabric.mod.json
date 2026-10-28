@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "yo_hooks_key_regression",
+  "version": "1",
+  "environment": "client",
+  "entrypoints": {
+    "preLaunch": [
+      "com.yori3o.yo_hooks.tests.KeyMappingRegression"
+    ]
+  }
+}

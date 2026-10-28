@@ -21,6 +21,9 @@ def verify(version: str, loader: str) -> None:
         assert ("minecraft:sulfur_spike" in fragile) == (version in {"26.2", "26.3"}), f"Wrong sulfur spike compatibility: {path.name}"
         mixins = resources["yo_hooks-common.mixins.json"]
         expected_java = 21 if version == "1.21.1" else 25
+        needs_shared_keys = version == "1.21.1" and loader == "fabric"
+        assert ("KeyMappingMixin" in mixins["client"]) == needs_shared_keys
+        assert ("com/yori3o/yo_hooks/common/mixin/KeyMappingMixin.class" in names) == needs_shared_keys
         assert mixins["compatibilityLevel"] == f"JAVA_{expected_java}"
         for mixin in mixins["mixins"] + mixins["client"]:
             name = mixins["package"].replace(".", "/") + "/" + mixin + ".class"
@@ -32,7 +35,7 @@ def verify(version: str, loader: str) -> None:
         other = "neoforge" if loader == "fabric" else "fabric"
         assert not any(n.startswith(f"com/yori3o/yo_hooks/{other}/") and n.endswith(".class") for n in names)
         assert not any("com/example/" in n or "template" in n for n in names)
-        assert not any("HookRegression" in n or "yo_hooks_regression" in n or "SableTransformTests" in n for n in names), "Test harness leaked into release jar"
+        assert not any("HookRegression" in n or "yo_hooks_regression" in n or "SableTransformTests" in n or "KeyMappingRegression" in n for n in names), "Test harness leaked into release jar"
         if loader == "fabric":
             metadata = resources["fabric.mod.json"]
             assert metadata["id"] == "yo_hooks" and metadata["version"] == MOD_VERSION
@@ -50,11 +53,20 @@ def verify(version: str, loader: str) -> None:
             assert metadata["mods"][0]["version"] == MOD_VERSION
             assert "fabric.mod.json" not in names
         for material in ["copper", "iron", "gold", "diamond", "netherite"]:
-            recipe = resources[f"data/yo_hooks/recipe/{material}_grappling_hook.json"]
-            ingredient = recipe.get("key", {}).get("B")
-            if ingredient is not None:
-                expected = {"item": "minecraft:chain"} if version == "1.21.1" else "minecraft:iron_chain"
-                assert ingredient == expected, f"Wrong chain ingredient: {path.name}"
+            if version == "1.21.1" and material == "copper":
+                for name in ["copper_grappling_hook", "copper_hook_head", "copper_nugget_from_smelting", "copper_nugget_from_blasting"]:
+                    assert f"data/yo_hooks/recipe/{name}.json" not in names, f"Legacy copper recipe: {path.name}"
+            else:
+                recipe = resources[f"data/yo_hooks/recipe/{material}_grappling_hook.json"]
+                ingredient = recipe.get("key", {}).get("B")
+                if ingredient is not None:
+                    expected = {"item": "minecraft:chain"} if version == "1.21.1" else "minecraft:iron_chain"
+                    assert ingredient == expected, f"Wrong chain ingredient: {path.name}"
+                if material == "copper":
+                    head = resources["data/yo_hooks/recipe/copper_hook_head.json"]
+                    pattern = "".join(head["pattern"])
+                    assert pattern.count("A") == 3 and pattern.count("B") == 1
+                    assert head["key"] == {"A": "#c:ingots/copper", "B": "#c:nuggets/copper"}
             item = f"assets/yo_hooks/items/{material}_grappling_hook.json"
             assert (item in names) == (version != "1.21.1")
             if version == "1.21.1":

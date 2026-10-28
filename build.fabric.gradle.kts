@@ -131,8 +131,12 @@ tasks {
 
         val mixinJava = "JAVA_${requiredJava.majorVersion}"
         val clientMixins = mutableListOf("MultiPlayerGameModeMixin", "MouseMixin", "HeldItemMixin")
+        if (sc.current.parsed < "26.1") clientMixins.add("KeyMappingMixin")
         if (sc.current.parsed >= "26.1") clientMixins.addAll(listOf("HookActivePropertyMixin", "AvatarRendererMixin"))
         val refmap = if (sc.current.parsed < "26.1") "\"refmap\": \"yo_hooks.refmap.json\",\n" else ""
+        inputs.property("mixin_client_classes", clientMixins)
+        inputs.property("mixin_java", mixinJava)
+        inputs.property("mixin_refmap", refmap)
         filesMatching("*.mixins.json") {
             expand("java" to mixinJava, "client_mixins" to clientMixins.joinToString(", ") { "\"$it\"" }, "refmap" to refmap)
         }
